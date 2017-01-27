@@ -1,0 +1,44 @@
+---
+- name: create volume-dirs
+  file:
+    path: "/volumes/kafka/{{item}}"
+    state: directory
+  with_items:
+  - logs
+  - config
+  - bin
+
+- name: delete content of logs-dir
+  shell: rm -rf /volumes/kafka/logs/*
+  when: kafka_reset or reset_all
+
+- name: copy conf to host
+  template:
+    src: "{{item}}.j2"
+    dest: "/volumes/kafka/config/{{item}}"
+  with_items:
+  - server.properties
+  - log4j.properties
+
+- name: copy bin to host
+  template:
+    src: start-kafka.sh.j2
+    dest: /volumes/kafka/bin/start-kafka.sh
+    mode: 755
+
+- name: start container
+  docker_container:
+    name: kafka
+    image: "wurstmeister/kafka:{{kafka_version}}" 
+    network_mode: host
+    state: "{{kafka_state}}"
+    restart: "{{kafka_reset or reset_all}}"
+    restart_policy: unless-stopped
+    volumes:
+    - /volumes/kafka/logs:/opt/kafka-logs
+    - "/volumes/kafka/config/log4j.properties:/opt/kafka_{{kafka_scala_version}}-{{kafka_version}}/config/log4j.properties"
+    - "/volumes/kafka/config/server.properties:/opt/kafka_{{kafka_scala_version}}-{{kafka_version}}/config/server.properties"
+    - /volumes/kafka/bin/start-kafka.sh:/usr/bin/start-kafka.sh
+    env:
+      EXTRA_ARGS: "-Dcom.sun.management.jmxremote.port={{kafka_jmx_port}}"
+

@@ -1,0 +1,29 @@
+---
+- name: correct /etc/hosts
+  lineinfile:
+    dest: /etc/hosts
+    line: "{{inventory_hostname}}  {{ansible_hostname}}  {{ansible_hostname}}"
+    regexp: '^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})(\s+){{ansible_hostname}}(\s+){{ansible_hostname}}'
+    state: present
+
+- name: add docker repos
+  apt_repository:
+    repo: deb https://apt.dockerproject.org/repo ubuntu-xenial main
+    state: present
+
+- name: add docker key
+  apt_key:
+    keyserver: hkp://p80.pool.sks-keyservers.net:80
+    id: 58118E89F3A912897C070ADBF76221572C52609D
+
+- name: install docker
+  apt:
+    name: docker-engine
+    update_cache: yes
+    state: present
+
+- name: install docker-py
+  pip:
+    name: docker-py
+    version: 1.10.6
+

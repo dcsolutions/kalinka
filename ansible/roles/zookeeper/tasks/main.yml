@@ -1,0 +1,41 @@
+---
+- name: create volume-dirs
+  file:
+    path: "/volumes/zookeeper/{{item}}"
+    state: directory
+  with_items:
+  - data
+  - conf
+
+- name: delete content of data-dir
+  shell: rm -rf /volumes/zookeeper/data/*
+  when: zookeeper_reset or reset_all
+
+- name: copy myid-file to host
+  template:
+    src: myid.j2
+    dest: /volumes/zookeeper/data/myid
+
+- name: copy conf to host
+  template:
+    src: "{{item}}.j2"
+    dest: "/volumes/zookeeper/conf/{{item}}"
+  with_items:
+  - zoo.cfg
+  - log4j.properties
+
+- name: start container
+  docker_container:
+    name: zookeeper
+    image: "jplock/zookeeper:{{zookeeper_version}}" 
+    network_mode: host
+    state: "{{zookeeper_state}}"
+    restart: "{{zookeeper_reset or reset_all}}"
+    restart_policy: unless-stopped
+    volumes:
+    - /volumes/zookeeper/data:/opt/zookeeper/data
+    - /volumes/zookeeper/conf/zoo.cfg:/opt/zookeeper/conf/zoo.cfg
+    - /volumes/zookeeper/conf/log4j.properties:/opt/zookeeper/conf/log4j.properties
+    env:
+      JMXPORT: "{{zookeeper_jmx_port}}"
+

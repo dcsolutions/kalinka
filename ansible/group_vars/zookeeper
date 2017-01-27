@@ -1,0 +1,11 @@
+---
+zookeeper_version: 3.4.9
+zookeeper_log_level: INFO
+zookeeper_jmx_port: 9449
+
+# docker-container-behaviour
+# drops data-volume and forces restart
+zookeeper_reset: False
+# desired state after deployment: started|stopped|present|absent
+zookeeper_state: started
+

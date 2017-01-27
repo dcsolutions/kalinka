@@ -1,0 +1,12 @@
+---
+kafka_version: 0.10.1.0
+kafka_scala_version: 2.11
+kafka_log_level: INFO
+kafka_jmx_port: 9448
+
+# docker-container-behaviour
+# drops data-volume and forces restart
+kafka_reset: False
+# desired state after deployment: started|stopped|present|absent
+kafka_state: started
+

@@ -1,0 +1,37 @@
+[dev1]
+192.168.33.20   zookeeper_id=0  kafka_id=0
+
+[dev2]
+192.168.33.21   zookeeper_id=1  kafka_id=1
+
+[dev3]
+192.168.33.22   zookeeper_id=2  kafka_id=2
+
+[devX]
+192.168.33.1
+
+[dockerhost:children]
+dev1
+dev2
+dev3
+
+[zookeeper:children]
+dev1
+dev2
+dev3
+
+[kafka:children]
+dev1
+dev2
+dev3
+
+[activemq:children]
+dev1
+dev2
+dev3
+
+[dev:children]
+dev1
+dev2
+dev3
+

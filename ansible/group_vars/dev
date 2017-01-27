@@ -1,0 +1,4 @@
+---
+ansible_ssh_common_args: '-i ../vagrant/ssh/insecure_rsa -o StrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null'
+# python3 not properly working atm
+# ansible_python_interpreter: /usr/bin/python3

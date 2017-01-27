@@ -1,0 +1,5 @@
+---
+- include: dockerhost.yml
+- include: zookeeper.yml
+- include: kafka.yml
+- include: activemq.yml

@@ -1,0 +1,5 @@
+---
+- hosts: zookeeper
+  roles:
+  - zookeeper
+  serial: 1

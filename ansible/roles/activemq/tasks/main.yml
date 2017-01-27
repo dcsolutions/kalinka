@@ -1,0 +1,32 @@
+---
+- name: create volume-dirs
+  file:
+    path: "/volumes/activemq/{{item}}"
+    state: directory
+  with_items:
+  - config
+
+- name: copy conf to host
+  template:
+    src: "{{item}}.j2"
+    dest: "/volumes/activemq/config/{{item}}"
+  with_items:
+  - activemq.xml
+  - log4j.properties
+
+- name: start container
+  docker_container:
+    name: activemq
+    image: "webcenter/activemq:{{activemq_version}}" 
+    network_mode: host
+    state: "{{activemq_state}}"
+    restart: "{{activemq_reset or reset_all}}"
+    restart_policy: unless-stopped
+    volumes:
+    - /volumes/activemq/config/log4j.properties:/opt/activemq/conf/log4j.properties
+    - /volumes/activemq/config/activemq.xml:/opt/activemq/conf/activemq.xml
+    env:
+      ACTIVEMQ_NAME: "{{ansible_hostname}}"
+      ACTIVEMQ_MAX_MEMORY: "{{activemq_max_mem}}"
+      ACTIVEMQ_LOGLEVEL: "{{activemq_log_level}}"
+
