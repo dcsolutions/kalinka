@@ -1,4 +1,4 @@
-package org.diehl.dcs.kalinka.mapper.mqtt;
+package org.diehl.dcs.kalinka.mapper.model;
 
 import java.util.Map;
 

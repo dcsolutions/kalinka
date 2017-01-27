@@ -2,8 +2,8 @@ package org.diehl.dcs.kalinka.mapper;
 
 import java.util.List;
 
-import org.diehl.dcs.kalinka.mapper.kafka.KafkaMessage;
-import org.diehl.dcs.kalinka.mapper.mqtt.MqttMessage;
+import org.diehl.dcs.kalinka.mapper.model.KafkaMessage;
+import org.diehl.dcs.kalinka.mapper.model.MqttMessage;
 
 public interface IMapper {
 
