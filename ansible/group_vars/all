@@ -1,2 +1,6 @@
 ---
 reset_all: False
+zk_client_port: 2181
+zk_chroots:
+  activemq: /activemq/connections
+  kafka: /kafka

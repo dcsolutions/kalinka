@@ -39,3 +39,16 @@
     env:
       JMXPORT: "{{zookeeper_jmx_port}}"
 
+- name: install zk-client-lib
+  pip:
+    name: kazoo
+    version: "{{kazoo_version}}"
+
+- name: create chroots
+  znode:
+    hosts: "{% for host in groups['zookeeper'] %}{{hostvars[host]['inventory_hostname']}}:{{zk_client_port}}{% if not loop.last %},{% endif %}{% endfor %}"
+    name: "{{item}}"
+    state: present
+  with_items:
+  - "{{zk_chroots['activemq']}}"
+  - "{{zk_chroots['kafka']}}"

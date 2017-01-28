@@ -5,6 +5,7 @@
     state: directory
   with_items:
   - config
+  - lib
 
 - name: copy conf to host
   template:
@@ -13,6 +14,11 @@
   with_items:
   - activemq.xml
   - log4j.properties
+
+- name: copy activemq-plugin
+  copy:
+    src: "../kalinka-activemq-plugin/target/kalinka-activemq-plugin-{{activemq_plugin_version}}.jar"
+    dest: /volumes/activemq/lib/kalinka-activemq-plugin.jar
 
 - name: start container
   docker_container:
@@ -25,6 +31,7 @@
     volumes:
     - /volumes/activemq/config/log4j.properties:/opt/activemq/conf/log4j.properties
     - /volumes/activemq/config/activemq.xml:/opt/activemq/conf/activemq.xml
+    - /volumes/activemq/lib/kalinka-activemq-plugin.jar:/opt/activemq/lib/kalinka-activemq-plugin.jar
     env:
       ACTIVEMQ_NAME: "{{ansible_hostname}}"
       ACTIVEMQ_MAX_MEMORY: "{{activemq_max_mem}}"

@@ -123,8 +123,14 @@
         <shutdownHooks>
             <bean xmlns="http://www.springframework.org/schema/beans" class="org.apache.activemq.hooks.SpringContextHook" />
         </shutdownHooks>
-
+        <plugins>
+            <bean xmlns="http://www.springframework.org/schema/beans" id="zkPlugin" class="org.diehl.dcs.kalinka.activemq_plugin.ActivemqPlugin">
+                <constructor-arg name="zkServers" value="{% for host in groups['zookeeper'] %}{{hostvars[host]['inventory_hostname']}}:{{zk_client_port}}{% if not loop.last %},{% endif %}{% endfor %}{{zk_chroots['activemq']}}"/>
+                <constructor-arg name="host" value="{{inventory_hostname}}"/>
+            </bean>
+        </plugins>
     </broker>
+
 
     <!--
         Enable web consoles, REST and Ajax APIs and demos

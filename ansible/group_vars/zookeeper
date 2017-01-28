@@ -2,6 +2,7 @@
 zookeeper_version: 3.4.9
 zookeeper_log_level: INFO
 zookeeper_jmx_port: 9449
+kazoo_version: 2.2.1
 
 # docker-container-behaviour
 # drops data-volume and forces restart
