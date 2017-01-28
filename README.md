@@ -58,7 +58,7 @@ All components are deployed as docker-containers. Docker will be installed on th
 ### Installation of Python and Virtualenv
 
 ```
-sudo apt-get install python python-dev virtualenv build-essential libssl-dev python-pip
+sudo apt-get install python python-dev virtualenv build-essential libffi-dev libxml2-dev libxslt1-dev libssl-dev python-pip
 ```
 
 ### Creation of Virtualenv
