@@ -30,7 +30,7 @@ public class ActivemqPluginTest {
 
 		this.zkServer = new TestingServer(2181);
 		this.zkClient = new ZkClient(this.zkServer.getConnectString());
-		// this must be done after Zookeeper install
+		// this must be done after Zookeeper install in "real-world-setup"
 		this.zkClient.createPersistent(ZK_CHROOT_PATH, true);
 	}
 
