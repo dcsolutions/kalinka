@@ -56,7 +56,7 @@ public class ActivemqPlugin implements BrokerPlugin {
 	void upsertZkNode(final String clientId) {
 
 		final String node = "/" + clientId;
-		LOG.debug("Trying to upsert node={}, to host{}", node, this.host);
+		LOG.debug("Trying to upsert node={}, to host={}", node, this.host);
 		try {
 			this.zkClient.createPersistent(node, this.host);
 		}
@@ -64,7 +64,7 @@ public class ActivemqPlugin implements BrokerPlugin {
 			this.deleteZkNode(clientId);
 			this.zkClient.createPersistent(node, this.host);
 		}
-		LOG.info("Upserted node={}, to host{}", node, this.host);
+		LOG.info("Upserted node={}, to host={}", node, this.host);
 	}
 
 	void deleteZkNode(final String clientId) {
