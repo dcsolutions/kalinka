@@ -24,9 +24,10 @@ public class ActivemqPlugin implements BrokerPlugin {
 
 	public ActivemqPlugin(final String zkServers, final String host) {
 
-		LOG.info("Creating ZkClient for zkServers=" + zkServers + ", currentHost=" + host);
+		LOG.debug("Trying to create ZkClient for zkServers=" + zkServers + ", currentHost=" + host);
 		this.zkClient = new ZkClient(zkServers);
 		this.host = host;
+		LOG.info("Created ZkClient for zkServers=" + zkServers + ", currentHost=" + host);
 	}
 
 
