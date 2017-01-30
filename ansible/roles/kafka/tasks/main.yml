@@ -32,7 +32,8 @@
     image: "wurstmeister/kafka:{{kafka_version}}" 
     network_mode: host
     state: "{{kafka_state}}"
-    restart: "{{kafka_reset or reset_all}}"
+    recreate: "{{kafka_reset or reset_all}}"
+    restart: "{{kafka_restart}}"
     restart_policy: unless-stopped
     volumes:
     - /volumes/kafka/logs:/opt/kafka-logs

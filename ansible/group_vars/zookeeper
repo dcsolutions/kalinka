@@ -5,8 +5,10 @@ zookeeper_jmx_port: 9449
 kazoo_version: 2.2.1
 
 # docker-container-behaviour
-# drops data-volume and forces restart
+# drops data-volume and forces recreation of container
 zookeeper_reset: False
+# force restart
+zookeeper_restart: False
 # desired state after deployment: started|stopped|present|absent
 zookeeper_state: started
 

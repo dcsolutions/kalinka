@@ -30,7 +30,8 @@
     image: "jplock/zookeeper:{{zookeeper_version}}" 
     network_mode: host
     state: "{{zookeeper_state}}"
-    restart: "{{zookeeper_reset or reset_all}}"
+    recreate: "{{zookeeper_reset or reset_all}}"
+    restart: "{{zookeeper_restart}}"
     restart_policy: unless-stopped
     volumes:
     - /volumes/zookeeper/data:/opt/zookeeper/data

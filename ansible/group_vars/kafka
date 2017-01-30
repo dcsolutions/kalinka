@@ -5,8 +5,10 @@ kafka_log_level: INFO
 kafka_jmx_port: 9448
 
 # docker-container-behaviour
-# drops data-volume and forces restart
+# drops data-volume and forces recreation of container
 kafka_reset: False
+# force restart
+kafka_restart: False
 # desired state after deployment: started|stopped|present|absent
 kafka_state: started
 

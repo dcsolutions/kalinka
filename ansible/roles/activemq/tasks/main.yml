@@ -27,7 +27,8 @@
     image: "rmohr/activemq:{{activemq_version}}" 
     network_mode: host
     state: "{{activemq_state}}"
-    restart: "{{activemq_reset or reset_all}}"
+    recreate: "{{activemq_reset or reset_all}}"
+    restart: "{{activemq_restart}}"
     restart_policy: unless-stopped
     volumes:
     - /volumes/activemq/config/log4j.properties:/opt/activemq/conf/log4j.properties

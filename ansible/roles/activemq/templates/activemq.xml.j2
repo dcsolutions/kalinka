@@ -129,6 +129,16 @@
                 <constructor-arg name="host" value="{{inventory_hostname}}"/>
             </bean>
         </plugins>
+		<destinationInterceptors>
+			<virtualDestinationInterceptor>
+				<virtualDestinations>
+					<virtualTopic name=">" prefix="VirtualTopicConsumers.*." selectorAware="false"/>
+				</virtualDestinations>
+			</virtualDestinationInterceptor>
+		</destinationInterceptors> 
+        <destinations>
+            <queue physicalName="VirtualTopicConsumers.KafkaConsumer.*." />
+        </destinations>
     </broker>
 
 

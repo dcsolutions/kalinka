@@ -7,8 +7,10 @@ activemq_jmx_port: 9447
 activemq_plugin_version: 0.0.1-SNAPSHOT
 
 # docker-container-behaviour
-# drops data-volume and forces restart
+# drops data-volume and forces recreation of container
 activemq_reset: False
+# force restart
+activemq_restart: False
 # desired state after deployment: started|stopped|present|absent
 activemq_state: started
 
