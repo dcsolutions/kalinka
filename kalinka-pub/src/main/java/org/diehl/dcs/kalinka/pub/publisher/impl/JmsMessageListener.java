@@ -40,6 +40,8 @@ public class JmsMessageListener<K, V> implements MessageListener {
 	@Override
 	public void onMessage(final Message msg) {
 
+		System.out.println("#########################################");
+
 		this.messageToKafkaPublisher.publish(msg, this.kafkaTemplate);
 	}
 }
