@@ -10,6 +10,11 @@
 package org.diehl.dcs.kalinka.activemq_plugin;
 
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
 import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.exception.ZkNodeExistsException;
 import org.apache.activemq.broker.Broker;
@@ -28,17 +33,25 @@ public class ActivemqPlugin implements BrokerPlugin {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ActivemqPlugin.class);
 
-	private static final String CLIENT_ID_PREFIX_KAFKA = "kafka-client";
+	static final String JMS_CLIENT_ID_KALINKA_PUB_REGEX = "kalinka-pub-.*";
 
 	private final ZkClient zkClient;
 	private final String host;
+	private final List<Pattern> clientIdRegexPatternsToIgnore;
 
 	public ActivemqPlugin(final String zkServers, final String host) {
 
-		LOG.debug("Trying to create ZkClient for zkServers={}, currentHost={}", zkServers, host);
+		this(zkServers, host, (JMS_CLIENT_ID_KALINKA_PUB_REGEX));
+	}
+
+	public ActivemqPlugin(final String zkServers, final String host, final String clientIdRegexesToIgnore) {
+
+		LOG.debug("Trying to create ZkClient for zkServers={}, currentHost={}, clientIdRegexesToIgnore={}", zkServers, host, clientIdRegexesToIgnore);
 		this.zkClient = new ZkClient(zkServers);
 		this.host = host;
-		LOG.info("Created ZkClient for zkServers=" + zkServers + ", currentHost=" + host);
+		this.clientIdRegexPatternsToIgnore = Arrays.asList(clientIdRegexesToIgnore.split(",")).stream().filter(s -> !s.trim().isEmpty())
+				.map(r -> Pattern.compile(r.trim())).collect(Collectors.toList());
+		LOG.info("Created ZkClient for zkServers={}, currentHost={}, clientIdRegexesToIgnore={}", zkServers, this.host, clientIdRegexesToIgnore);
 	}
 
 
@@ -48,32 +61,38 @@ public class ActivemqPlugin implements BrokerPlugin {
 		return new BrokerFilter(broker) {
 
 			@Override
-			public void addConnection(final ConnectionContext context, final ConnectionInfo info)
-					throws Exception {
+			public void addConnection(final ConnectionContext context, final ConnectionInfo info) throws Exception {
 
 				LOG.debug("Received connect from clientId={}", context.getClientId());
 
 				super.addConnection(context, info);
-				if (context.getClientId().startsWith(CLIENT_ID_PREFIX_KAFKA)) {
+				if (isClientToIgnore(context.getClientId(), clientIdRegexPatternsToIgnore)) {
 					return;
 				}
 				upsertZkNode(context.getClientId());
 			}
 
 			@Override
-			public void removeConnection(final ConnectionContext context, final ConnectionInfo info,
-					final Throwable error) throws Exception {
+			public void removeConnection(final ConnectionContext context, final ConnectionInfo info, final Throwable error) throws Exception {
 
 				LOG.debug("Received disconnect from clientId={}", context.getClientId());
 
 				super.removeConnection(context, info, error);
-				if (context.getClientId().startsWith(CLIENT_ID_PREFIX_KAFKA)) {
+				if (isClientToIgnore(context.getClientId(), clientIdRegexPatternsToIgnore)) {
 					return;
 				}
 				deleteZkNode(context.getClientId());
 			}
 		};
 	};
+
+	static boolean isClientToIgnore(final String clientId, final List<Pattern> clientIdRegexPatternsToIgnore) {
+
+		return clientIdRegexPatternsToIgnore.stream().filter(r -> {
+			return r.matcher(clientId).matches();
+		}).findFirst().isPresent();
+
+	}
 
 	void upsertZkNode(final String clientId) {
 

@@ -17,6 +17,11 @@ limitations under the License.
 package org.diehl.dcs.kalinka.activemq_plugin;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
+import java.util.regex.Pattern;
 
 import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.exception.ZkNoNodeException;
@@ -26,6 +31,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import com.google.common.collect.Lists;
 
 /**
  * @author michas <michas@jarmoni.org>
@@ -75,6 +82,15 @@ public class ActivemqPluginTest {
 		plugin.deleteZkNode("123");
 		this.ee.expect(ZkNoNodeException.class);
 		this.zkClient.readData("/123");
+	}
+
+	@Test
+	public void testIsClientToIgnore() throws Exception {
+
+		final List<Pattern> patterns = Lists.newArrayList(Pattern.compile(ActivemqPlugin.JMS_CLIENT_ID_KALINKA_PUB_REGEX));
+
+		assertTrue(ActivemqPlugin.isClientToIgnore("kalinka-pub-123", patterns));
+		assertFalse(ActivemqPlugin.isClientToIgnore("kalinka-sub", patterns));
 	}
 
 	@After
