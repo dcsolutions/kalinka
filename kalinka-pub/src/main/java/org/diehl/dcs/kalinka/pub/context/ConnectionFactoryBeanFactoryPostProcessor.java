@@ -17,6 +17,7 @@ limitations under the License.
 package org.diehl.dcs.kalinka.pub.context;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.springframework.beans.BeansException;
@@ -38,7 +39,7 @@ public class ConnectionFactoryBeanFactoryPostProcessor implements BeanDefinition
 
 	private final List<String> jmsHosts;
 	private final List<String> jmsDestinations;
-	private final String kafkaClientIdPrefix;
+	private final String jmsClientIdKalinkaPub;
 
 	// Found no better way to configure multiple ConnectionFactories dynamically
 	// See: https://dzone.com/articles/how-create-your-own-dynamic
@@ -46,12 +47,11 @@ public class ConnectionFactoryBeanFactoryPostProcessor implements BeanDefinition
 
 		this.jmsHosts = Splitter.on(',').omitEmptyStrings().trimResults().splitToList(springEnvironment.getProperty("jms.hosts"));
 		this.jmsDestinations = Splitter.on(',').omitEmptyStrings().trimResults().splitToList(springEnvironment.getProperty("jms.destinations"));
-		this.kafkaClientIdPrefix = springEnvironment.getProperty("kafka.client.id.prefix");
+		this.jmsClientIdKalinkaPub = springEnvironment.getProperty("jms.client.id.kalinka.pub", "kalinka-pub-");
 	}
 
 	@Override
 	public void postProcessBeanFactory(final ConfigurableListableBeanFactory beanFactory) throws BeansException {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -63,7 +63,7 @@ public class ConnectionFactoryBeanFactoryPostProcessor implements BeanDefinition
 			final BeanDefinitionBuilder connectionFactoryBuilder = BeanDefinitionBuilder.genericBeanDefinition(CachingConnectionFactory.class);
 			connectionFactoryBuilder.addConstructorArgValue(new ActiveMQConnectionFactory(jmsHost));
 			connectionFactoryBuilder.addPropertyValue("cacheConsumers", true);
-			connectionFactoryBuilder.addPropertyValue("clientId", this.kafkaClientIdPrefix);
+			connectionFactoryBuilder.addPropertyValue("clientId", this.jmsClientIdKalinkaPub + jmsHost + "-" + UUID.randomUUID().toString());
 			registry.registerBeanDefinition("connectionFactory-" + jmsHost, connectionFactoryBuilder.getBeanDefinition());
 
 			this.jmsDestinations.forEach(dest -> {

@@ -16,6 +16,9 @@ limitations under the License.
 
 package org.diehl.dcs.kalinka.pub.context;
 
+import static org.diehl.dcs.kalinka.util.LangUtil.createClass;
+import static org.diehl.dcs.kalinka.util.LangUtil.createObject;
+
 import java.util.Map;
 
 import javax.jms.MessageListener;
@@ -24,7 +27,6 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.Serializer;
 import org.diehl.dcs.kalinka.pub.publisher.IJmsMessageToKafkaPublisher;
 import org.diehl.dcs.kalinka.pub.publisher.impl.JmsMessageListener;
-import org.diehl.dcs.kalinka.pub.publisher.impl.JmsMessageToKafkaPublisher;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,20 +49,20 @@ public class ContextConfiguration {
 	@SuppressWarnings("rawtypes")
 	private Class<? extends Serializer> kafkaValueSerializerClass;
 
-	@Value("${kafka.client.id.prefix:kafka-client-}")
-	private String kafkaClientIdPrefix;
-
 	@Value("${kafka.key.serializer.class.name:org.apache.kafka.common.serialization.StringSerializer}")
 	public void setKafkaKeySerializerClass(final String kafkaKeySerializerClassName) {
 
-		this.kafkaKeySerializerClass = this.createSerializerClass(kafkaKeySerializerClassName);
+		this.kafkaKeySerializerClass = createClass(kafkaKeySerializerClassName, Serializer.class);
 	}
 
 	@Value("${kafka.value.serializer.class.name:org.apache.kafka.common.serialization.ByteArraySerializer}")
 	public void setKafkaValueSerializerClass(final String kafkaValueSerializerClassName) {
 
-		this.kafkaValueSerializerClass = this.createSerializerClass(kafkaValueSerializerClassName);
+		this.kafkaValueSerializerClass = createClass(kafkaValueSerializerClassName, Serializer.class);
 	}
+
+	@Value("${kafka.message.publisher.class.name}")
+	private String kafkaMessagePublisherClassName;
 
 	@Value("${kafka.hosts}")
 	private String kafkaHosts;
@@ -81,7 +83,7 @@ public class ContextConfiguration {
 	@Bean
 	public IJmsMessageToKafkaPublisher messageToKafkaPublisher() {
 
-		return new JmsMessageToKafkaPublisher();
+		return createObject(kafkaMessagePublisherClassName, IJmsMessageToKafkaPublisher.class);
 	}
 
 	@Bean
@@ -117,15 +119,5 @@ public class ContextConfiguration {
 	public MessageListener messageListener() {
 
 		return new JmsMessageListener(this.messageToKafkaPublisher(), this.kafkaTemplate());
-	}
-
-	@SuppressWarnings({ "rawtypes" })
-	private Class<? extends Serializer> createSerializerClass(final String className) {
-
-		try {
-			return Class.forName(className).asSubclass(Serializer.class);
-		} catch (final ClassNotFoundException e) {
-			throw new RuntimeException("Cannot create class=" + className, e);
-		}
 	}
 }
