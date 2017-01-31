@@ -83,7 +83,7 @@ public class ContextConfiguration {
 	@Bean
 	public IJmsMessageToKafkaPublisher messageToKafkaPublisher() {
 
-		return createObject(kafkaMessagePublisherClassName, IJmsMessageToKafkaPublisher.class);
+		return createObject(this.kafkaMessagePublisherClassName, IJmsMessageToKafkaPublisher.class);
 	}
 
 	@Bean
