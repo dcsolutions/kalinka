@@ -19,21 +19,28 @@ package org.diehl.dcs.kalinka.pub.context;
 import static org.diehl.dcs.kalinka.util.LangUtil.createClass;
 import static org.diehl.dcs.kalinka.util.LangUtil.createObject;
 
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.jms.MessageListener;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.Serializer;
-import org.diehl.dcs.kalinka.pub.publisher.IJmsMessageToKafkaPublisher;
-import org.diehl.dcs.kalinka.pub.publisher.impl.JmsMessageListener;
+import org.diehl.dcs.kalinka.pub.publisher.IMessagePublisher;
+import org.diehl.dcs.kalinka.pub.publisher.JmsMessageListener;
+import org.diehl.dcs.kalinka.pub.publisher.MessagePublisherProvider;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 
+import com.google.common.base.Splitter;
 import com.google.common.collect.Maps;
 
 /**
@@ -42,27 +49,6 @@ import com.google.common.collect.Maps;
  */
 @Configuration
 public class ContextConfiguration {
-
-	@SuppressWarnings("rawtypes")
-	private Class<? extends Serializer> kafkaKeySerializerClass;
-
-	@SuppressWarnings("rawtypes")
-	private Class<? extends Serializer> kafkaValueSerializerClass;
-
-	@Value("${kafka.key.serializer.class.name:org.apache.kafka.common.serialization.StringSerializer}")
-	public void setKafkaKeySerializerClass(final String kafkaKeySerializerClassName) {
-
-		this.kafkaKeySerializerClass = createClass(kafkaKeySerializerClassName, Serializer.class);
-	}
-
-	@Value("${kafka.value.serializer.class.name:org.apache.kafka.common.serialization.ByteArraySerializer}")
-	public void setKafkaValueSerializerClass(final String kafkaValueSerializerClassName) {
-
-		this.kafkaValueSerializerClass = createClass(kafkaValueSerializerClassName, Serializer.class);
-	}
-
-	@Value("${kafka.message.publisher.class.name}")
-	private String kafkaMessagePublisherClassName;
 
 	@Value("${kafka.hosts}")
 	private String kafkaHosts;
@@ -78,12 +64,51 @@ public class ContextConfiguration {
 
 	@Value("${kafka.buffer.memory.config:33554432}")
 	private Integer kafkaBufferMemory;
+	@SuppressWarnings("rawtypes")
+	private Class<? extends Serializer> kafkaKeySerializerClass;
+
+	@SuppressWarnings("rawtypes")
+	private Class<? extends Serializer> kafkaValueSerializerClass;
+
+	private List<String> kafkaMessagePublisherClassNames;
+
+	@Value("${kafka.key.serializer.class.name:org.apache.kafka.common.serialization.StringSerializer}")
+	public void setKafkaKeySerializerClass(final String kafkaKeySerializerClassName) {
+
+		this.kafkaKeySerializerClass = createClass(kafkaKeySerializerClassName, Serializer.class);
+	}
+
+	@Value("${kafka.value.serializer.class.name:org.apache.kafka.common.serialization.ByteArraySerializer}")
+	public void setKafkaValueSerializerClass(final String kafkaValueSerializerClassName) {
+
+		this.kafkaValueSerializerClass = createClass(kafkaValueSerializerClassName, Serializer.class);
+	}
+
+	@Value("${kafka.message.publisher.class.names}")
+	public void setKafkaMessagePublisherClassNames(final String rawKafkaMessagePublisherClassNames) {
+
+		this.kafkaMessagePublisherClassNames = Splitter.on(',').omitEmptyStrings().trimResults().splitToList(rawKafkaMessagePublisherClassNames);
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Bean
+	public MessagePublisherProvider messagePublisherProvider() {
+
+		final LinkedHashMap<Pattern, IMessagePublisher> publishers = new LinkedHashMap<>();
+		this.kafkaMessagePublisherClassNames.forEach(className -> {
+			final IMessagePublisher publisher = this.messageToKafkaPublisher(className);
+			publishers.put(Pattern.compile(publisher.getSourceTopicRegex()), publisher);
+		});
+		return new MessagePublisherProvider(publishers);
+	}
+
 
 	@SuppressWarnings("rawtypes")
 	@Bean
-	public IJmsMessageToKafkaPublisher messageToKafkaPublisher() {
+	@Scope(BeanDefinition.SCOPE_PROTOTYPE)
+	public IMessagePublisher messageToKafkaPublisher(final String className) {
 
-		return createObject(this.kafkaMessagePublisherClassName, IJmsMessageToKafkaPublisher.class);
+		return createObject(className, IMessagePublisher.class);
 	}
 
 	@Bean
@@ -118,6 +143,6 @@ public class ContextConfiguration {
 	@Bean
 	public MessageListener messageListener() {
 
-		return new JmsMessageListener(this.messageToKafkaPublisher(), this.kafkaTemplate());
+		return new JmsMessageListener(this.messagePublisherProvider(), this.kafkaTemplate());
 	}
 }

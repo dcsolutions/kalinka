@@ -14,12 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
  */
 
-package org.diehl.dcs.kalinka.pub.publisher.impl;
+package org.diehl.dcs.kalinka.pub.publisher;
 
 import javax.jms.Message;
 import javax.jms.MessageListener;
 
-import org.diehl.dcs.kalinka.pub.publisher.IJmsMessageToKafkaPublisher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 
 /**
@@ -28,18 +29,30 @@ import org.springframework.kafka.core.KafkaTemplate;
  */
 public class JmsMessageListener<K, V> implements MessageListener {
 
-	private final IJmsMessageToKafkaPublisher<K, V> messageToKafkaPublisher;
+	private static final Logger LOG = LoggerFactory.getLogger(JmsMessageListener.class);
+
+	private final MessagePublisherProvider<Message, K, V> messagePublisherProvider;
 	private final KafkaTemplate<K, V> kafkaTemplate;
 
-	public JmsMessageListener(final IJmsMessageToKafkaPublisher<K, V> messageToKafkaPublisher, final KafkaTemplate<K, V> kafkaTemplate) {
+	public JmsMessageListener(final MessagePublisherProvider<Message, K, V> messagePublisherProvider, final KafkaTemplate<K, V> kafkaTemplate) {
 
-		this.messageToKafkaPublisher = messageToKafkaPublisher;
+		this.messagePublisherProvider = messagePublisherProvider;
 		this.kafkaTemplate = kafkaTemplate;
 	}
 
 	@Override
 	public void onMessage(final Message msg) {
 
-		this.messageToKafkaPublisher.publish(msg, this.kafkaTemplate);
+		try {
+			final String destination = msg.getStringProperty("JMSDestination");
+			final IMessagePublisher<Message, K, V> publisher = this.messagePublisherProvider.getPublisher(msg.getStringProperty("JMSDestination"));
+			if (publisher == null) {
+				LOG.warn("No publisher found for destination={}" + destination);
+				return;
+			}
+			publisher.publish(msg, this.kafkaTemplate);
+		} catch (final Throwable t) {
+			throw new RuntimeException(t);
+		}
 	}
 }
