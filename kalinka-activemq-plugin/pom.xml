@@ -9,9 +9,6 @@
 
 	<properties>
 		<activemq.version>5.14.3</activemq.version>
-		<zkclient.version>0.10</zkclient.version>
-		<!-- We cannot use most recent curator-version because zookeeper-version conflicts with zkclient -->
-		<apache.curator.version>2.11.1</apache.curator.version>
 		<maven.shade.plugin.version>3.0.0</maven.shade.plugin.version>
 	</properties>
 
