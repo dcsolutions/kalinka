@@ -15,6 +15,7 @@ import java.util.List;
 import javax.jms.BytesMessage;
 import javax.jms.Message;
 
+import org.diehl.dcs.kalinka.pub.util.JmsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -34,10 +35,7 @@ public class MqttMqttJmsMessagePublisher implements IMessagePublisher<Message, S
 	public void publish(final Message message, final KafkaTemplate<String, byte[]> kafkaTemplate) {
 
 		try {
-			final BytesMessage bytesMessage = (BytesMessage) message;
-			final int len = Long.valueOf(bytesMessage.getBodyLength()).intValue();
-			final byte[] effectivePayload = new byte[len];
-			bytesMessage.readBytes(effectivePayload, len);
+			final byte[] effectivePayload = JmsUtil.getPayload((BytesMessage) message);
 			final MessageContainer messageContainer = this.createMessageContainer(message.getStringProperty("JMSDestination"), effectivePayload);
 			kafkaTemplate.send(messageContainer.topic, messageContainer.key, messageContainer.content);
 		} catch (final Throwable t) {
