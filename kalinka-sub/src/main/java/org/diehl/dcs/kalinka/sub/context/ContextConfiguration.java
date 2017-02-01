@@ -12,7 +12,7 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-*/
+ */
 package org.diehl.dcs.kalinka.sub.context;
 
 import static org.diehl.dcs.kalinka.util.LangUtil.createClass;
@@ -25,22 +25,27 @@ import java.util.UUID;
 
 import javax.jms.ConnectionFactory;
 
+import org.I0Itec.zkclient.ZkClient;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.Deserializer;
-import org.diehl.dcs.kalinka.sub.publisher.IConnectionFactoryFactory;
+import org.diehl.dcs.kalinka.sub.cache.BrokerCache;
+import org.diehl.dcs.kalinka.sub.cache.IBrokerCache;
 import org.diehl.dcs.kalinka.sub.publisher.IJmsMessageFromKafkaPublisher;
-import org.diehl.dcs.kalinka.sub.publisher.IJmsTemplateFactory;
 import org.diehl.dcs.kalinka.sub.publisher.IMessageFromKafkaPublisher;
+import org.diehl.dcs.kalinka.sub.publisher.JmsTemplateProvider;
 import org.diehl.dcs.kalinka.sub.util.KafkaPartitionResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.jms.connection.CachingConnectionFactory;
 
 import com.google.common.base.Splitter;
+import com.google.common.collect.Maps;
 
 
 /**
@@ -54,11 +59,15 @@ public class ContextConfiguration {
 	public static final String KAFKA_SUBSCRIBED_PARTITIONS = "kafkaSubscribedPartitions";
 	public static final String KAFKA_SUBSCRIBED_TOPICS = "kafkaSubscribedTopics";
 
+	private static final Logger LOG = LoggerFactory.getLogger(ContextConfiguration.class);
+
 	@SuppressWarnings("rawtypes")
 	private Class<? extends Deserializer> kafkaKeyDeserializerClass;
 
 	@SuppressWarnings("rawtypes")
 	private Class<? extends Deserializer> kafkaValueDeserializerClass;
+
+	private List<String> jmsHosts;
 
 	private List<String> kafkaSubscribedTopics;
 
@@ -76,6 +85,12 @@ public class ContextConfiguration {
 		this.kafkaValueDeserializerClass = createClass(kafkaValueDeserializerClassName, Deserializer.class);
 	}
 
+	@Value("${jms.hosts}")
+	public void setJmsHosts(final String rawJmsHosts) {
+
+		this.jmsHosts = Splitter.on(',').omitEmptyStrings().trimResults().splitToList(rawJmsHosts);
+	}
+
 	@Value("${kafka.subscribed.topics}")
 	public void setKafkaSuscribedTopics(final String rawKafkaSubscribedTopics) {
 
@@ -87,6 +102,9 @@ public class ContextConfiguration {
 
 		this.kafkaSubscribedPartitions = KafkaPartitionResolver.partitionsFromString(rawKafkaSubscribedPartitions);
 	}
+
+	@Value("${zk.hosts}")
+	private String zkHosts;
 
 	@Value("${kafka.hosts}")
 	private String kafkaHosts;
@@ -110,7 +128,16 @@ public class ContextConfiguration {
 	private String messageFromKafkaPublisherClassName;
 
 	@Value("${jms.client.id.kalinka.sub:kalinka-sub-}")
-	private String jmsClientIdKlinkaSub;
+	private String jmsClientIdKalinkaSub;
+
+	@Value("${cache.initial.size}")
+	private int cacheInitialSize;
+
+	@Value("${cache.max.size}")
+	private long cacheMaxSize;
+
+	@Value("${cache.eviction.hours}")
+	private int cacheEvictionHours;
 
 	@SuppressWarnings("rawtypes")
 	@Bean
@@ -119,6 +146,11 @@ public class ContextConfiguration {
 		return createObject(this.messageFromKafkaPublisherClassName, IJmsMessageFromKafkaPublisher.class);
 	}
 
+	@Bean
+	public ZkClient zkClient() {
+
+		return new ZkClient(this.zkHosts);
+	}
 
 	@Bean
 	public Map<String, Object> kafkaConsumerConfig() {
@@ -137,27 +169,52 @@ public class ContextConfiguration {
 		return props;
 	}
 
-	@Bean
-	public IJmsTemplateFactory jmsTemplateFactory() {
+	//	@Bean
+	//	public KafkaMessageConsumer kafkaMessageConsumer() {
+	//
+	//		return new KafkaMessageConsumer<>(consumer, assignedPartitions, pollTimeout, topic, jmsTemplateProvider)
+	//	}
+	//	@Bean
+	//	public IJmsTemplateFactory jmsTemplateFactory() {
+	//
+	//		return new JmsTemplateFactory(this.connectionFactoryFactory(), this.jmsHosts);
+	//
+	//	}
 
+
+	//	@Bean
+	//	public IConnectionFactoryFactory connectionFactoryFactory() {
+	//
+	//		return host -> connectionFactory(host);
+	//	}
+
+	@Bean
+	public IBrokerCache brokerCache() {
+
+		return new BrokerCache(this.zkClient(), this.cacheInitialSize, this.cacheMaxSize, this.cacheEvictionHours);
 	}
 
-
 	@Bean
-	public IConnectionFactoryFactory connectionFactoryFactory() {
+	public JmsTemplateProvider jmsTemplateProvider() {
 
-		return host -> connectionFactory(host);
+		final Map<String, ConnectionFactory> connectionFactories = Maps.newHashMap();
+		this.jmsHosts.forEach(h -> connectionFactories.put(h, this.connectionFactory(h)));
+		return new JmsTemplateProvider(connectionFactories, this.brokerCache());
 	}
 
 	@Bean
-	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+	@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 	public ConnectionFactory connectionFactory(final String host) {
 
 		final CachingConnectionFactory connectionFactory = new CachingConnectionFactory(new ActiveMQConnectionFactory(host));
 		connectionFactory.setCacheProducers(true);
 		connectionFactory.setReconnectOnException(true);
-		connectionFactory.setClientId(this.jmsClientIdKlinkaSub + host + "-" + UUID.randomUUID().toString());
-		connectionFactory.getTargetConnectionFactory().g
+		connectionFactory.setClientId(this.jmsClientIdKalinkaSub + host + "-" + UUID.randomUUID().toString());
+		try {
+			connectionFactory.createConnection();
+		} catch (final Throwable t) {
+			LOG.warn("Could not create connection", t);
+		}
 		return connectionFactory;
 	}
 

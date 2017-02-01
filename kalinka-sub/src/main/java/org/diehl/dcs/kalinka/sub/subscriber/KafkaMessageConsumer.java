@@ -10,9 +10,9 @@ import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
 import org.diehl.dcs.kalinka.sub.publisher.IJmsMessageFromKafkaPublisher;
+import org.diehl.dcs.kalinka.sub.publisher.JmsTemplateProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.jms.core.JmsTemplate;
 
 public class KafkaMessageConsumer<K, V> implements Runnable {
 
@@ -23,14 +23,16 @@ public class KafkaMessageConsumer<K, V> implements Runnable {
 
 	private final long pollTimeout;
 
-	private JmsTemplate jmsTemplate;
+	private final JmsTemplateProvider jmsTemplateProvider;
 
 	private IJmsMessageFromKafkaPublisher<K, V> jmsPublisher;
 
-	public KafkaMessageConsumer(final KafkaConsumer<K, V> consumer, final List<Integer> assignedPartitions, final long pollTimeout, final String topic) {
+	public KafkaMessageConsumer(final KafkaConsumer<K, V> consumer, final List<Integer> assignedPartitions, final long pollTimeout, final String topic,
+			final JmsTemplateProvider jmsTemplateProvider) {
 
 		this.consumer = consumer;
 		this.pollTimeout = pollTimeout;
+		this.jmsTemplateProvider = jmsTemplateProvider;
 
 		final List<PartitionInfo> partitionInfos = consumer.partitionsFor(topic);
 
@@ -60,7 +62,7 @@ public class KafkaMessageConsumer<K, V> implements Runnable {
 					try {
 						final String hostIdentifier = this.jmsPublisher.getHostIdentifier(record);
 						if (hostIdentifier != null) {
-							this.jmsPublisher.publish(record, this.jmsTemplate);
+							this.jmsPublisher.publish(record, this.jmsTemplateProvider.getJmsTemplate(hostIdentifier));
 						}
 						consumer.commitAsync((offsets, exception) -> {
 							if (exception != null) {
