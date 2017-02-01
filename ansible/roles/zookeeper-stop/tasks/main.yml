@@ -1,0 +1,7 @@
+---
+- name: remove zookeeper-instances if reset requested
+  docker_container:
+    name: zookeeper
+    state: absent
+  when: zookeeper_reset or reset_all
+

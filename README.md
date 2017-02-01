@@ -168,3 +168,8 @@ kafka-console-consumer.sh --bootstrap-server 192.168.33.12:9092 --topic test --f
 ```
 jconsole 192.168.33.20:9448
 ```
+
+* List the topics created during deployment
+```
+kafka-topics.sh --zookeeper 192.168.33.20:2181/kafka --list
+```

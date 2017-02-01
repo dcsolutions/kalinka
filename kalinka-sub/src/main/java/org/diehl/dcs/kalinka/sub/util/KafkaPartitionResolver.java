@@ -4,6 +4,8 @@ import static org.diehl.dcs.kalinka.util.LangUtil.combine;
 
 import java.util.List;
 
+import org.apache.kafka.common.utils.Utils;
+
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
@@ -47,6 +49,11 @@ public class KafkaPartitionResolver {
 			result.add(i);
 		}
 		return result;
+	}
+
+	public static int hashPartitionKey(final String key, final int numPartitions) {
+
+		return Utils.toPositive(Utils.murmur2(key.getBytes())) % numPartitions;
 	}
 
 }

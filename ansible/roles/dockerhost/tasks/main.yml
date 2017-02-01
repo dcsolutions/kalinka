@@ -25,5 +25,11 @@
 - name: install docker-py
   pip:
     name: docker-py
-    version: 1.10.6
+    version: "{{docker_py_version}}"
+
+- name: install java
+  apt:
+    name: openjdk-8-jdk
+    update_cache: yes
+    state: present
 

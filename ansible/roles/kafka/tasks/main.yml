@@ -8,6 +8,13 @@
   - config
   - bin
 
+- name: get kafka tarball
+  unarchive:
+    src: "{{kafka_download_url}}"
+    dest: /opt
+    creates: "/opt/{{kafka_dir_name}}"
+    remote_src: True
+
 - name: delete content of logs-dir
   shell: rm -rf /volumes/kafka/logs/*
   when: kafka_reset or reset_all
@@ -22,9 +29,12 @@
 
 - name: copy bin to host
   template:
-    src: start-kafka.sh.j2
-    dest: /volumes/kafka/bin/start-kafka.sh
+    src: "{{item}}.j2"
+    dest: "/volumes/kafka/bin/{{item}}"
     mode: 755
+  with_items:
+  - start-kafka.sh
+  - create-topics.sh
 
 - name: start container
   docker_container:

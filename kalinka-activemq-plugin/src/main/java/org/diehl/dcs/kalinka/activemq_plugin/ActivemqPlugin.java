@@ -49,7 +49,8 @@ public class ActivemqPlugin implements BrokerPlugin {
 		LOG.debug("Trying to create ZkClient for zkServers={}, currentHost={}, clientIdRegexesToIgnore={}", zkServers, host, clientIdRegexesToIgnore);
 		this.zkClient = new ZkClient(zkServers);
 		this.host = host;
-		this.clientIdRegexPatternsToIgnore = Arrays.asList(clientIdRegexesToIgnore.split(",")).stream().filter(s -> !s.trim().isEmpty()).map(r -> Pattern.compile(r.trim())).collect(Collectors.toList());
+		this.clientIdRegexPatternsToIgnore = Arrays.asList(clientIdRegexesToIgnore.split(",")).stream().filter(s -> !s.trim().isEmpty())
+				.map(r -> Pattern.compile(r.trim())).collect(Collectors.toList());
 		LOG.info("Created ZkClient for zkServers={}, currentHost={}, clientIdRegexesToIgnore={}", zkServers, this.host, clientIdRegexesToIgnore);
 	}
 
@@ -100,8 +101,7 @@ public class ActivemqPlugin implements BrokerPlugin {
 		try {
 			this.zkClient.createPersistent(node, this.host);
 		} catch (final ZkNodeExistsException e) {
-			this.deleteZkNode(clientId);
-			this.zkClient.createPersistent(node, this.host);
+			this.zkClient.writeData(node, this.host);
 		}
 		LOG.info("Upserted node={}, to host={}", node, this.host);
 	}
@@ -115,6 +115,7 @@ public class ActivemqPlugin implements BrokerPlugin {
 	}
 
 	public static void main(final String[] args) {
-		System.out.println(Arrays.asList(JMS_CLIENT_ID_KALINKA_PUB_REGEX.split(",")).stream().filter(s -> !s.trim().isEmpty()).map(r -> Pattern.compile(r.trim())).collect(Collectors.toList()).size());
+		System.out.println(Arrays.asList(JMS_CLIENT_ID_KALINKA_PUB_REGEX.split(",")).stream().filter(s -> !s.trim().isEmpty())
+				.map(r -> Pattern.compile(r.trim())).collect(Collectors.toList()).size());
 	}
 }

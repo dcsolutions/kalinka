@@ -1,5 +1,13 @@
 ---
 - hosts: zookeeper
   roles:
+  - zookeeper-stop
+
+- hosts: zookeeper
+  roles:
   - zookeeper
   serial: 1
+
+- hosts: zookeeper
+  roles:
+  - zookeeper-post

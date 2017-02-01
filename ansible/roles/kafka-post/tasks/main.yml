@@ -1,0 +1,10 @@
+---
+- name: "wait for kafka-cluster coming up (TODO: Replace this with active availability-check)"
+  pause:
+    seconds: 10
+  when: (kafka_reset or reset_all) and ansible_hostname == hostvars[groups['kafka'][0]]['ansible_hostname']
+
+- name: create topics
+  shell: /volumes/kafka/bin/create-topics.sh
+  when: (kafka_reset or reset_all) and ansible_hostname == hostvars[groups['kafka'][0]]['ansible_hostname']
+

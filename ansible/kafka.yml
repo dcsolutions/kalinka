@@ -1,5 +1,13 @@
 ---
 - hosts: kafka
   roles:
+  - kafka-stop
+
+- hosts: kafka
+  roles:
   - kafka
   serial: 1
+
+- hosts: kafka
+  roles:
+  - kafka-post

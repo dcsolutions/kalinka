@@ -53,4 +53,15 @@ public class KafkaPartitionResolverTest {
 		assertThat(result.contains(2), is(true));
 		assertThat(result.contains(3), is(true));
 	}
+
+	@Test
+	public void testHashPartitionKey() throws Exception {
+
+		assertThat(KafkaPartitionResolver.hashPartitionKey("cyclops", 3), is(0));
+		assertThat(KafkaPartitionResolver.hashPartitionKey("beast", 3), is(0));
+		assertThat(KafkaPartitionResolver.hashPartitionKey("pyro", 3), is(1));
+		assertThat(KafkaPartitionResolver.hashPartitionKey("rouge", 3), is(1));
+		assertThat(KafkaPartitionResolver.hashPartitionKey("wolverine", 3), is(2));
+		assertThat(KafkaPartitionResolver.hashPartitionKey("iceman", 3), is(2));
+	}
 }

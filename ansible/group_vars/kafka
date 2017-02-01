@@ -1,8 +1,15 @@
 ---
 kafka_version: 0.10.1.0
 kafka_scala_version: 2.11
+kafka_dir_name: "kafka_{{kafka_scala_version}}-{{kafka_version}}"
+kafka_download_url: "http://ftp-stud.hs-esslingen.de/pub/Mirrors/ftp.apache.org/dist/kafka/{{kafka_version}}/{{kafka_dir_name}}.tgz"
 kafka_log_level: INFO
 kafka_jmx_port: 9448
+
+kafka_topics:
+- { name: mqtt.mqtt, replication_factor: 2, partitions: 3 }
+- { name: spark_cluster.mqtt, replication_factor: 2, partitions: 3 }
+- { name: mqtt.spark_cluster, replication_factor: 2, partitions: 3 }
 
 # docker-container-behaviour
 # drops data-volume and forces recreation of container
