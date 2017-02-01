@@ -17,6 +17,7 @@ package org.diehl.dcs.kalinka.it.model;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
@@ -87,19 +88,19 @@ public class MqttConnector {
 	int qos = 2;
 	int port = 1883;
 	List<String> subTopics;
-	final String pubTopic;
+	final String pubTopic2Mqtt;
 	List<String> otherClients;
 	String message;
 	long intervalInMillis;
 	MqttAsyncClient mqttAsyncClient;
 
-	public MqttConnector(final String url, final String clientId, final String pubTopic, final List<String> subTopics, final List<String> otherClients,
-			final long intervalInMillis) throws MqttException {
+	public MqttConnector(final String url, final String clientId, final List<String> clients, final long intervalInMillis) {
 		this.url = url;
 		this.clientId = clientId;
-		this.pubTopic = pubTopic;
-		this.subTopics = subTopics;
-		this.otherClients = otherClients;
+		this.pubTopic2Mqtt = "mqtt/" + clientId + "/mqtt/";
+		this.subTopics.add("mqtt/+/mqtt/" + clientId);
+		this.subTopics.add("spark_cluster/mqtt/" + clientId);
+		this.otherClients = clients.stream().filter(client -> !client.equals(clientId)).collect(Collectors.toList());
 		this.message = "Regards from " + clientId;
 		this.intervalInMillis = intervalInMillis;
 
@@ -115,7 +116,7 @@ public class MqttConnector {
 			mqttConnectOptions.setCleanSession(true);
 
 			// lastWill
-			mqttConnectOptions.setWill(pubTopic, "Bye, bye Baby!".getBytes(), 0, false);
+			mqttConnectOptions.setWill(pubTopic2Mqtt, "Bye, bye Baby!".getBytes(), 0, false);
 
 			// maximal queued messages
 			//mqttConnectOptions.setMaxInflight(500);
@@ -160,7 +161,7 @@ public class MqttConnector {
 		while (t == thisThread) {
 			try {
 				for (final String otherClient : otherClients) {
-					mqttAsyncClient.publish(pubTopic + "/" + otherClient, message.getBytes(), 1, false);
+					mqttAsyncClient.publish(pubTopic2Mqtt + otherClient, message.getBytes(), 1, false);
 				}
 				Thread.sleep(intervalInMillis);
 			} catch (final Throwable t) {

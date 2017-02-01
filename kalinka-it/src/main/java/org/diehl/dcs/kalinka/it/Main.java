@@ -16,21 +16,27 @@ limitations under the License.
 
 package org.diehl.dcs.kalinka.it;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.diehl.dcs.kalinka.it.model.MqttConnector;
 
 /**
  * @author Merkaban <ridethesnake7@yahoo.de>
  *
  */
-@SpringBootApplication
-@EnableAutoConfiguration(exclude = JmsAutoConfiguration.class)
+
 public class Main {
 
 	public static void main(final String[] args) {
-
-		SpringApplication.run(Main.class, args);
+		final List<String> clients = new ArrayList<>();
+		clients.add("beast");
+		clients.add("pyro");
+		clients.add("wolverine");
+		final List<MqttConnector> connectors = new ArrayList<>();
+		connectors.add(new MqttConnector("192.168.33.20", "beast", clients, 5000));
+		connectors.add(new MqttConnector("192.168.33.21", "pyro", clients, 5000));
+		connectors.add(new MqttConnector("192.168.33.22", "wolverine", clients, 5000));
+		connectors.stream().forEach(con -> con.start());
 	}
 }
