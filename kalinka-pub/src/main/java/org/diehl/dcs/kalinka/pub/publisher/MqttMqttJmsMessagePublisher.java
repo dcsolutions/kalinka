@@ -60,10 +60,7 @@ public class MqttMqttJmsMessagePublisher implements IMessagePublisher<Message, S
 	@Override
 	public String getSourceTopicRegex() {
 
-		// evtll besser: "\\S*(mqtt\\.\\S+\\.mqtt\\.\\S+)"
-		// u. das ganze als Pattern zurück geben, dann könnte man den Regex hier nochmal anwenden.
-
-		return "\\S*mqtt\\.\\S+\\.mqtt\\.\\S+";
+		return "(\\S*//){0,1}(mqtt\\.\\S+\\.mqtt\\.\\S+)";
 	}
 
 	public static class MessageContainer {

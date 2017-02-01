@@ -20,6 +20,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.nio.charset.StandardCharsets;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.diehl.dcs.kalinka.pub.publisher.MqttMqttJmsMessagePublisher.MessageContainer;
@@ -40,7 +41,14 @@ public class MqttMqttJmsMessagePublisherTest {
 	public void testGetSourceTopicRegex() {
 
 		final Pattern p = Pattern.compile(this.publisher.getSourceTopicRegex());
-		assertThat(p.matcher("tcp://mqtt.src.mqtt.dest").matches(), is(true));
+		final Matcher m = p.matcher("tcp://mqtt.src.mqtt.dest");
+		assertThat(m.matches(), is(true));
+		assertThat(m.group(1), is("tcp://"));
+		assertThat(m.group(2), is("mqtt.src.mqtt.dest"));
+
+		final Matcher m2 = p.matcher("mqtt.src.mqtt.dest");
+		assertThat(m2.matches(), is(true));
+		assertThat(m2.group(2), is("mqtt.src.mqtt.dest"));
 	}
 
 	@Test
