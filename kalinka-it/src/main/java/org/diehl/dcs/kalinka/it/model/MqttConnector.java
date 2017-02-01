@@ -16,6 +16,7 @@ limitations under the License.
 package org.diehl.dcs.kalinka.it.model;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -161,7 +162,7 @@ public class MqttConnector {
 		while (t == thisThread) {
 			try {
 				for (final String otherClient : otherClients) {
-					mqttAsyncClient.publish(pubTopic2Mqtt + otherClient, message.getBytes(), 1, false);
+					mqttAsyncClient.publish(pubTopic2Mqtt + otherClient, (LocalDateTime.now() + message).getBytes(), 1, false);
 				}
 				Thread.sleep(intervalInMillis);
 			} catch (final Throwable t) {
