@@ -33,7 +33,7 @@ public class ActivemqPlugin implements BrokerPlugin {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ActivemqPlugin.class);
 
-	static final String JMS_CLIENT_ID_KALINKA_PUB_REGEX = "kalinka-pub-.*";
+	static final String JMS_CLIENT_ID_KALINKA_PUB_REGEX = "kalinka-pub-.*, kalinka-sub-.*";
 
 	private final ZkClient zkClient;
 	private final String host;
@@ -49,8 +49,7 @@ public class ActivemqPlugin implements BrokerPlugin {
 		LOG.debug("Trying to create ZkClient for zkServers={}, currentHost={}, clientIdRegexesToIgnore={}", zkServers, host, clientIdRegexesToIgnore);
 		this.zkClient = new ZkClient(zkServers);
 		this.host = host;
-		this.clientIdRegexPatternsToIgnore = Arrays.asList(clientIdRegexesToIgnore.split(",")).stream().filter(s -> !s.trim().isEmpty())
-				.map(r -> Pattern.compile(r.trim())).collect(Collectors.toList());
+		this.clientIdRegexPatternsToIgnore = Arrays.asList(clientIdRegexesToIgnore.split(",")).stream().filter(s -> !s.trim().isEmpty()).map(r -> Pattern.compile(r.trim())).collect(Collectors.toList());
 		LOG.info("Created ZkClient for zkServers={}, currentHost={}, clientIdRegexesToIgnore={}", zkServers, this.host, clientIdRegexesToIgnore);
 	}
 
@@ -113,5 +112,9 @@ public class ActivemqPlugin implements BrokerPlugin {
 		LOG.debug("Trying to delete node={}", node);
 		this.zkClient.delete(node);
 		LOG.info("Deleted node={}", node);
+	}
+
+	public static void main(final String[] args) {
+		System.out.println(Arrays.asList(JMS_CLIENT_ID_KALINKA_PUB_REGEX.split(",")).stream().filter(s -> !s.trim().isEmpty()).map(r -> Pattern.compile(r.trim())).collect(Collectors.toList()).size());
 	}
 }
