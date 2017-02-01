@@ -113,9 +113,4 @@ public class ActivemqPlugin implements BrokerPlugin {
 		this.zkClient.delete(node);
 		LOG.info("Deleted node={}", node);
 	}
-
-	public static void main(final String[] args) {
-		System.out.println(Arrays.asList(JMS_CLIENT_ID_KALINKA_PUB_REGEX.split(",")).stream().filter(s -> !s.trim().isEmpty())
-				.map(r -> Pattern.compile(r.trim())).collect(Collectors.toList()).size());
-	}
 }
