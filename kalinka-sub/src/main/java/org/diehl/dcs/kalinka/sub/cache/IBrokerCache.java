@@ -13,16 +13,14 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package org.diehl.dcs.kalinka.sub.publisher;
 
-import javax.jms.ConnectionFactory;
+package org.diehl.dcs.kalinka.sub.cache;
 
 /**
  * @author michas <michas@jarmoni.org>
  *
  */
-public interface IConnectionFactoryFactory {
+public interface IBrokerCache {
 
-	ConnectionFactory createConnectionFactory(String host);
-
+	String get(String id);
 }
