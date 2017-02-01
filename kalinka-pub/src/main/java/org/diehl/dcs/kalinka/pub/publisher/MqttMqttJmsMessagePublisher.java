@@ -50,7 +50,7 @@ public class MqttMqttJmsMessagePublisher implements IMessagePublisher<Message, S
 		final List<String> srcTopicSplitted = Splitter.on('.').splitToList(srcTopic);
 		final String srcId = srcTopicSplitted.get(1);
 		final String destId = srcTopicSplitted.get(3);
-		final byte[] headerBytes = ("{'srcId': '" + srcId + "'}").getBytes(StandardCharsets.UTF_8);
+		final byte[] headerBytes = ("{\"srcId\": \"" + srcId + "\"}").getBytes(StandardCharsets.UTF_8);
 		final byte[] header = new byte[64];
 		System.arraycopy(headerBytes, 0, header, 0, headerBytes.length);
 		final byte[] payload = Bytes.concat(header, effectivePayload);
@@ -59,6 +59,9 @@ public class MqttMqttJmsMessagePublisher implements IMessagePublisher<Message, S
 
 	@Override
 	public String getSourceTopicRegex() {
+
+		// evtll besser: "\\S*(mqtt\\.\\S+\\.mqtt\\.\\S+)"
+		// u. das ganze als Pattern zurück geben, dann könnte man den Regex hier nochmal anwenden.
 
 		return "\\S*mqtt\\.\\S+\\.mqtt\\.\\S+";
 	}
@@ -74,6 +77,18 @@ public class MqttMqttJmsMessagePublisher implements IMessagePublisher<Message, S
 			this.topic = topic;
 			this.key = key;
 			this.content = content;
+		}
+
+		public String getTopic() {
+			return topic;
+		}
+
+		public String getKey() {
+			return key;
+		}
+
+		public byte[] getContent() {
+			return content;
 		}
 	}
 }
