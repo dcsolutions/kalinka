@@ -156,7 +156,7 @@ public class ContextConfiguration {
 
 		final LinkedHashMap<Pattern, IMessagePublisher> publishers = new LinkedHashMap<>();
 		this.messagePublisherClassNames.forEach(className -> {
-			final IMessagePublisher publisher = this.messageFromKafkaPublisher(className);
+			final IMessagePublisher publisher = this.messagePublisher(className);
 			publishers.put(publisher.getSourceTopicRegex(), publisher);
 		});
 		return new MessagePublisherProvider(publishers);
@@ -165,7 +165,7 @@ public class ContextConfiguration {
 	@SuppressWarnings("rawtypes")
 	@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 	@Bean
-	public IMessagePublisher messageFromKafkaPublisher(final String className) {
+	public IMessagePublisher messagePublisher(final String className) {
 
 		return createObject(className, IMessagePublisher.class);
 	}
