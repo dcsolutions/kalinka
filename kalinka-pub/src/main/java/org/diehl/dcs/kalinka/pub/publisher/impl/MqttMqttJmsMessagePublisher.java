@@ -29,6 +29,8 @@ import com.google.common.primitives.Bytes;
 /**
  * @author michas <michas@jarmoni.org>
  *
+ * This is an example user-implementation. It matches the topic names and topic-mapping-semantics described in README.md
+ *
  */
 public class MqttMqttJmsMessagePublisher implements IMessagePublisher<Message, String, byte[]> {
 

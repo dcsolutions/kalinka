@@ -34,6 +34,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * @author michas <michas@jarmoni.org>
  *
+ * This is an example user-implementation. It matches the topic names and topic-mapping-semantics described in README.md
+ *
  */
 public class MqttMqttJmsMessagePublisher implements IMessagePublisher<JmsTemplate, String, byte[]> {
 
