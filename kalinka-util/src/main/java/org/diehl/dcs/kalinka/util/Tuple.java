@@ -12,21 +12,29 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
- */
-
-package org.diehl.dcs.kalinka.pub.publisher;
-
-import java.util.regex.Pattern;
-
-import org.springframework.kafka.core.KafkaTemplate;
+*/
+package org.diehl.dcs.kalinka.util;
 
 /**
  * @author michas <michas@jarmoni.org>
  *
  */
-public interface IMessagePublisher<T, K, V> {
+public class Tuple<F, S> {
 
-	void publish(T message, KafkaTemplate<K, V> kafkaTemplate);
+	private final F first;
+	private final S second;
 
-	Pattern getSourceTopicRegex();
+	public Tuple(final F first, final S second) {
+
+		this.first = first;
+		this.second = second;
+	}
+
+	public F getFirst() {
+		return first;
+	}
+
+	public S getSecond() {
+		return second;
+	}
 }

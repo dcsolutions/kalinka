@@ -97,7 +97,7 @@ public class ContextConfiguration {
 		final LinkedHashMap<Pattern, IMessagePublisher> publishers = new LinkedHashMap<>();
 		this.kafkaMessagePublisherClassNames.forEach(className -> {
 			final IMessagePublisher publisher = this.messageToKafkaPublisher(className);
-			publishers.put(Pattern.compile(publisher.getSourceTopicRegex()), publisher);
+			publishers.put(publisher.getSourceTopicRegex(), publisher);
 		});
 		return new MessagePublisherProvider(publishers);
 	}

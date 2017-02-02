@@ -47,7 +47,7 @@ public class JmsMessageListener<K, V> implements MessageListener {
 			final String destination = msg.getStringProperty("JMSDestination");
 			final IMessagePublisher<Message, K, V> publisher = this.messagePublisherProvider.getPublisher(msg.getStringProperty("JMSDestination"));
 			if (publisher == null) {
-				LOG.warn("No publisher found for destination={}" + destination);
+				LOG.warn("No publisher found for destination={}", destination);
 				return;
 			}
 			publisher.publish(msg, this.kafkaTemplate);

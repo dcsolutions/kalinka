@@ -10,17 +10,19 @@
 package org.diehl.dcs.kalinka.pub.publisher;
 
 import java.nio.charset.StandardCharsets;
-import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.jms.BytesMessage;
 import javax.jms.Message;
 
 import org.diehl.dcs.kalinka.pub.util.JmsUtil;
+import org.diehl.dcs.kalinka.util.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 
-import com.google.common.base.Splitter;
+import com.google.common.base.MoreObjects;
 import com.google.common.primitives.Bytes;
 
 /**
@@ -30,6 +32,7 @@ import com.google.common.primitives.Bytes;
 public class MqttMqttJmsMessagePublisher implements IMessagePublisher<Message, String, byte[]> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(MqttMqttJmsMessagePublisher.class);
+	private static final String KAFKA_DEST_TOPIC = "mqtt.mqtt";
 
 	@Override
 	public void publish(final Message message, final KafkaTemplate<String, byte[]> kafkaTemplate) {
@@ -37,30 +40,44 @@ public class MqttMqttJmsMessagePublisher implements IMessagePublisher<Message, S
 		try {
 			final byte[] effectivePayload = JmsUtil.getPayload((BytesMessage) message);
 			final MessageContainer messageContainer = this.createMessageContainer(message.getStringProperty("JMSDestination"), effectivePayload);
+			LOG.debug("Will send message={}", messageContainer);
 			kafkaTemplate.send(messageContainer.topic, messageContainer.key, messageContainer.content);
 		} catch (final Throwable t) {
 			LOG.error("Exception occured", t);
 		}
 	}
 
-	MessageContainer createMessageContainer(final String rawTopic, final byte[] effectivePayload) {
+	MessageContainer createMessageContainer(final String rawSourceTopic, final byte[] effectivePayload) {
 
-		final String srcTopic = rawTopic.replaceFirst("topic://", "");
-		final String destTopic = "mqtt.mqtt";
-		final List<String> srcTopicSplitted = Splitter.on('.').splitToList(srcTopic);
-		final String srcId = srcTopicSplitted.get(1);
-		final String destId = srcTopicSplitted.get(3);
+		LOG.debug("Creating MessageContainer for rawSourceTopic={}, effectivePayload={}", rawSourceTopic,
+				effectivePayload != null ? new String(effectivePayload) : null);
+
+		final Tuple<String, String> srcDestIds = this.getSourceAndDestId(rawSourceTopic);
+		final byte[] payload = this.getEnrichedPayload(effectivePayload, srcDestIds.getFirst());
+		return new MessageContainer(KAFKA_DEST_TOPIC, srcDestIds.getSecond(), payload);
+	}
+
+	Tuple<String, String> getSourceAndDestId(final String rawTopic) {
+
+		final Matcher m = this.getSourceTopicRegex().matcher(rawTopic);
+		while (m.find()) {
+			return new Tuple<>(m.group(3), m.group(4));
+		}
+		return null;
+	}
+
+	byte[] getEnrichedPayload(final byte[] effectivePayload, final String srcId) {
+
 		final byte[] headerBytes = ("{\"srcId\": \"" + srcId + "\"}").getBytes(StandardCharsets.UTF_8);
 		final byte[] header = new byte[64];
 		System.arraycopy(headerBytes, 0, header, 0, headerBytes.length);
-		final byte[] payload = Bytes.concat(header, effectivePayload);
-		return new MessageContainer(destTopic, destId, payload);
+		return Bytes.concat(header, effectivePayload);
 	}
 
 	@Override
-	public String getSourceTopicRegex() {
+	public Pattern getSourceTopicRegex() {
 
-		return "(\\S*//){0,1}(mqtt\\.\\S+\\.mqtt\\.\\S+)";
+		return Pattern.compile("(\\S+//|/){0,1}(mqtt[\\./](\\S+)[\\./]mqtt[\\./](\\S+))");
 	}
 
 	public static class MessageContainer {
@@ -86,6 +103,12 @@ public class MqttMqttJmsMessagePublisher implements IMessagePublisher<Message, S
 
 		public byte[] getContent() {
 			return content;
+		}
+
+		@Override
+		public String toString() {
+			return MoreObjects.toStringHelper(this.getClass()).add("topic", this.topic).add("key", this.key)
+					.add("content", content != null ? new String(this.content) : null).toString();
 		}
 	}
 }

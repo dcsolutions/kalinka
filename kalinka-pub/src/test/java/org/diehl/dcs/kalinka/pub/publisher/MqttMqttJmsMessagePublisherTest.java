@@ -20,10 +20,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.nio.charset.StandardCharsets;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.diehl.dcs.kalinka.pub.publisher.MqttMqttJmsMessagePublisher.MessageContainer;
+import org.diehl.dcs.kalinka.util.Tuple;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -40,15 +40,37 @@ public class MqttMqttJmsMessagePublisherTest {
 	@Test
 	public void testGetSourceTopicRegex() {
 
-		final Pattern p = Pattern.compile(this.publisher.getSourceTopicRegex());
-		final Matcher m = p.matcher("tcp://mqtt.src.mqtt.dest");
-		assertThat(m.matches(), is(true));
-		assertThat(m.group(1), is("tcp://"));
-		assertThat(m.group(2), is("mqtt.src.mqtt.dest"));
+		final Pattern p = this.publisher.getSourceTopicRegex();
 
-		final Matcher m2 = p.matcher("mqtt.src.mqtt.dest");
-		assertThat(m2.matches(), is(true));
-		assertThat(m2.group(2), is("mqtt.src.mqtt.dest"));
+		assertThat(p.matcher("tcp://mqtt.src.mqtt.dest").matches(), is(true));
+		assertThat(p.matcher("mqtt.src.mqtt.dest").matches(), is(true));
+		assertThat(p.matcher("tcp://mqtt/src/mqtt/dest").matches(), is(true));
+		assertThat(p.matcher("mqtt/src/mqtt/dest").matches(), is(true));
+		assertThat(p.matcher("/mqtt/src/mqtt/dest").matches(), is(true));
+	}
+
+	@Test
+	public void testGetEffectiveSourceTopic() throws Exception {
+
+		final Tuple<String, String> t1 = this.publisher.getSourceAndDestId("tcp://mqtt.src.mqtt.dest");
+		assertThat(t1.getFirst(), is("src"));
+		assertThat(t1.getSecond(), is("dest"));
+
+		final Tuple<String, String> t2 = this.publisher.getSourceAndDestId("/mqtt.src.mqtt.dest");
+		assertThat(t2.getFirst(), is("src"));
+		assertThat(t2.getSecond(), is("dest"));
+
+		final Tuple<String, String> t3 = this.publisher.getSourceAndDestId("tcp+nio://mqtt/src/mqtt/dest");
+		assertThat(t3.getFirst(), is("src"));
+		assertThat(t3.getSecond(), is("dest"));
+
+		final Tuple<String, String> t4 = this.publisher.getSourceAndDestId("/mqtt/src/mqtt/dest");
+		assertThat(t4.getFirst(), is("src"));
+		assertThat(t4.getSecond(), is("dest"));
+
+		final Tuple<String, String> t5 = this.publisher.getSourceAndDestId("mqtt.src.mqtt.dest");
+		assertThat(t5.getFirst(), is("src"));
+		assertThat(t5.getSecond(), is("dest"));
 	}
 
 	@Test
