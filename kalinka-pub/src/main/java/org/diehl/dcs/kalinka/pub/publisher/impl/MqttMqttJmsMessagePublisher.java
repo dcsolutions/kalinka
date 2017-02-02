@@ -7,7 +7,7 @@
  * for the specific language governing permissions and limitations under the License.
  */
 
-package org.diehl.dcs.kalinka.pub.publisher;
+package org.diehl.dcs.kalinka.pub.publisher.impl;
 
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
@@ -16,7 +16,8 @@ import java.util.regex.Pattern;
 import javax.jms.BytesMessage;
 import javax.jms.Message;
 
-import org.diehl.dcs.kalinka.pub.util.JmsUtil;
+import org.diehl.dcs.kalinka.pub.jms.util.JmsUtil;
+import org.diehl.dcs.kalinka.pub.publisher.IMessagePublisher;
 import org.diehl.dcs.kalinka.util.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

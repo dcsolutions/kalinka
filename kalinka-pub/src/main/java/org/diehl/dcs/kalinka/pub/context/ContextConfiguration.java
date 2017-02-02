@@ -28,8 +28,8 @@ import javax.jms.MessageListener;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.Serializer;
+import org.diehl.dcs.kalinka.pub.jms.JmsMessageListener;
 import org.diehl.dcs.kalinka.pub.publisher.IMessagePublisher;
-import org.diehl.dcs.kalinka.pub.publisher.JmsMessageListener;
 import org.diehl.dcs.kalinka.pub.publisher.MessagePublisherProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;

@@ -13,14 +13,22 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package org.diehl.dcs.kalinka.sub.publisher;
+
+package org.diehl.dcs.kalinka.pub.jms.util;
+
+import javax.jms.BytesMessage;
 
 /**
  * @author michas <michas@jarmoni.org>
  *
  */
-public interface ISenderProvider<T> {
+public class JmsUtil {
 
-	T getSender(String hostIdentifier);
+	public static byte[] getPayload(final BytesMessage bytesMessage) throws Exception {
 
+		final int len = Long.valueOf(bytesMessage.getBodyLength()).intValue();
+		final byte[] bytes = new byte[len];
+		bytesMessage.readBytes(bytes, len);
+		return bytes;
+	}
 }

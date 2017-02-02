@@ -12,8 +12,8 @@ import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
 import org.diehl.dcs.kalinka.sub.context.ContextConfiguration;
 import org.diehl.dcs.kalinka.sub.publisher.IMessagePublisher;
-import org.diehl.dcs.kalinka.sub.publisher.ISenderProvider;
 import org.diehl.dcs.kalinka.sub.publisher.MessagePublisherProvider;
+import org.diehl.dcs.kalinka.sub.sender.ISenderProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

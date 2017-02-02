@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package org.diehl.dcs.kalinka.sub.publisher;
+package org.diehl.dcs.kalinka.sub.publisher.impl;
 
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
@@ -21,6 +21,8 @@ import java.util.regex.Pattern;
 import javax.jms.BytesMessage;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.diehl.dcs.kalinka.sub.publisher.IMessagePublisher;
+import org.diehl.dcs.kalinka.sub.sender.ISenderProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jms.core.JmsTemplate;

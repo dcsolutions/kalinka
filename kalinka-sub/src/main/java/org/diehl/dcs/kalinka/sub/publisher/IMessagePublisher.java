@@ -18,6 +18,7 @@ package org.diehl.dcs.kalinka.sub.publisher;
 import java.util.regex.Pattern;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.diehl.dcs.kalinka.sub.sender.ISenderProvider;
 
 /**
  * @author michas <michas@jarmoni.org>

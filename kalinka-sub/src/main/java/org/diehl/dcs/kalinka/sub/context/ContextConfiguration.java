@@ -35,9 +35,9 @@ import org.apache.kafka.common.serialization.Deserializer;
 import org.diehl.dcs.kalinka.sub.cache.BrokerCache;
 import org.diehl.dcs.kalinka.sub.cache.IBrokerCache;
 import org.diehl.dcs.kalinka.sub.publisher.IMessagePublisher;
-import org.diehl.dcs.kalinka.sub.publisher.ISenderProvider;
-import org.diehl.dcs.kalinka.sub.publisher.JmsTemplateProvider;
 import org.diehl.dcs.kalinka.sub.publisher.MessagePublisherProvider;
+import org.diehl.dcs.kalinka.sub.sender.ISenderProvider;
+import org.diehl.dcs.kalinka.sub.sender.jms.JmsSenderProvider;
 import org.diehl.dcs.kalinka.sub.subscriber.KafkaMessageConsumer;
 import org.diehl.dcs.kalinka.sub.util.KafkaPartitionResolver;
 import org.slf4j.Logger;
@@ -230,7 +230,7 @@ public class ContextConfiguration {
 			m.find();
 			connectionFactories.put(m.group(1), this.connectionFactory(h));
 		});
-		return new JmsTemplateProvider(connectionFactories, this.brokerCache());
+		return new JmsSenderProvider(connectionFactories, this.brokerCache());
 	}
 
 	@Bean

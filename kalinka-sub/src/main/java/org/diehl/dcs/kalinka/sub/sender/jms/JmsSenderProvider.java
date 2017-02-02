@@ -14,13 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
  */
 
-package org.diehl.dcs.kalinka.sub.publisher;
+package org.diehl.dcs.kalinka.sub.sender.jms;
 
 import java.util.Map;
 
 import javax.jms.ConnectionFactory;
 
 import org.diehl.dcs.kalinka.sub.cache.IBrokerCache;
+import org.diehl.dcs.kalinka.sub.sender.AbstractSenderProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jms.core.JmsTemplate;
@@ -31,29 +32,22 @@ import com.google.common.base.Preconditions;
  * @author michas <michas@jarmoni.org>
  *
  */
-public class JmsTemplateProvider implements ISenderProvider<JmsTemplate> {
+public class JmsSenderProvider extends AbstractSenderProvider<JmsTemplate> {
 
-	private static final Logger LOG = LoggerFactory.getLogger(JmsTemplateProvider.class);
+	private static final Logger LOG = LoggerFactory.getLogger(JmsSenderProvider.class);
 
 	private final Map<String, ConnectionFactory> connectionFactories;
 
-	private final IBrokerCache brokerCache;
 
+	public JmsSenderProvider(final Map<String, ConnectionFactory> connectionFactories, final IBrokerCache brokerCache) {
 
-	public JmsTemplateProvider(final Map<String, ConnectionFactory> connectionFactories, final IBrokerCache brokerCache) {
-
+		super(brokerCache);
 		this.connectionFactories = Preconditions.checkNotNull(connectionFactories);
-		this.brokerCache = Preconditions.checkNotNull(brokerCache);
 	}
 
 	@Override
-	public JmsTemplate getSender(final String hostIdentifier) {
+	public JmsTemplate getSenderForHost(final String host) {
 
-		final String host = this.brokerCache.get(hostIdentifier);
-		if (host == null) {
-			LOG.warn("HostIdentifier={} is not registered in ZK. Cannot publish", hostIdentifier);
-			return null;
-		}
 		final ConnectionFactory connectionFactory = this.connectionFactories.get(host);
 		if (connectionFactory == null) {
 			LOG.warn("No connectionFactory available for host={}", host);
