@@ -35,7 +35,6 @@
 		<module>kalinka-pub</module>
 		<module>kalinka-sub</module>
 		<module>kalinka-activemq-plugin</module>
-		<module>kalinka-mapper</module>
 		<module>kalinka-util</module>
 	</modules>
 </project>
