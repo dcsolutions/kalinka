@@ -3,8 +3,13 @@
 ## mqtt-attached-device to mqtt-attached-device
 
 ```
-mqtt/<SRC_MQTT_CLIENT_ID>/mqtt/<DEST_MQTT_CLIENT_ID> ->  mqtt.mqtt [key: <DEST_MQTT_CLIENT_ID>] (Header: <SRC_MQTT_CLIENT_ID>)
+mqtt/<SRC_MQTT_CLIENT_ID>/mqtt/<DEST_MQTT_CLIENT_ID>/pub|sub ->  mqtt.mqtt [key: <DEST_MQTT_CLIENT_ID>] (srcId: <SRC_MQTT_CLIENT_ID>)
 ```
+
+* Der Publisher hängt `/pub` an das Topic an
+* Der Subscriber hängt `/sub` an.
+
+**Wichtig**: Wenn `pub` und `sub` nicht angehängt werden, wird Kafka umgangen und der Empfänger erhält die Nachricht direkt aus dem MQTT-Topic
 
 ## mqtt-attached-device to kafka-attached-system
 
@@ -48,3 +53,12 @@ spark_cluster/mqtt/<DEST_MQTT_CLIENT_ID>             ->  spark_cluster.mqtt [key
   from: "client1",
   to: "client2"
 }
+
+# TODO - Naming
+* kalinka-pub -> kalinka-to-kafka?
+* kalinka-sub -> kaliknka-from-kafka?
+
+# Strange
+* Mit MQTT.fx publishe ich nach `mqtt/cylops/mqtt/pyro/pub`, in der ActiveMQ-UI wird es angezeigt als `mqtt.cyclops.mqtt.pyro.pub`
+* Mit Mosquitto subscribe ich `mqtt/+/mqtt/pyro/sub`, wenn ich eine Nachricht kriege, wird sie mir aber angezeigt als `mqtt.cyclops.mqtt.pyro.pub`
+*

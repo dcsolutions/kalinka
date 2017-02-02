@@ -137,7 +137,8 @@
 			</virtualDestinationInterceptor>
 		</destinationInterceptors> 
         <destinations>
-            <queue physicalName="VirtualTopicConsumers.KafkaConsumer.*." />
+            <queue physicalName="VirtualTopicConsumers.KafkaConsumer.mqtt.*.mqtt.*.pub"/>
+            <!--queue physicalName="VirtualTopicConsumers.KafkaConsumer.*." /-->
         </destinations>
     </broker>
 

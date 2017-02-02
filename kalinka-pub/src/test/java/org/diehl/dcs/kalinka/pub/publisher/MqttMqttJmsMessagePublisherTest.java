@@ -42,33 +42,33 @@ public class MqttMqttJmsMessagePublisherTest {
 
 		final Pattern p = this.publisher.getSourceTopicRegex();
 
-		assertThat(p.matcher("tcp://mqtt.src.mqtt.dest").matches(), is(true));
-		assertThat(p.matcher("mqtt.src.mqtt.dest").matches(), is(true));
-		assertThat(p.matcher("tcp://mqtt/src/mqtt/dest").matches(), is(true));
-		assertThat(p.matcher("mqtt/src/mqtt/dest").matches(), is(true));
-		assertThat(p.matcher("/mqtt/src/mqtt/dest").matches(), is(true));
+		assertThat(p.matcher("tcp://mqtt.src.mqtt.dest.pub").matches(), is(true));
+		assertThat(p.matcher("mqtt.src.mqtt.dest.pub").matches(), is(true));
+		assertThat(p.matcher("tcp://mqtt/src/mqtt/dest.pub").matches(), is(true));
+		assertThat(p.matcher("mqtt/src/mqtt/dest.pub").matches(), is(true));
+		assertThat(p.matcher("/mqtt/src/mqtt/dest.pub").matches(), is(true));
 	}
 
 	@Test
 	public void testGetEffectiveSourceTopic() throws Exception {
 
-		final Tuple<String, String> t1 = this.publisher.getSourceAndDestId("tcp://mqtt.src.mqtt.dest");
+		final Tuple<String, String> t1 = this.publisher.getSourceAndDestId("tcp://mqtt.src.mqtt.dest.pub");
 		assertThat(t1.getFirst(), is("src"));
 		assertThat(t1.getSecond(), is("dest"));
 
-		final Tuple<String, String> t2 = this.publisher.getSourceAndDestId("/mqtt.src.mqtt.dest");
+		final Tuple<String, String> t2 = this.publisher.getSourceAndDestId("/mqtt.src.mqtt.dest.pub");
 		assertThat(t2.getFirst(), is("src"));
 		assertThat(t2.getSecond(), is("dest"));
 
-		final Tuple<String, String> t3 = this.publisher.getSourceAndDestId("tcp+nio://mqtt/src/mqtt/dest");
+		final Tuple<String, String> t3 = this.publisher.getSourceAndDestId("tcp+nio://mqtt/src/mqtt/dest/pub");
 		assertThat(t3.getFirst(), is("src"));
 		assertThat(t3.getSecond(), is("dest"));
 
-		final Tuple<String, String> t4 = this.publisher.getSourceAndDestId("/mqtt/src/mqtt/dest");
+		final Tuple<String, String> t4 = this.publisher.getSourceAndDestId("/mqtt/src/mqtt/dest/pub");
 		assertThat(t4.getFirst(), is("src"));
 		assertThat(t4.getSecond(), is("dest"));
 
-		final Tuple<String, String> t5 = this.publisher.getSourceAndDestId("mqtt.src.mqtt.dest");
+		final Tuple<String, String> t5 = this.publisher.getSourceAndDestId("mqtt.src.mqtt.dest.pub");
 		assertThat(t5.getFirst(), is("src"));
 		assertThat(t5.getSecond(), is("dest"));
 	}
@@ -77,7 +77,7 @@ public class MqttMqttJmsMessagePublisherTest {
 	public void testCreateMessageContainer() throws Exception {
 
 		final byte[] effectivePayload = "this is payload".getBytes(StandardCharsets.UTF_8);
-		final String rawTopic = "tcp://mqtt.src.mqtt.dest";
+		final String rawTopic = "tcp://mqtt.src.mqtt.dest.pub";
 
 		final MessageContainer msgContainer = this.publisher.createMessageContainer(rawTopic, effectivePayload);
 

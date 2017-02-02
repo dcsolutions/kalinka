@@ -32,6 +32,9 @@ import com.google.common.primitives.Bytes;
 public class MqttMqttJmsMessagePublisher implements IMessagePublisher<Message, String, byte[]> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(MqttMqttJmsMessagePublisher.class);
+
+	private static final Pattern REGEX_PATTERN = Pattern.compile("(\\S+//|/){0,1}(mqtt[\\./](\\S+)[\\./]mqtt[\\./](\\S+)).pub");
+
 	private static final String KAFKA_DEST_TOPIC = "mqtt.mqtt";
 
 	@Override
@@ -77,7 +80,7 @@ public class MqttMqttJmsMessagePublisher implements IMessagePublisher<Message, S
 	@Override
 	public Pattern getSourceTopicRegex() {
 
-		return Pattern.compile("(\\S+//|/){0,1}(mqtt[\\./](\\S+)[\\./]mqtt[\\./](\\S+))");
+		return REGEX_PATTERN;
 	}
 
 	public static class MessageContainer {
