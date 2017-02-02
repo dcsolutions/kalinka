@@ -17,6 +17,7 @@ package org.diehl.dcs.kalinka.it.model;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,7 +25,6 @@ import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
-import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +40,7 @@ public class MqttConnector {
 		@Override
 		public void connectionLost(final Throwable throwable) {
 			try {
-				LOG.info("{} > connection lost ({}).", url, throwable.getMessage());
+				LOG.info("{} > {} > connection lost ({}).", url, clientId, throwable.getMessage());
 
 				t = null;
 
@@ -50,17 +50,15 @@ public class MqttConnector {
 		}
 
 		@Override
-		public void messageArrived(final String topic, final org.eclipse.paho.client.mqttv3.MqttMessage message) throws Exception {
-			LOG.info("{} > receive: {} - {}", url, topic, new String(message.getPayload(), StandardCharsets.UTF_8));
+		public void messageArrived(final String topic, final org.eclipse.paho.client.mqttv3.MqttMessage mqttMessage) throws Exception {
+			LOG.info("{} > receive: {} - {}", url, topic, new String(mqttMessage.getPayload(), StandardCharsets.UTF_8));
+			in.add(LocalDateTime.now() + " " + topic);
 		}
 
 		@Override
 		public void deliveryComplete(final IMqttDeliveryToken token) {
-			try {
-				LOG.info("{} > delivered: {} - {}", url, token.getTopics(), new String(token.getMessage().getPayload(), StandardCharsets.UTF_8));
-			} catch (final MqttException e) {
-				LOG.error("error while trying to log deliveryCompletion", e);
-			}
+			LOG.info("message delivered to {} on {} by {}", token.getTopics(), token.getClient().getServerURI(), token.getClient().getClientId());
+			out.add(LocalDateTime.now() + " " + token.getTopics()[0]);
 		}
 	}
 
@@ -70,7 +68,7 @@ public class MqttConnector {
 			LOG.debug("{} > run..", url);
 
 			if (!doConnectBroker()) {
-				LOG.error("no broker connection possible.");
+				LOG.error("no broker connection possible for {} and {}.", url, clientId);
 				//				delayRetry = Math.min(delayRetry * 2, CONNECTION_DELAY_RETRY_MAX);
 				//				scheduleConnect(delayRetry);
 			} else {
@@ -88,12 +86,14 @@ public class MqttConnector {
 	String clientId;
 	int qos = 2;
 	int port = 1883;
-	List<String> subTopics;
+	List<String> subTopics = new ArrayList<>();
 	final String pubTopic2Mqtt;
-	List<String> otherClients;
+	List<String> otherClients = new ArrayList<>();
 	String message;
 	long intervalInMillis;
 	MqttAsyncClient mqttAsyncClient;
+	List<String> in = new ArrayList<>();
+	List<String> out = new ArrayList<>();
 
 	public MqttConnector(final String url, final String clientId, final List<String> clients, final long intervalInMillis) {
 		this.url = url;
@@ -104,7 +104,7 @@ public class MqttConnector {
 		this.otherClients = clients.stream().filter(client -> !client.equals(clientId)).collect(Collectors.toList());
 		this.message = "Regards from " + clientId;
 		this.intervalInMillis = intervalInMillis;
-
+		LOG.info("constructed MqttConnector for {}", clientId);
 
 	}
 
@@ -125,6 +125,7 @@ public class MqttConnector {
 			// client
 			final String tmpDir = System.getProperty("java.io.tmpdir");
 			final MqttDefaultFilePersistence dataStore = new MqttDefaultFilePersistence(tmpDir);
+			LOG.info("creating MqttAsyncClient for {} and {}", url, clientId);
 			mqttAsyncClient = new MqttAsyncClient(url, clientId, dataStore);
 
 			// callback
@@ -135,10 +136,12 @@ public class MqttConnector {
 
 			// subscriptions
 			for (final String subTopic : subTopics) {
+				LOG.info("client {} subscribing to {}", clientId, subTopic);
 				mqttAsyncClient.subscribe(subTopic, 0);
 			}
 
-			LOG.info("{} > mqtt connection established.", url);
+
+			LOG.info("{} > mqtt connection established for {}.", url, clientId);
 			return true;
 		} catch (final Throwable throwable) {
 			LOG.error("{} > connection failed. ({})", url, throwable.getMessage());
@@ -150,6 +153,7 @@ public class MqttConnector {
 	private void close() {
 		if (mqttAsyncClient != null) {
 			try {
+				mqttAsyncClient.disconnect();
 				mqttAsyncClient.close();
 			} catch (final Throwable throwable) {
 				LOG.error("{} > close: close failed. ({})", url, throwable.getMessage());
@@ -162,7 +166,9 @@ public class MqttConnector {
 		while (t == thisThread) {
 			try {
 				for (final String otherClient : otherClients) {
-					mqttAsyncClient.publish(pubTopic2Mqtt + otherClient, (LocalDateTime.now() + message).getBytes(), 1, false);
+					final String topic = pubTopic2Mqtt + otherClient;
+					LOG.info("{} publishing \"{}\" to topic {}", clientId, message, topic);
+					mqttAsyncClient.publish(topic, (LocalDateTime.now() + message).getBytes(), 1, false);
 				}
 				Thread.sleep(intervalInMillis);
 			} catch (final Throwable t) {
@@ -181,4 +187,14 @@ public class MqttConnector {
 		close();
 		t = null;
 	}
+
+	public List<String> getOut() {
+		return out;
+	}
+
+	public List<String> getIn() {
+		return in;
+	}
+
+
 }

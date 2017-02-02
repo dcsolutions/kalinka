@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.diehl.dcs.kalinka.it.model.MqttConnector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Merkaban <ridethesnake7@yahoo.de>
@@ -27,16 +29,18 @@ import org.diehl.dcs.kalinka.it.model.MqttConnector;
  */
 
 public class Main {
+	private static final Logger LOG = LoggerFactory.getLogger(Main.class);
 
 	public static void main(final String[] args) {
+		LOG.info("Starting application...");
 		final List<String> clients = new ArrayList<>();
 		clients.add("beast");
 		clients.add("pyro");
 		clients.add("wolverine");
 		final List<MqttConnector> connectors = new ArrayList<>();
-		connectors.add(new MqttConnector("192.168.33.20", "beast", clients, 5000));
-		connectors.add(new MqttConnector("192.168.33.21", "pyro", clients, 5000));
-		connectors.add(new MqttConnector("192.168.33.22", "wolverine", clients, 5000));
+		connectors.add(new MqttConnector("tcp://192.168.33.20:1883", "beast", clients, 5000));
+		connectors.add(new MqttConnector("tcp://192.168.33.20:1883", "pyro", clients, 5000));
+		connectors.add(new MqttConnector("tcp://192.168.33.20:1883", "wolverine", clients, 5000));
 		connectors.stream().forEach(con -> con.start());
 	}
 }
