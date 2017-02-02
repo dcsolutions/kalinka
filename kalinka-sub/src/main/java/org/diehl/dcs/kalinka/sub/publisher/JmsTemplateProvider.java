@@ -20,11 +20,12 @@ import java.util.Map;
 
 import javax.jms.ConnectionFactory;
 
-import org.assertj.core.util.Preconditions;
 import org.diehl.dcs.kalinka.sub.cache.IBrokerCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jms.core.JmsTemplate;
+
+import com.google.common.base.Preconditions;
 
 /**
  * @author michas <michas@jarmoni.org>
