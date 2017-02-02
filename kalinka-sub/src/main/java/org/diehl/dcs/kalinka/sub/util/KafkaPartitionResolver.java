@@ -1,6 +1,7 @@
 package org.diehl.dcs.kalinka.sub.util;
 
 import static org.diehl.dcs.kalinka.util.LangUtil.combine;
+import static org.diehl.dcs.kalinka.util.LangUtil.splitCsStrings;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class KafkaPartitionResolver {
 		Preconditions.checkNotNull(partitionsString);
 		Preconditions.checkState(!partitionsString.isEmpty() && partitionsString.matches("(\\d+[,-]{1})+\\d+"));
 
-		final List<String> splitted = Splitter.on(',').trimResults().splitToList(partitionsString);
+		final List<String> splitted = splitCsStrings(partitionsString);
 		return splitted.stream().map(s -> {
 			final List<String> ranges = Splitter.on('-').splitToList(s);
 

@@ -16,6 +16,8 @@ limitations under the License.
 
 package org.diehl.dcs.kalinka.pub.context;
 
+import static org.diehl.dcs.kalinka.util.LangUtil.splitCsStrings;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -28,8 +30,6 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProce
 import org.springframework.core.env.Environment;
 import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
-
-import com.google.common.base.Splitter;
 
 /**
  * @author michas <michas@jarmoni.org>
@@ -45,8 +45,8 @@ public class ConnectionFactoryBeanFactoryPostProcessor implements BeanDefinition
 	// See: https://dzone.com/articles/how-create-your-own-dynamic
 	public ConnectionFactoryBeanFactoryPostProcessor(final Environment springEnvironment) {
 
-		this.jmsHosts = Splitter.on(',').omitEmptyStrings().trimResults().splitToList(springEnvironment.getProperty("jms.hosts"));
-		this.jmsDestinations = Splitter.on(',').omitEmptyStrings().trimResults().splitToList(springEnvironment.getProperty("jms.destinations"));
+		this.jmsHosts = splitCsStrings(springEnvironment.getProperty("jms.hosts"));
+		this.jmsDestinations = splitCsStrings(springEnvironment.getProperty("jms.destinations"));
 		this.jmsClientIdKalinkaPub = springEnvironment.getProperty("jms.client.id.kalinka.pub", "kalinka-pub-");
 	}
 

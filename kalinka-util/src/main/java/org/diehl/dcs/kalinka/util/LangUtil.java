@@ -3,6 +3,7 @@ package org.diehl.dcs.kalinka.util;
 import java.util.Arrays;
 import java.util.List;
 
+import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 
 public class LangUtil {
@@ -44,6 +45,11 @@ public class LangUtil {
 	public static <T> List<T> toList(final T... args) {
 
 		return Lists.newArrayList(args);
+	}
+
+	public static List<String> splitCsStrings(final String cs) {
+
+		return Splitter.on(',').omitEmptyStrings().trimResults().splitToList(cs);
 	}
 
 

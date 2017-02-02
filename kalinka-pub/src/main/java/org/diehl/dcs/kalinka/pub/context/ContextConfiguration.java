@@ -18,6 +18,7 @@ package org.diehl.dcs.kalinka.pub.context;
 
 import static org.diehl.dcs.kalinka.util.LangUtil.createClass;
 import static org.diehl.dcs.kalinka.util.LangUtil.createObject;
+import static org.diehl.dcs.kalinka.util.LangUtil.splitCsStrings;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -40,7 +41,6 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 
-import com.google.common.base.Splitter;
 import com.google.common.collect.Maps;
 
 /**
@@ -87,7 +87,7 @@ public class ContextConfiguration {
 	@Value("${kafka.message.publisher.class.names}")
 	public void setKafkaMessagePublisherClassNames(final String rawKafkaMessagePublisherClassNames) {
 
-		this.kafkaMessagePublisherClassNames = Splitter.on(',').omitEmptyStrings().trimResults().splitToList(rawKafkaMessagePublisherClassNames);
+		this.kafkaMessagePublisherClassNames = splitCsStrings(rawKafkaMessagePublisherClassNames);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })

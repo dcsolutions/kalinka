@@ -17,6 +17,7 @@ package org.diehl.dcs.kalinka.sub.context;
 
 import static org.diehl.dcs.kalinka.util.LangUtil.createClass;
 import static org.diehl.dcs.kalinka.util.LangUtil.createObject;
+import static org.diehl.dcs.kalinka.util.LangUtil.splitCsStrings;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -49,7 +50,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.jms.connection.CachingConnectionFactory;
 
-import com.google.common.base.Splitter;
 import com.google.common.collect.Maps;
 
 
@@ -128,13 +128,13 @@ public class ContextConfiguration {
 	@Value("${jms.hosts}")
 	public void setJmsHosts(final String rawJmsHosts) {
 
-		this.jmsHosts = Splitter.on(',').omitEmptyStrings().trimResults().splitToList(rawJmsHosts);
+		this.jmsHosts = splitCsStrings(rawJmsHosts);
 	}
 
 	@Value("${kafka.subscribed.topics}")
 	public void setKafkaSuscribedTopics(final String rawKafkaSubscribedTopics) {
 
-		this.kafkaSubscribedTopics = Splitter.on(',').omitEmptyStrings().trimResults().splitToList(rawKafkaSubscribedTopics);
+		this.kafkaSubscribedTopics = splitCsStrings(rawKafkaSubscribedTopics);
 	}
 
 	@Value("${kafka.subscribed.partitions}")
@@ -146,7 +146,7 @@ public class ContextConfiguration {
 	@Value("${message.publisher.class.names}")
 	public void setMessagePublisherClassNames(final String rawMessagePublisherClassNames) {
 
-		this.messagePublisherClassNames = Splitter.on(',').omitEmptyStrings().trimResults().splitToList(rawMessagePublisherClassNames);
+		this.messagePublisherClassNames = splitCsStrings(rawMessagePublisherClassNames);
 	}
 
 
