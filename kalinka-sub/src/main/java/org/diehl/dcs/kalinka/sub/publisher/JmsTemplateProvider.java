@@ -31,7 +31,7 @@ import com.google.common.base.Preconditions;
  * @author michas <michas@jarmoni.org>
  *
  */
-public class JmsTemplateProvider {
+public class JmsTemplateProvider implements ISenderProvider<JmsTemplate> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(JmsTemplateProvider.class);
 
@@ -46,7 +46,8 @@ public class JmsTemplateProvider {
 		this.brokerCache = Preconditions.checkNotNull(brokerCache);
 	}
 
-	public JmsTemplate getJmsTemplate(final String hostIdentifier) {
+	@Override
+	public JmsTemplate getSender(final String hostIdentifier) {
 
 		final String host = this.brokerCache.get(hostIdentifier);
 		if (host == null) {
@@ -58,6 +59,8 @@ public class JmsTemplateProvider {
 			LOG.warn("No connectionFactory available for host={}", host);
 			return null;
 		}
-		return new JmsTemplate(connectionFactory);
+		final JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory);
+		jmsTemplate.setPubSubDomain(true);
+		return jmsTemplate;
 	}
 }

@@ -2,6 +2,7 @@ package org.diehl.dcs.kalinka.sub.subscriber;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -9,12 +10,14 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
-import org.diehl.dcs.kalinka.sub.publisher.IJmsMessageFromKafkaPublisher;
-import org.diehl.dcs.kalinka.sub.publisher.JmsTemplateProvider;
+import org.diehl.dcs.kalinka.sub.context.ContextConfiguration;
+import org.diehl.dcs.kalinka.sub.publisher.IMessagePublisher;
+import org.diehl.dcs.kalinka.sub.publisher.ISenderProvider;
+import org.diehl.dcs.kalinka.sub.publisher.MessagePublisherProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class KafkaMessageConsumer<K, V> implements Runnable {
+public class KafkaMessageConsumer<T, K, V> implements Runnable {
 
 
 	private static final Logger LOG = LoggerFactory.getLogger(KafkaMessageConsumer.class);
@@ -23,20 +26,22 @@ public class KafkaMessageConsumer<K, V> implements Runnable {
 
 	private final long pollTimeout;
 
-	private final JmsTemplateProvider jmsTemplateProvider;
+	private final ISenderProvider<T> senderProvider;
 
-	private IJmsMessageFromKafkaPublisher<K, V> jmsPublisher;
+	private final MessagePublisherProvider<T, K, V> publisherProvider;
 
-	public KafkaMessageConsumer(final KafkaConsumer<K, V> consumer, final List<Integer> assignedPartitions, final long pollTimeout, final String topic,
-			final JmsTemplateProvider jmsTemplateProvider) {
-
-		this.consumer = consumer;
-		this.pollTimeout = pollTimeout;
-		this.jmsTemplateProvider = jmsTemplateProvider;
+	@SuppressWarnings("unchecked")
+	public KafkaMessageConsumer(final Map<String, Object> consumerConfig, final String topic, final ISenderProvider<T> senderProvider,
+			final MessagePublisherProvider<T, K, V> publisherProvider) {
+		this.consumer = new KafkaConsumer<>(consumerConfig);
+		this.pollTimeout = (Long) consumerConfig.get(ContextConfiguration.KAFKA_POLL_TIMEOUT);
+		this.senderProvider = senderProvider;
+		this.publisherProvider = publisherProvider;
 
 		final List<PartitionInfo> partitionInfos = consumer.partitionsFor(topic);
 
-		final Collection<TopicPartition> partitions = partitionInfos.stream().filter(p -> assignedPartitions.contains(Integer.valueOf(p.partition())))
+		final List<String> subscribedPartitions = (List<String>) consumerConfig.get(ContextConfiguration.KAFKA_SUBSCRIBED_PARTITIONS);
+		final Collection<TopicPartition> partitions = partitionInfos.stream().filter(p -> subscribedPartitions.contains(Integer.valueOf(p.partition())))
 				.map(p -> new TopicPartition(p.topic(), p.partition())).collect(Collectors.toList());
 		LOG.info("Assigning to topic={}, partitions={}", topic, partitions);
 		this.consumer.assign(partitions);
@@ -60,9 +65,11 @@ public class KafkaMessageConsumer<K, V> implements Runnable {
 				records.forEach(record -> {
 					LOG.info("Received record={}", record);
 					try {
-						final String hostIdentifier = this.jmsPublisher.getHostIdentifier(record);
-						if (hostIdentifier != null) {
-							this.jmsPublisher.publish(record, this.jmsTemplateProvider.getJmsTemplate(hostIdentifier));
+						final IMessagePublisher<T, K, V> publisher = this.publisherProvider.getPublisher(record.topic());
+						if (publisher == null) {
+							LOG.warn("No publisher found for srcTopic={}", record.topic());
+						} else {
+							publisher.publish(record, this.senderProvider);
 						}
 						consumer.commitAsync((offsets, exception) -> {
 							if (exception != null) {

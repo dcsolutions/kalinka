@@ -19,9 +19,12 @@ import static org.diehl.dcs.kalinka.util.LangUtil.createClass;
 import static org.diehl.dcs.kalinka.util.LangUtil.createObject;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.jms.ConnectionFactory;
 
@@ -31,9 +34,11 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.diehl.dcs.kalinka.sub.cache.BrokerCache;
 import org.diehl.dcs.kalinka.sub.cache.IBrokerCache;
-import org.diehl.dcs.kalinka.sub.publisher.IJmsMessageFromKafkaPublisher;
-import org.diehl.dcs.kalinka.sub.publisher.IMessageFromKafkaPublisher;
+import org.diehl.dcs.kalinka.sub.publisher.IMessagePublisher;
+import org.diehl.dcs.kalinka.sub.publisher.ISenderProvider;
 import org.diehl.dcs.kalinka.sub.publisher.JmsTemplateProvider;
+import org.diehl.dcs.kalinka.sub.publisher.MessagePublisherProvider;
+import org.diehl.dcs.kalinka.sub.subscriber.KafkaMessageConsumer;
 import org.diehl.dcs.kalinka.sub.util.KafkaPartitionResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +66,39 @@ public class ContextConfiguration {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ContextConfiguration.class);
 
+	@Value("${zk.hosts}")
+	private String zkHosts;
+
+	@Value("${kafka.hosts}")
+	private String kafkaHosts;
+
+	@Value("${kafka.replication.factor:1}")
+	private int kafkaReplicationFactor;
+
+	@Value("${kafka.poll.timeout:100}")
+	private long kafkaPollTimeout;
+
+	@Value("${kafka.auto.commit:false}")
+	private boolean kafkaAutoCommit;
+
+	@Value("${kafka.auto.commit.interval:#{null}}")
+	private Long kafkaAutoCommitInterval;
+
+	@Value("${kafka.session.timeout:15000}")
+	private Integer kafkaSessionTimeout;
+
+	@Value("${jms.client.id.kalinka.sub:kalinka-sub-}")
+	private String jmsClientIdKalinkaSub;
+
+	@Value("${cache.initial.size}")
+	private int cacheInitialSize;
+
+	@Value("${cache.max.size}")
+	private long cacheMaxSize;
+
+	@Value("${cache.eviction.hours}")
+	private int cacheEvictionHours;
+
 	@SuppressWarnings("rawtypes")
 	private Class<? extends Deserializer> kafkaKeyDeserializerClass;
 
@@ -72,6 +110,8 @@ public class ContextConfiguration {
 	private List<String> kafkaSubscribedTopics;
 
 	private List<Integer> kafkaSubscribedPartitions;
+
+	private List<String> messagePublisherClassNames;
 
 	@Value("${kafka.key.serializer.class.name:org.apache.kafka.common.serialization.StringDeserializer}")
 	public void setKafkaKeyDeserializerClass(final String kafkaKeyDeserializerClassName) {
@@ -103,47 +143,31 @@ public class ContextConfiguration {
 		this.kafkaSubscribedPartitions = KafkaPartitionResolver.partitionsFromString(rawKafkaSubscribedPartitions);
 	}
 
-	@Value("${zk.hosts}")
-	private String zkHosts;
+	@Value("${message.publisher.class.names}")
+	public void setMessagePublisherClassNames(final String rawMessagePublisherClassNames) {
 
-	@Value("${kafka.hosts}")
-	private String kafkaHosts;
+		this.messagePublisherClassNames = Splitter.on(',').omitEmptyStrings().trimResults().splitToList(rawMessagePublisherClassNames);
+	}
 
-	@Value("${kafka.replication.factor:1}")
-	private int kafkaReplicationFactor;
 
-	@Value("${kafka.poll.timeout:100}")
-	private long kafkaPollTimeout;
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Bean
+	public MessagePublisherProvider messagePublisherProvider() {
 
-	@Value("${kafka.auto.commit:false}")
-	private boolean kafkaAutoCommit;
-
-	@Value("${kafka.auto.commit.interval:#{null}}")
-	private Long kafkaAutoCommitInterval;
-
-	@Value("${kafka.session.timeout:15000}")
-	private Integer kafkaSessionTimeout;
-
-	@Value("${message.from.kafka.publisher.class.name}")
-	private String messageFromKafkaPublisherClassName;
-
-	@Value("${jms.client.id.kalinka.sub:kalinka-sub-}")
-	private String jmsClientIdKalinkaSub;
-
-	@Value("${cache.initial.size}")
-	private int cacheInitialSize;
-
-	@Value("${cache.max.size}")
-	private long cacheMaxSize;
-
-	@Value("${cache.eviction.hours}")
-	private int cacheEvictionHours;
+		final LinkedHashMap<Pattern, IMessagePublisher> publishers = new LinkedHashMap<>();
+		this.messagePublisherClassNames.forEach(className -> {
+			final IMessagePublisher publisher = this.messageFromKafkaPublisher(className);
+			publishers.put(publisher.getSourceTopicRegex(), publisher);
+		});
+		return new MessagePublisherProvider(publishers);
+	}
 
 	@SuppressWarnings("rawtypes")
+	@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 	@Bean
-	public IMessageFromKafkaPublisher messageFromKafkaPublisher() {
+	public IMessagePublisher messageFromKafkaPublisher(final String className) {
 
-		return createObject(this.messageFromKafkaPublisherClassName, IJmsMessageFromKafkaPublisher.class);
+		return createObject(className, IMessagePublisher.class);
 	}
 
 	@Bean
@@ -169,24 +193,25 @@ public class ContextConfiguration {
 		return props;
 	}
 
-	//	@Bean
-	//	public KafkaMessageConsumer kafkaMessageConsumer() {
-	//
-	//		return new KafkaMessageConsumer<>(consumer, assignedPartitions, pollTimeout, topic, jmsTemplateProvider)
-	//	}
-	//	@Bean
-	//	public IJmsTemplateFactory jmsTemplateFactory() {
-	//
-	//		return new JmsTemplateFactory(this.connectionFactoryFactory(), this.jmsHosts);
-	//
-	//	}
+	@SuppressWarnings("rawtypes")
+	@Bean
+	Map<String, KafkaMessageConsumer> KafkaMessageConsumers() {
+
+		final Map<String, KafkaMessageConsumer> consumers = Maps.newHashMap();
+		this.kafkaSubscribedTopics.forEach(t -> {
+			consumers.put(t, this.kafkaMessageConsumer(t));
+		});
+		return consumers;
+	}
 
 
-	//	@Bean
-	//	public IConnectionFactoryFactory connectionFactoryFactory() {
-	//
-	//		return host -> connectionFactory(host);
-	//	}
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Bean(initMethod = "run", destroyMethod = "stop")
+	@Scope(BeanDefinition.SCOPE_PROTOTYPE)
+	public KafkaMessageConsumer kafkaMessageConsumer(final String topic) {
+
+		return new KafkaMessageConsumer<>(this.kafkaConsumerConfig(), topic, this.senderProvider(), this.messagePublisherProvider());
+	}
 
 	@Bean
 	public IBrokerCache brokerCache() {
@@ -194,11 +219,17 @@ public class ContextConfiguration {
 		return new BrokerCache(this.zkClient(), this.cacheInitialSize, this.cacheMaxSize, this.cacheEvictionHours);
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Bean
-	public JmsTemplateProvider jmsTemplateProvider() {
+	public ISenderProvider senderProvider() {
 
 		final Map<String, ConnectionFactory> connectionFactories = Maps.newHashMap();
-		this.jmsHosts.forEach(h -> connectionFactories.put(h, this.connectionFactory(h)));
+		this.jmsHosts.forEach(h -> {
+			final Pattern p = Pattern.compile("\\S+//(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}):\\d{3,5}");
+			final Matcher m = p.matcher(h);
+			m.find();
+			connectionFactories.put(m.group(1), this.connectionFactory(h));
+		});
 		return new JmsTemplateProvider(connectionFactories, this.brokerCache());
 	}
 

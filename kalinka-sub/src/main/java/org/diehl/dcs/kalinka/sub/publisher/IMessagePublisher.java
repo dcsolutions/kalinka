@@ -15,16 +15,17 @@ limitations under the License.
 */
 package org.diehl.dcs.kalinka.sub.publisher;
 
+import java.util.regex.Pattern;
+
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 /**
  * @author michas <michas@jarmoni.org>
  *
  */
-public interface IMessageFromKafkaPublisher<T, K, V> {
+public interface IMessagePublisher<T, K, V> {
 
-	void publish(ConsumerRecord<K, V> message, T publisher);
+	void publish(ConsumerRecord<K, V> message, ISenderProvider<T> senderProvider);
 
-	String getHostIdentifier(ConsumerRecord<K, V> message);
-
+	Pattern getSourceTopicRegex();
 }

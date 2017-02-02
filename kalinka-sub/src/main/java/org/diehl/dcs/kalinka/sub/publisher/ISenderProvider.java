@@ -15,16 +15,12 @@ limitations under the License.
 */
 package org.diehl.dcs.kalinka.sub.publisher;
 
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.springframework.jms.core.JmsTemplate;
-
 /**
  * @author michas <michas@jarmoni.org>
  *
  */
-public interface IJmsMessageFromKafkaPublisher<K, V> extends IMessageFromKafkaPublisher<JmsTemplate, K, V> {
+public interface ISenderProvider<T> {
 
-	@Override
-	void publish(ConsumerRecord<K, V> message, JmsTemplate publisher);
+	T getSender(String hostIdentifier);
 
 }
