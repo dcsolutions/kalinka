@@ -67,6 +67,9 @@ public class ContextConfiguration {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ContextConfiguration.class);
 
+	@Value("${kafka.group.id:kalinka}")
+	private String kafkaGroupId;
+
 	@Value("${zk.hosts}")
 	private String zkHosts;
 
@@ -180,6 +183,7 @@ public class ContextConfiguration {
 	@Bean
 	public Map<String, Object> kafkaConsumerConfig() {
 		final Map<String, Object> props = new HashMap<>();
+		props.put(ConsumerConfig.GROUP_ID_CONFIG, this.kafkaGroupId);
 		props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, this.kafkaHosts);
 		props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, this.kafkaAutoCommit);
 		if (this.kafkaAutoCommit) {

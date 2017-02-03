@@ -3,6 +3,7 @@
   docker_container:
     name: kalinka-pub
     image: "{{hostvars[groups['registry'][0]]['inventory_hostname']}}:5000/kalinka-pub:latest" 
+    pull: True
     docker_host: "{{docker_host}}"
     network_mode: host
     state: "{{kalinka_pub_state}}"
