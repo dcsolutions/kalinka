@@ -8,6 +8,7 @@
   docker_container:
     name: registry
     image: "registry:{{registry_version}}" 
+    docker_host: "{{docker_host}}"
     network_mode: host
     state: "started"
     restart_policy: always

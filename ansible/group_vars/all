@@ -1,4 +1,5 @@
 ---
+docker_host: "tcp://{{inventory_hostname}}:2375"
 reset_all: False
 zk_client_port: 2181
 zk_chroots:

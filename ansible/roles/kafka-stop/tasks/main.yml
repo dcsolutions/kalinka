@@ -2,5 +2,6 @@
 - name: remove kafka-instances if reset requested
   docker_container:
     name: kafka
+    docker_host: "{{docker_host}}"
     state: absent
   when: kafka_reset or reset_all

@@ -25,6 +25,7 @@
   docker_container:
     name: activemq
     image: "rmohr/activemq:{{activemq_version}}" 
+    docker_host: "{{docker_host}}"
     network_mode: host
     state: "{{activemq_state}}"
     recreate: "{{activemq_reset or reset_all}}"

@@ -28,6 +28,7 @@
   docker_container:
     name: zookeeper
     image: "jplock/zookeeper:{{zookeeper_version}}" 
+    docker_host: "{{docker_host}}"
     network_mode: host
     state: "{{zookeeper_state}}"
     recreate: "{{zookeeper_reset or reset_all}}"
