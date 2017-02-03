@@ -33,6 +33,16 @@ dev3
 [registry:children]
 dev1
 
+[kalinka_pub:children]
+dev1
+dev2
+dev3
+
+[kalinka_sub:children]
+dev1
+dev2
+dev3
+
 [dev:children]
 dev1
 dev2

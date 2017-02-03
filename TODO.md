@@ -18,7 +18,7 @@ mqtt/<SRC_MQTT_CLIENT_ID>/<DEST_SYSTEM_NAME>/pub         ->  mqtt.<DEST_SYSTEM_N
 ```
 e.g.:
 ```
-mqtt/<SRC_MQTT_CLIENT_ID>/spark_cluster/pub              ->  mqtt.spark_cluster (Header: <SRC_MQTT_CLIENT_ID>)
+mqtt/<SRC_MQTT_CLIENT_ID>/sparkcluster/pub              ->  mqtt.sparkcluster (Header: <SRC_MQTT_CLIENT_ID>)
 ```
 
 ## kafka-attached-system to mqtt-attached-device
@@ -28,7 +28,7 @@ mqtt/<SRC_MQTT_CLIENT_ID>/spark_cluster/pub              ->  mqtt.spark_cluster 
 ```
 e.g.:
 ```
-spark_cluster/mqtt/<DEST_MQTT_CLIENT_ID>/sub             ->  spark_cluster.mqtt [key: <DEST_MQTT_CLIENT_ID>)
+sparkcluster/mqtt/<DEST_MQTT_CLIENT_ID>/sub             ->  sparkcluster.mqtt [key: <DEST_MQTT_CLIENT_ID>)
 
 ```
 

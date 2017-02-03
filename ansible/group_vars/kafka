@@ -8,8 +8,8 @@ kafka_jmx_port: 9448
 
 kafka_topics:
 - { name: mqtt.mqtt, replication_factor: 2, partitions: 3 }
-- { name: spark_cluster.mqtt, replication_factor: 2, partitions: 3 }
-- { name: mqtt.spark_cluster, replication_factor: 2, partitions: 3 }
+- { name: sparkcluster.mqtt, replication_factor: 2, partitions: 3 }
+- { name: mqtt.sparkcluster, replication_factor: 2, partitions: 3 }
 
 # docker-container-behaviour
 # drops data-volume and forces recreation of container

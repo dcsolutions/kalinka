@@ -1,6 +1,7 @@
 ---
 docker_host: "tcp://{{inventory_hostname}}:2375"
 reset_all: False
+deploy_registry: False
 zk_client_port: 2181
 zk_chroots:
   activemq: /activemq/connections

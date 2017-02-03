@@ -1,6 +1,4 @@
 ---
 - hosts: registry
-
-- hosts: registry
   roles:
-  - registry
+  - { role: registry, when: deploy_registry }

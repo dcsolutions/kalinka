@@ -97,7 +97,7 @@ public class MqttConnector {
 		this.clientId = clientId;
 		this.pubTopic2Mqtt = "mqtt/" + clientId + "/mqtt/";
 		this.subTopics.add("mqtt/+/mqtt/" + clientId + subPostFix);
-		this.subTopics.add("spark_cluster/mqtt/" + clientId + subPostFix);
+		this.subTopics.add("sparkcluster/mqtt/" + clientId + subPostFix);
 		this.otherClients = clients.stream().filter(client -> !client.equals(clientId)).collect(Collectors.toList());
 		this.message = "Regards from " + clientId;
 		this.intervalInMillis = intervalInMillis;
@@ -113,7 +113,7 @@ public class MqttConnector {
 		this.clientId = clientId;
 		this.pubTopic2Mqtt = "mqtt/" + clientId + "/mqtt/";
 		this.subTopics.add("mqtt/+/mqtt/" + clientId + subPostFix);
-		this.subTopics.add("spark_cluster/mqtt/" + clientId + subPostFix);
+		this.subTopics.add("sparkcluster/mqtt/" + clientId + subPostFix);
 		this.otherClients = clients.stream().filter(client -> !client.equals(clientId)).collect(Collectors.toList());
 		this.message = "Regards from " + clientId;
 		this.intervalInMillis = 1000L;

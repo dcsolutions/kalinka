@@ -55,7 +55,7 @@ public class KafkaConnector {
 		props.put("bootstrap.servers", kafkaHosts);
 		props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 		props.put("value.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer");
-		producer = new KafkaProducer<String, byte[]>(props);
+		producer = new KafkaProducer<>(props);
 	}
 
 	private void doPublish() {
@@ -65,7 +65,7 @@ public class KafkaConnector {
 				for (final String client : clients) {
 					LOG.info("publishing message from kafka to {}", client);
 					final ProducerRecord<String, byte[]> producerRecord =
-							new ProducerRecord<>("spark_cluster.mqtt", client, new String("Regards from Kafka to " + client).getBytes());
+							new ProducerRecord<>("sparkcluster.mqtt", client, new String("Regards from Kafka to " + client).getBytes());
 					producer.send(producerRecord);
 				}
 				Thread.sleep(intervalInMillis);

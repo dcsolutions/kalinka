@@ -32,7 +32,7 @@ import org.springframework.kafka.core.KafkaTemplate;
  */
 public class MqttSparkClusterJmsMessagePublisher implements IMessagePublisher<Message, String, byte[]> {
 
-	private static final Pattern REGEX_PATTERN = Pattern.compile("\\S+//{0,1}mqtt\\.\\S+\\.spark_cluster.pub");
+	private static final Pattern REGEX_PATTERN = Pattern.compile("\\S+//{0,1}mqtt\\.\\S+\\.sparkcluster.pub");
 
 	private static final Logger LOG = LoggerFactory.getLogger(MqttSparkClusterJmsMessagePublisher.class);
 
@@ -41,7 +41,7 @@ public class MqttSparkClusterJmsMessagePublisher implements IMessagePublisher<Me
 
 		try {
 			final byte[] effectivePayload = JmsUtil.getPayload((BytesMessage) message);
-			kafkaTemplate.send("mqtt.spark_cluster", effectivePayload);
+			kafkaTemplate.send("mqtt.sparkcluster", effectivePayload);
 		} catch (final Throwable t) {
 			LOG.error("Exception occured", t);
 		}

@@ -37,14 +37,14 @@ public class SparkClusterMqttJmsMessagePublisher implements IMessagePublisher<Jm
 
 	private static final Logger LOG = LoggerFactory.getLogger(SparkClusterMqttJmsMessagePublisher.class);
 
-	private static final Pattern REGEX_PATTERN = Pattern.compile("spark_cluster.mqtt");
+	private static final Pattern REGEX_PATTERN = Pattern.compile("sparkcluster.mqtt");
 
 	@Override
 	public void publish(final ConsumerRecord<String, byte[]> message, final ISenderProvider<JmsTemplate> senderProvider) {
 
 		try {
 			final String destId = message.key();
-			final String topic = "spark_cluster." + ".mqtt." + destId + ".sub";
+			final String topic = "sparkcluster." + ".mqtt." + destId + ".sub";
 
 			senderProvider.getSender(destId).send(topic, (MessageCreator) session -> {
 				final BytesMessage byteMessage = session.createBytesMessage();
