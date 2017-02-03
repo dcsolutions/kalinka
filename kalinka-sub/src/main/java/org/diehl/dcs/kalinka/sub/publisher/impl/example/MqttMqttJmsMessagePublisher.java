@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package org.diehl.dcs.kalinka.sub.publisher.impl;
+package org.diehl.dcs.kalinka.sub.publisher.impl.example;
 
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
