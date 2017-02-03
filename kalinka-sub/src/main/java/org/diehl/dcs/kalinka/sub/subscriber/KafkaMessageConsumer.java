@@ -63,7 +63,7 @@ public class KafkaMessageConsumer<T, K, V> implements Runnable {
 				LOG.trace("Polling..... Assignments={}", this.consumer.assignment());
 
 				records.forEach(record -> {
-					LOG.info("Received record={}", record);
+					LOG.debug("Received record={}", record);
 					try {
 						final IMessagePublisher<T, K, V> publisher = this.publisherProvider.getPublisher(record.topic());
 						if (publisher == null) {
