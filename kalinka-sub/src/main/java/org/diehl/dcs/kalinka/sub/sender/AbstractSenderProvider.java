@@ -16,10 +16,11 @@ limitations under the License.
 
 package org.diehl.dcs.kalinka.sub.sender;
 
-import org.assertj.core.util.Preconditions;
 import org.diehl.dcs.kalinka.sub.cache.IBrokerCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Preconditions;
 
 /**
  * @author michas <michas@jarmoni.org>
