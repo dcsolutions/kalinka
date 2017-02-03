@@ -1,0 +1,15 @@
+---
+#kalinka_pub_version: ???
+#kalinka_pub_log_level: INFO
+#kalinka_pub_log_level_diehl: DEBUG
+#kalinka_pub_max_mem: 512
+#kalinka_pub_jmx_port: 9447
+
+# docker-container-behaviour
+# drops data-volume and forces recreation of container
+kalinka_pub_reset: False
+# force restart
+kalinka_pub_restart: False
+# desired state after deployment: started|stopped|present|absent
+kalinka_pub_state: started
+

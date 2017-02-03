@@ -1,0 +1,12 @@
+---
+- name: start container
+  docker_container:
+    name: kalinka-sub
+    image: "{{hostvars[groups['registry'][0]]['inventory_hostname']}}:5000/kalinka-sub:latest" 
+    docker_host: "{{docker_host}}"
+    network_mode: host
+    state: "{{kalinka_sub_state}}"
+    recreate: "{{kalinka_sub_reset or reset_all}}"
+    restart: "{{kalinka_sub_restart}}"
+    restart_policy: always
+

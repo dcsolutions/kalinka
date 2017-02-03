@@ -24,6 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -199,14 +200,16 @@ public class ContextConfiguration {
 
 		final Map<String, KafkaMessageConsumer> consumers = Maps.newHashMap();
 		this.kafkaSubscribedTopics.forEach(t -> {
-			consumers.put(t, this.kafkaMessageConsumer(t));
+			final KafkaMessageConsumer consumer = this.kafkaMessageConsumer(t);
+			Executors.newSingleThreadExecutor().submit(consumer);
+			consumers.put(t, consumer);
 		});
 		return consumers;
 	}
 
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Bean(initMethod = "run", destroyMethod = "stop")
+	@Bean(destroyMethod = "stop")
 	@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 	public KafkaMessageConsumer kafkaMessageConsumer(final String topic) {
 
