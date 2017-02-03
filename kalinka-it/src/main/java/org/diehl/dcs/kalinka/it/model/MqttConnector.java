@@ -67,45 +67,62 @@ public class MqttConnector {
 		public void run() {
 			LOG.debug("{} > run..", url);
 
-			if (!doConnectBroker()) {
-				LOG.error("no broker connection possible for {} and {}.", url, clientId);
-				//				delayRetry = Math.min(delayRetry * 2, CONNECTION_DELAY_RETRY_MAX);
-				//				scheduleConnect(delayRetry);
-			} else {
-				doPublish();
-			}
+			doPublish();
 		}
 	}
 
 
-	volatile Thread t;
+	private volatile Thread t;
 	private static final Logger LOG = LoggerFactory.getLogger(MqttConnector.class);
 
 	//url = protocol + broker + ":" + port;
-	String url;
-	String clientId;
-	int qos = 2;
-	int port = 1883;
-	List<String> subTopics = new ArrayList<>();
-	final String pubTopic2Mqtt;
-	List<String> otherClients = new ArrayList<>();
-	String message;
-	long intervalInMillis;
-	MqttAsyncClient mqttAsyncClient;
-	List<String> in = new ArrayList<>();
-	List<String> out = new ArrayList<>();
+	private String url;
+	private final String clientId;
+	private final int qos = 2;
+	private final int port = 1883;
+	private final List<String> subTopics = new ArrayList<>();
+	private final String pubTopic2Mqtt;
+	private final String pubPostFix = "/pub";
+	private final String subPostFix = "/sub";
+	private List<String> otherClients = new ArrayList<>();
+	private final String message;
+	private final long intervalInMillis;
+	private MqttAsyncClient mqttAsyncClient;
+	private final List<String> in = new ArrayList<>();
+	private final List<String> out = new ArrayList<>();
+	private boolean publish = true;
 
 	public MqttConnector(final String url, final String clientId, final List<String> clients, final long intervalInMillis) {
 		this.url = url;
 		this.clientId = clientId;
 		this.pubTopic2Mqtt = "mqtt/" + clientId + "/mqtt/";
-		this.subTopics.add("mqtt/+/mqtt/" + clientId);
-		this.subTopics.add("spark_cluster/mqtt/" + clientId);
+		this.subTopics.add("mqtt/+/mqtt/" + clientId + subPostFix);
+		this.subTopics.add("spark_cluster/mqtt/" + clientId + subPostFix);
 		this.otherClients = clients.stream().filter(client -> !client.equals(clientId)).collect(Collectors.toList());
 		this.message = "Regards from " + clientId;
 		this.intervalInMillis = intervalInMillis;
 		LOG.info("constructed MqttConnector for {}", clientId);
 
+		if (!doConnectBroker()) {
+			LOG.error("no broker connection possible for {} and {}.", url, clientId);
+		}
+	}
+
+	public MqttConnector(final String url, final String clientId, final List<String> clients) {
+		this.url = url;
+		this.clientId = clientId;
+		this.pubTopic2Mqtt = "mqtt/" + clientId + "/mqtt/";
+		this.subTopics.add("mqtt/+/mqtt/" + clientId + subPostFix);
+		this.subTopics.add("spark_cluster/mqtt/" + clientId + subPostFix);
+		this.otherClients = clients.stream().filter(client -> !client.equals(clientId)).collect(Collectors.toList());
+		this.message = "Regards from " + clientId;
+		this.intervalInMillis = 1000L;
+		this.publish = false;
+		LOG.info("constructed MqttConnector for {}", clientId);
+
+		if (!doConnectBroker()) {
+			LOG.error("no broker connection possible for {} and {}.", url, clientId);
+		}
 	}
 
 	private boolean doConnectBroker() {
@@ -140,7 +157,6 @@ public class MqttConnector {
 				mqttAsyncClient.subscribe(subTopic, 0);
 			}
 
-
 			LOG.info("{} > mqtt connection established for {}.", url, clientId);
 			return true;
 		} catch (final Throwable throwable) {
@@ -164,17 +180,19 @@ public class MqttConnector {
 	private void doPublish() {
 		final Thread thisThread = Thread.currentThread();
 		while (t == thisThread) {
-			try {
-				for (final String otherClient : otherClients) {
-					final String topic = pubTopic2Mqtt + otherClient;
-					LOG.info("{} publishing \"{}\" to topic {}", clientId, message, topic);
-					mqttAsyncClient.publish(topic, (LocalDateTime.now() + message).getBytes(), 1, false);
+			if (publish) {
+				try {
+					for (final String otherClient : otherClients) {
+						final String topic = pubTopic2Mqtt + otherClient + pubPostFix;
+						LOG.info("{} publishing \"{}\" to topic {}", clientId, message, topic);
+						mqttAsyncClient.publish(topic, (LocalDateTime.now() + message).getBytes(), 1, false);
+					}
+					Thread.sleep(intervalInMillis);
+				} catch (final Throwable t) {
+					LOG.error("exception while publishing", t);
 				}
-				Thread.sleep(intervalInMillis);
-			} catch (final Throwable t) {
-				LOG.error("exception while publishing", t);
-			}
 
+			}
 		}
 	}
 
@@ -188,6 +206,10 @@ public class MqttConnector {
 		t = null;
 	}
 
+	public void reconnect() {
+		doConnectBroker();
+	}
+
 	public List<String> getOut() {
 		return out;
 	}
@@ -196,5 +218,7 @@ public class MqttConnector {
 		return in;
 	}
 
-
+	public void setUrl(final String url) {
+		this.url = url;
+	}
 }

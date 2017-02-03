@@ -38,9 +38,9 @@ public class Main {
 		clients.add("pyro");
 		clients.add("wolverine");
 		final List<MqttConnector> connectors = new ArrayList<>();
-		connectors.add(new MqttConnector("tcp://192.168.33.20:1883", "beast", clients, 5000));
-		connectors.add(new MqttConnector("tcp://192.168.33.20:1883", "pyro", clients, 5000));
-		connectors.add(new MqttConnector("tcp://192.168.33.20:1883", "wolverine", clients, 5000));
+		connectors.add(new MqttConnector("tcp://192.168.33.22:1883", "beast", clients, 3000));
+		connectors.add(new MqttConnector("tcp://192.168.33.20:1883", "pyro", clients, 3000));
+		connectors.add(new MqttConnector("tcp://192.168.33.21:1883", "wolverine", clients, 3000));
 		connectors.stream().forEach(con -> con.start());
 	}
 }
