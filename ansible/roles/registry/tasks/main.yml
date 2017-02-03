@@ -1,0 +1,16 @@
+---
+- name: create volume-dirs
+  file:
+    path: /volumes/registry/data
+    state: directory
+
+- name: start container
+  docker_container:
+    name: registry
+    image: "registry:{{registry_version}}" 
+    network_mode: host
+    state: "started"
+    restart_policy: always
+    volumes:
+    - /volumes/registry/data:/var/lib/registry
+

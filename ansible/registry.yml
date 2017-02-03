@@ -1,0 +1,6 @@
+---
+- hosts: registry
+
+- hosts: registry
+  roles:
+  - registry

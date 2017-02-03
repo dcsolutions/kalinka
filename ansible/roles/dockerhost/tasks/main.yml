@@ -5,6 +5,7 @@
     line: "{{inventory_hostname}}  {{ansible_hostname}}  {{ansible_hostname}}"
     regexp: '^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})(\s+){{ansible_hostname}}(\s+){{ansible_hostname}}'
     state: present
+  notify: restart docker
 
 - name: add docker repos
   apt_repository:
@@ -21,6 +22,19 @@
     name: docker-engine
     update_cache: yes
     state: present
+
+- name: docker remote availability
+  lineinfile:
+    dest: /lib/systemd/system/docker.service
+    regexp: '^ExecStart=/usr/bin/dockerd'
+    line: "ExecStart=/usr/bin/dockerd -H tcp://{{inventory_hostname}}:2375 --insecure-registry={{hostvars[groups['registry'][0]]['inventory_hostname']}}:5000"
+  notify: restart docker
+
+- name: set env-var DOCKER_HOST
+  lineinfile:
+    dest: /etc/bash.bashrc
+    regexp: '^export DOCKER_HOST='
+    line: "export DOCKER_HOST=tcp://{{inventory_hostname}}:2375"
 
 - name: install docker-py
   pip:

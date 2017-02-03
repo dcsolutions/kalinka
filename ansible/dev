@@ -30,6 +30,9 @@ dev1
 dev2
 dev3
 
+[registry:children]
+dev1
+
 [dev:children]
 dev1
 dev2
