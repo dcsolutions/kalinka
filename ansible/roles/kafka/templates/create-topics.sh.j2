@@ -4,5 +4,6 @@ ZK_HOSTS="{% for host in groups['zookeeper'] %}{{hostvars[host]['inventory_hostn
 
 {% for topic in kafka_topics %}
 /opt/{{kafka_dir_name}}/bin/kafka-topics.sh --create --zookeeper "$ZK_HOSTS" --replication-factor {{topic['replication_factor']}} --partitions {{topic['partitions']}} --topic {{topic['name']}} 
+/bin/sleep 3
 {% endfor %}
 
