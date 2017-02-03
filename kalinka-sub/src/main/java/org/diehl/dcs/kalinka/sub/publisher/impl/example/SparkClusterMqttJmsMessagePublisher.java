@@ -44,7 +44,7 @@ public class SparkClusterMqttJmsMessagePublisher implements IMessagePublisher<Jm
 
 		try {
 			final String destId = message.key();
-			final String topic = "sparkcluster." + ".mqtt." + destId + ".sub";
+			final String topic = "sparkcluster" + ".mqtt." + destId + ".sub";
 
 			senderProvider.getSender(destId).send(topic, (MessageCreator) session -> {
 				final BytesMessage byteMessage = session.createBytesMessage();
