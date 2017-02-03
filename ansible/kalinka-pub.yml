@@ -1,5 +1,5 @@
 ---
 - hosts: kalinka_pub
   roles:
-  - kalinka_pub
+  - kalinka-pub
 

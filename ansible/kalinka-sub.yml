@@ -1,5 +1,5 @@
 ---
 - hosts: kalinka_sub
   roles:
-  - kalinka_sub
+  - kalinka-sub
 
