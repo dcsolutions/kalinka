@@ -18,6 +18,7 @@ import javax.jms.Message;
 
 import org.diehl.dcs.kalinka.pub.jms.util.JmsUtil;
 import org.diehl.dcs.kalinka.pub.publisher.IMessagePublisher;
+import org.diehl.dcs.kalinka.pub.util.HashUtil;
 import org.diehl.dcs.kalinka.util.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,11 +35,14 @@ import com.google.common.primitives.Bytes;
  */
 public class MqttMqttJmsMessagePublisher implements IMessagePublisher<Message, String, byte[]> {
 
+	// TODO: Make this configurable
+	private static final int NUM_LOGICAL_PARTITIONS = 2;
+
 	private static final Logger LOG = LoggerFactory.getLogger(MqttMqttJmsMessagePublisher.class);
 
 	private static final Pattern REGEX_PATTERN = Pattern.compile("(\\S+//|/){0,1}(mqtt[\\./](\\S+)[\\./]mqtt[\\./](\\S+)).pub");
 
-	private static final String KAFKA_DEST_TOPIC = "mqtt.mqtt";
+	private static final String KAFKA_DEST_TOPIC = "{p}.mqtt.mqtt";
 
 	@Override
 	public void publish(final Message message, final KafkaTemplate<String, byte[]> kafkaTemplate) {
@@ -59,14 +63,26 @@ public class MqttMqttJmsMessagePublisher implements IMessagePublisher<Message, S
 				effectivePayload != null ? new String(effectivePayload) : null);
 
 		final Tuple<String, String> srcDestIds = this.getSourceAndDestId(rawSourceTopic);
+		if (srcDestIds == null) {
+			throw new IllegalStateException("Could not get sourceId and destId from topic=" + rawSourceTopic);
+		}
 		final byte[] payload = this.getEnrichedPayload(effectivePayload, srcDestIds.getFirst());
-		return new MessageContainer(KAFKA_DEST_TOPIC, srcDestIds.getSecond(), payload);
+		final String destTopic = this.getDestTopic(srcDestIds.getFirst());
+		return new MessageContainer(destTopic, srcDestIds.getSecond(), payload);
 	}
+
+	String getDestTopic(final String sourceId) {
+
+		final int logicalPartition = HashUtil.hashKey(sourceId, NUM_LOGICAL_PARTITIONS);
+		final String destTopic = KAFKA_DEST_TOPIC.replace("{p}", String.valueOf(logicalPartition));
+		return destTopic;
+	}
+
 
 	Tuple<String, String> getSourceAndDestId(final String rawTopic) {
 
 		final Matcher m = this.getSourceTopicRegex().matcher(rawTopic);
-		while (m.find()) {
+		if (m.find()) {
 			return new Tuple<>(m.group(3), m.group(4));
 		}
 		return null;
