@@ -18,10 +18,8 @@ package org.diehl.dcs.kalinka.it.model;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Executors;
 
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.producer.ProducerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +33,7 @@ public class KafkaConsumerClient {
 	private final KafkaConsumer<String, byte[]> consumer;
 	private final String kafkaHosts = "192.168.33.20:9092,192.168.33.21:9092,192.168.33.22:9092";
 
-	private int publishCounter = 0;
+	private final int publishCounter = 0;
 
 	private volatile boolean stopped = false;
 
@@ -50,32 +48,32 @@ public class KafkaConsumerClient {
 		LOG.info("Assigning to topic=mqtt.sparkcluster");
 	}
 
-	private void doPublish() {
-		while (!stopped) {
-			try {
-				for (final String client : clients) {
-					LOG.info("publishing message from kafka to {}", client);
-					final ProducerRecord<String, byte[]> producerRecord =
-							new ProducerRecord<>("sparkcluster.mqtt", client, new String("Regards from Kafka to " + client).getBytes());
-					producer.send(producerRecord);
-					publishCounter++;
-				}
-				Thread.sleep(intervalInMillis);
-			} catch (final Throwable t) {
-				LOG.error("exception while publishing", t);
-			}
+	//	private void doPublish() {
+	//		while (!stopped) {
+	//			try {
+	//				for (final String client : clients) {
+	//					LOG.info("publishing message from kafka to {}", client);
+	//					final ProducerRecord<String, byte[]> producerRecord =
+	//							new ProducerRecord<>("sparkcluster.mqtt", client, new String("Regards from Kafka to " + client).getBytes());
+	//					producer.send(producerRecord);
+	//					publishCounter++;
+	//				}
+	//				Thread.sleep(intervalInMillis);
+	//			} catch (final Throwable t) {
+	//				LOG.error("exception while publishing", t);
+	//			}
+	//
+	//		}
+	//	}
 
-		}
-	}
-
-	public void start() {
-		this.stopped = false;
-		try {
-			Executors.newSingleThreadExecutor().submit(() -> doPublish());
-		} catch (final Throwable t) {
-			LOG.error("exception during execution", t);
-		}
-	}
+	//	public void start() {
+	//		this.stopped = false;
+	//		try {
+	//			Executors.newSingleThreadExecutor().submit(() -> doPublish());
+	//		} catch (final Throwable t) {
+	//			LOG.error("exception during execution", t);
+	//		}
+	//	}
 
 	public void stop() {
 		this.stopped = true;
