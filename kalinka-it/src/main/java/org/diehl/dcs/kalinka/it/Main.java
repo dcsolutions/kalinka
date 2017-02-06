@@ -19,7 +19,7 @@ package org.diehl.dcs.kalinka.it;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.diehl.dcs.kalinka.it.model.MqttConnector;
+import org.diehl.dcs.kalinka.it.model.MqttClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,10 +37,10 @@ public class Main {
 		clients.add("beast");
 		clients.add("pyro");
 		clients.add("wolverine");
-		final List<MqttConnector> connectors = new ArrayList<>();
-		connectors.add(new MqttConnector("tcp://192.168.33.22:1883", "beast", clients, 3000));
-		connectors.add(new MqttConnector("tcp://192.168.33.20:1883", "pyro", clients, 3000));
-		connectors.add(new MqttConnector("tcp://192.168.33.21:1883", "wolverine", clients, 3000));
+		final List<MqttClient> connectors = new ArrayList<>();
+		connectors.add(new MqttClient("tcp://192.168.33.22:1883", "beast", clients, 3000));
+		connectors.add(new MqttClient("tcp://192.168.33.20:1883", "pyro", clients, 3000));
+		connectors.add(new MqttClient("tcp://192.168.33.21:1883", "wolverine", clients, 3000));
 		connectors.stream().forEach(con -> con.start());
 	}
 }

@@ -19,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
@@ -33,47 +34,31 @@ import org.slf4j.LoggerFactory;
  * @author Merkaban <ridethesnake7@yahoo.de>
  *
  */
-public class MqttConnector {
+public class MqttClient implements MqttCallback {
+	@Override
+	public void connectionLost(final Throwable throwable) {
+		try {
+			LOG.info("{} > {} > connection lost ({}).", url, clientId, throwable.getMessage());
 
-	public class MqttConnectorCallback implements MqttCallback {
-
-		@Override
-		public void connectionLost(final Throwable throwable) {
-			try {
-				LOG.info("{} > {} > connection lost ({}).", url, clientId, throwable.getMessage());
-
-				t = null;
-
-			} catch (final Throwable t) {
-				LOG.error(t.getMessage(), t);
-			}
-		}
-
-		@Override
-		public void messageArrived(final String topic, final org.eclipse.paho.client.mqttv3.MqttMessage mqttMessage) throws Exception {
-			LOG.info("{} > receive: {} - {}", url, topic, new String(mqttMessage.getPayload(), StandardCharsets.UTF_8));
-			in.add(LocalDateTime.now() + " " + topic);
-		}
-
-		@Override
-		public void deliveryComplete(final IMqttDeliveryToken token) {
-			LOG.info("message delivered to {} on {} by {}", token.getTopics(), token.getClient().getServerURI(), token.getClient().getClientId());
-			out.add(LocalDateTime.now() + " " + token.getTopics()[0]);
+		} catch (final Throwable t) {
+			LOG.error(t.getMessage(), t);
 		}
 	}
 
-	public class MqttConnectorRunnable implements Runnable {
-		@Override
-		public void run() {
-			LOG.debug("{} > run..", url);
+	@Override
+	public void messageArrived(final String topic, final org.eclipse.paho.client.mqttv3.MqttMessage mqttMessage) throws Exception {
+		LOG.info("{} > receive: {} - {}", url, topic, new String(mqttMessage.getPayload(), StandardCharsets.UTF_8));
+		in.add(LocalDateTime.now() + " " + topic);
+	}
 
-			doPublish();
-		}
+	@Override
+	public void deliveryComplete(final IMqttDeliveryToken token) {
+		LOG.info("message delivered to {} on {} by {}", token.getTopics(), token.getClient().getServerURI(), token.getClient().getClientId());
+		out.add(LocalDateTime.now() + " " + token.getTopics()[0]);
 	}
 
 
-	private volatile Thread t;
-	private static final Logger LOG = LoggerFactory.getLogger(MqttConnector.class);
+	private static final Logger LOG = LoggerFactory.getLogger(MqttClient.class);
 
 	//url = protocol + broker + ":" + port;
 	private String url;
@@ -91,8 +76,9 @@ public class MqttConnector {
 	private final List<String> in = new ArrayList<>();
 	private final List<String> out = new ArrayList<>();
 	private boolean publish = true;
+	private volatile boolean stopped = false;
 
-	public MqttConnector(final String url, final String clientId, final List<String> clients, final long intervalInMillis) {
+	public MqttClient(final String url, final String clientId, final List<String> clients, final long intervalInMillis) {
 		this.url = url;
 		this.clientId = clientId;
 		this.pubTopic2Mqtt = "mqtt/" + clientId + "/mqtt/";
@@ -108,7 +94,7 @@ public class MqttConnector {
 		}
 	}
 
-	public MqttConnector(final String url, final String clientId, final List<String> clients) {
+	public MqttClient(final String url, final String clientId, final List<String> clients) {
 		this.url = url;
 		this.clientId = clientId;
 		this.pubTopic2Mqtt = "mqtt/" + clientId + "/mqtt/";
@@ -129,15 +115,9 @@ public class MqttConnector {
 		try {
 			LOG.debug("{} > connect..", url);
 
-			// options
 			final MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
 			mqttConnectOptions.setCleanSession(true);
-
-			// lastWill
 			mqttConnectOptions.setWill(pubTopic2Mqtt, "Bye, bye Baby!".getBytes(), 0, false);
-
-			// maximal queued messages
-			//mqttConnectOptions.setMaxInflight(500);
 
 			// client
 			final String tmpDir = System.getProperty("java.io.tmpdir");
@@ -146,7 +126,7 @@ public class MqttConnector {
 			mqttAsyncClient = new MqttAsyncClient(url, clientId, dataStore);
 
 			// callback
-			mqttAsyncClient.setCallback(new MqttConnectorCallback());
+			mqttAsyncClient.setCallback(this);
 
 			// connect
 			mqttAsyncClient.connect(mqttConnectOptions).waitForCompletion();
@@ -178,32 +158,30 @@ public class MqttConnector {
 	}
 
 	private void doPublish() {
-		final Thread thisThread = Thread.currentThread();
-		while (t == thisThread) {
-			if (publish) {
-				try {
+		while (!stopped) {
+			try {
+				if (publish) {
 					for (final String otherClient : otherClients) {
 						final String topic = pubTopic2Mqtt + otherClient + pubPostFix;
 						LOG.info("{} publishing \"{}\" to topic {}", clientId, message, topic);
 						mqttAsyncClient.publish(topic, (LocalDateTime.now() + message).getBytes(), 1, false);
 					}
-					Thread.sleep(intervalInMillis);
-				} catch (final Throwable t) {
-					LOG.error("exception while publishing", t);
 				}
-
+				Thread.sleep(intervalInMillis);
+			} catch (final Throwable t) {
+				LOG.error("exception while publishing", t);
 			}
 		}
 	}
 
 	public void start() {
-		t = new Thread(new MqttConnectorRunnable(), clientId);
-		t.start();
+		stopped = false;
+		Executors.newSingleThreadExecutor().submit(() -> doPublish());
 	}
 
 	public void stop() {
+		stopped = true;
 		close();
-		t = null;
 	}
 
 	public void reconnect() {
