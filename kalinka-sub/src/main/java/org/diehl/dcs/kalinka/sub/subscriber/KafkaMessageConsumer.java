@@ -51,7 +51,6 @@ public class KafkaMessageConsumer<T, K, V> implements Runnable {
 		try {
 			while (true) {
 				final ConsumerRecords<K, V> records = this.consumer.poll(this.pollTimeout);
-				LOG.trace("Polling..... Assignments={}", this.consumer.assignment());
 
 				records.forEach(record -> {
 					LOG.debug("Received record={}", record);

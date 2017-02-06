@@ -58,7 +58,12 @@ public class MqttMqttJmsMessagePublisher implements IMessagePublisher<JmsTemplat
 			final byte[] effectivePayloadFromResult = new byte[effectiveLength];
 			System.arraycopy(message.value(), 64, effectivePayloadFromResult, 0, effectiveLength);
 
-			senderProvider.getSender(destId).send(topic, (MessageCreator) session -> {
+			final JmsTemplate sender = senderProvider.getSender(destId);
+			if (sender == null) {
+				LOG.warn("Cannot send, no sender available for destId={}", destId);
+				return;
+			}
+			sender.send(topic, (MessageCreator) session -> {
 				final BytesMessage byteMessage = session.createBytesMessage();
 				try {
 					byteMessage.writeBytes(effectivePayloadFromResult);
