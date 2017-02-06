@@ -1,8 +1,3 @@
 ---
-- include: dockerhost.yml
-- include: registry.yml
-- include: zookeeper.yml
-- include: kafka.yml
-- include: activemq.yml
-- include: kalinka-pub.yml
-- include: kalinka-sub.yml
+- include: infrastruct.yml
+- include: kalinka.yml
