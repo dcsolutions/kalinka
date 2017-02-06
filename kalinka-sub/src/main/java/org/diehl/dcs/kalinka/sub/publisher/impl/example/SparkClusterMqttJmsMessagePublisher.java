@@ -37,7 +37,7 @@ public class SparkClusterMqttJmsMessagePublisher implements IMessagePublisher<Jm
 
 	private static final Logger LOG = LoggerFactory.getLogger(SparkClusterMqttJmsMessagePublisher.class);
 
-	private static final Pattern REGEX_PATTERN = Pattern.compile("sparkcluster.mqtt");
+	private static final Pattern REGEX_PATTERN = Pattern.compile("\\d+\\.sparkcluster.mqtt");
 
 	@Override
 	public void publish(final ConsumerRecord<String, byte[]> message, final ISenderProvider<JmsTemplate> senderProvider) {

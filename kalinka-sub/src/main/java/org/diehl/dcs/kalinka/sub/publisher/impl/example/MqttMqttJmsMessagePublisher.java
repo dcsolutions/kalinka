@@ -41,7 +41,7 @@ public class MqttMqttJmsMessagePublisher implements IMessagePublisher<JmsTemplat
 
 	private static final Logger LOG = LoggerFactory.getLogger(MqttMqttJmsMessagePublisher.class);
 
-	private static final Pattern REGEX_PATTERN = Pattern.compile("mqtt.mqtt");
+	private static final Pattern REGEX_PATTERN = Pattern.compile("\\d+\\.mqtt.mqtt");
 
 	@Override
 	public void publish(final ConsumerRecord<String, byte[]> message, final ISenderProvider<JmsTemplate> senderProvider) {

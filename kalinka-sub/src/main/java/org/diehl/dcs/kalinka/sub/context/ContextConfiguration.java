@@ -41,7 +41,6 @@ import org.diehl.dcs.kalinka.sub.publisher.MessagePublisherProvider;
 import org.diehl.dcs.kalinka.sub.sender.ISenderProvider;
 import org.diehl.dcs.kalinka.sub.sender.jms.JmsSenderProvider;
 import org.diehl.dcs.kalinka.sub.subscriber.KafkaMessageConsumer;
-import org.diehl.dcs.kalinka.sub.util.KafkaPartitionResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -113,8 +112,6 @@ public class ContextConfiguration {
 
 	private List<String> kafkaSubscribedTopics;
 
-	private List<Integer> kafkaSubscribedPartitions;
-
 	private List<String> messagePublisherClassNames;
 
 	@Value("${kafka.key.serializer.class.name:org.apache.kafka.common.serialization.StringDeserializer}")
@@ -141,18 +138,11 @@ public class ContextConfiguration {
 		this.kafkaSubscribedTopics = splitCsStrings(rawKafkaSubscribedTopics);
 	}
 
-	@Value("${kafka.subscribed.partitions}")
-	public void setKafkaSubscribedPartitions(final String rawKafkaSubscribedPartitions) {
-
-		this.kafkaSubscribedPartitions = KafkaPartitionResolver.partitionsFromString(rawKafkaSubscribedPartitions);
-	}
-
 	@Value("${message.publisher.class.names}")
 	public void setMessagePublisherClassNames(final String rawMessagePublisherClassNames) {
 
 		this.messagePublisherClassNames = splitCsStrings(rawMessagePublisherClassNames);
 	}
-
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Bean
@@ -193,7 +183,6 @@ public class ContextConfiguration {
 		props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, this.kafkaKeyDeserializerClass);
 		props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, this.kafkaValueDeserializerClass);
 		props.put(KAFKA_POLL_TIMEOUT, this.kafkaPollTimeout);
-		props.put(KAFKA_SUBSCRIBED_PARTITIONS, this.kafkaSubscribedPartitions);
 		props.put(KAFKA_SUBSCRIBED_TOPICS, this.kafkaSubscribedTopics);
 		return props;
 	}
