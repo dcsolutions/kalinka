@@ -35,7 +35,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class MqttMqttJmsMessagePublisherTest {
 
-	private final MqttMqttJmsMessagePublisher publisher = new MqttMqttJmsMessagePublisher();
+	private final MqttMqttJmsMessagePublisher publisher = new MqttMqttJmsMessagePublisher(2);
 
 	@Test
 	public void testGetSourceTopicRegex() {

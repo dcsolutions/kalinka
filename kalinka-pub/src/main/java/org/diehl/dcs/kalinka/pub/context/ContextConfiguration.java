@@ -16,7 +16,6 @@ limitations under the License.
 
 package org.diehl.dcs.kalinka.pub.context;
 
-import static org.diehl.dcs.kalinka.util.LangUtil.createClass;
 import static org.diehl.dcs.kalinka.util.LangUtil.createObject;
 
 import java.util.LinkedHashMap;
@@ -27,7 +26,6 @@ import java.util.regex.Pattern;
 import javax.jms.MessageListener;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.serialization.Serializer;
 import org.diehl.dcs.kalinka.pub.jms.JmsMessageListener;
 import org.diehl.dcs.kalinka.pub.publisher.IMessagePublisher;
 import org.diehl.dcs.kalinka.pub.publisher.MessagePublisherProvider;
@@ -70,23 +68,12 @@ public class ContextConfiguration {
 
 	@Value("${kafka.buffer.memory.config:33554432}")
 	private Integer kafkaBufferMemory;
-	@SuppressWarnings("rawtypes")
-	private Class<? extends Serializer> kafkaKeySerializerClass;
 
-	@SuppressWarnings("rawtypes")
-	private Class<? extends Serializer> kafkaValueSerializerClass;
+	@Value("${kafka.key.serializer.class:org.apache.kafka.common.serialization.StringSerializer}")
+	private String kafkaKeySerializerClass;
 
-	@Value("${kafka.key.serializer.class.name:org.apache.kafka.common.serialization.StringSerializer}")
-	public void setKafkaKeySerializerClass(final String kafkaKeySerializerClassName) {
-
-		this.kafkaKeySerializerClass = createClass(kafkaKeySerializerClassName, Serializer.class);
-	}
-
-	@Value("${kafka.value.serializer.class.name:org.apache.kafka.common.serialization.ByteArraySerializer}")
-	public void setKafkaValueSerializerClass(final String kafkaValueSerializerClassName) {
-
-		this.kafkaValueSerializerClass = createClass(kafkaValueSerializerClassName, Serializer.class);
-	}
+	@Value("${kafka.value.serializer.class:org.apache.kafka.common.serialization.ByteArraySerializer}")
+	private String kafkaValueSerializerClass;
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Bean
@@ -96,7 +83,6 @@ public class ContextConfiguration {
 		this.messagePublishers.forEach(p -> publishers.put(p.getSourceTopicRegex(), p));
 		return new MessagePublisherProvider(publishers);
 	}
-
 
 	@SuppressWarnings("rawtypes")
 	@Bean
