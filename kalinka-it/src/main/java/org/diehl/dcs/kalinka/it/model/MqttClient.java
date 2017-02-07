@@ -184,6 +184,10 @@ public class MqttClient implements MqttCallback {
 		close();
 	}
 
+	public void restart() {
+		stopped = false;
+	}
+
 	public void reconnect() {
 		doConnectBroker();
 	}

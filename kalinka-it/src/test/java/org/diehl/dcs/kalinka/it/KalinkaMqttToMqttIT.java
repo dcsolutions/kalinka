@@ -46,10 +46,6 @@ public class KalinkaMqttToMqttIT {
 
 		Thread.sleep(intervalInMillis + 1000);
 
-		//		LOG.info("OUT:");
-		//		connectors.get(0).getOut().stream().forEach(out -> LOG.info(out));
-		//		LOG.info("IN:");
-		//		connectors.get(0).getIn().stream().forEach(in -> LOG.info(in));
 		assertThat(connectors.get(0).getOut().size(), is(4));
 		assertThat(connectors.get(0).getIn().size(), is(4));
 		assertThat(connectors.get(1).getOut().size(), is(4));
@@ -82,8 +78,6 @@ public class KalinkaMqttToMqttIT {
 
 		Thread.sleep(intervalInMillis + 1000);
 
-		//		LOG.info("OUT:");
-		//		connectors.get(0).getOut().stream().forEach(out -> LOG.info(out));
 		LOG.info("IN:");
 		connectors.get(1).getIn().stream().forEach(in -> LOG.info(in));
 		assertThat(connectors.get(0).getOut().size(), is(4));
@@ -111,29 +105,28 @@ public class KalinkaMqttToMqttIT {
 
 		ZookeeperCountdownLatch.waitForZookeeper(clients, zkClient);
 
+		LOG.info("START PUBLISHING WITH ALL CLIENTS");
 		connectors.stream().forEach(con -> con.start());
 
 		Thread.sleep(intervalInMillis + 1000);
 
+		LOG.info("STOP PUBLISHING WITH BEAST");
 		connectors.get(0).stop();
 		connectors.get(0).setUrl("tcp://192.168.33.22:1883");
 		connectors.get(0).reconnect();
 		ZookeeperCountdownLatch.waitForZookeeper(clients, zkClient);
 
-		connectors.get(0).start();
+		LOG.info("START PUBLISHING WITH BEAST");
+		connectors.get(0).restart();
 
 		Thread.sleep(intervalInMillis + 1000);
 
-		//		LOG.info("OUT:");
-		//		connectors.get(0).getOut().stream().forEach(out -> LOG.info(out));
-		LOG.info("IN:");
-		connectors.get(1).getIn().stream().forEach(in -> LOG.info(in));
-		assertThat(connectors.get(0).getOut().size(), is(8));
+		assertThat(connectors.get(0).getOut().size(), is(6));
 		assertThat(connectors.get(0).getIn().size(), is(6));
 		assertThat(connectors.get(1).getOut().size(), is(6));
-		assertThat(connectors.get(1).getIn().size(), is(7));
+		assertThat(connectors.get(1).getIn().size(), is(6));
 		assertThat(connectors.get(2).getOut().size(), is(6));
-		assertThat(connectors.get(2).getIn().size(), is(7));
+		assertThat(connectors.get(2).getIn().size(), is(6));
 
 		connectors.get(0).stop();
 		connectors.get(1).stop();
@@ -157,11 +150,6 @@ public class KalinkaMqttToMqttIT {
 		connectors.stream().forEach(con -> con.start());
 
 		Thread.sleep(intervalInMillis + 1000);
-
-		//		LOG.info("OUT:");
-		//		connectors.get(0).getOut().stream().forEach(out -> LOG.info(out));
-		//		LOG.info("IN:");
-		//		connectors.get(0).getIn().stream().forEach(in -> LOG.info(in));
 		assertThat(connectors.get(0).getOut().size(), is(4));
 		assertThat(connectors.get(0).getIn().size(), is(4));
 		assertThat(connectors.get(1).getOut().size(), is(4));
