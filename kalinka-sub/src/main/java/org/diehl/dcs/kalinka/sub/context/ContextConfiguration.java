@@ -27,6 +27,7 @@ import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.jms.ConnectionFactory;
 
@@ -50,6 +51,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.jms.connection.CachingConnectionFactory;
 
+import com.google.common.base.Splitter;
 import com.google.common.collect.Maps;
 
 
@@ -74,9 +76,6 @@ public class ContextConfiguration {
 
 	@Value("${kafka.hosts}")
 	private String kafkaHosts;
-
-	@Value("${kafka.replication.factor:1}")
-	private int kafkaReplicationFactor;
 
 	@Value("${kafka.poll.timeout:100}")
 	private long kafkaPollTimeout;
@@ -110,7 +109,7 @@ public class ContextConfiguration {
 
 	private List<String> jmsHosts;
 
-	private List<String> kafkaSubscribedTopics;
+	private List<TopicInfo> kafkaSubscribedTopics;
 
 	private List<String> messagePublisherClassNames;
 
@@ -135,7 +134,11 @@ public class ContextConfiguration {
 	@Value("${kafka.subscribed.topics}")
 	public void setKafkaSuscribedTopics(final String rawKafkaSubscribedTopics) {
 
-		this.kafkaSubscribedTopics = splitCsStrings(rawKafkaSubscribedTopics);
+		final List<String> topicNumThreadPairs = splitCsStrings(rawKafkaSubscribedTopics);
+		this.kafkaSubscribedTopics = topicNumThreadPairs.stream().map(p -> {
+			final List<String> topicNumThreadPair = Splitter.on(':').omitEmptyStrings().splitToList(p);
+			return new TopicInfo(topicNumThreadPair.get(0), topicNumThreadPair.size() == 2 ? Integer.valueOf(topicNumThreadPair.get(1)) : 1);
+		}).collect(Collectors.toList());
 	}
 
 	@Value("${message.publisher.class.names}")
@@ -193,9 +196,11 @@ public class ContextConfiguration {
 
 		final Map<String, KafkaMessageConsumer> consumers = Maps.newHashMap();
 		this.kafkaSubscribedTopics.forEach(t -> {
-			final KafkaMessageConsumer consumer = this.kafkaMessageConsumer(t);
-			Executors.newSingleThreadExecutor().submit(consumer);
-			consumers.put(t, consumer);
+			for (int i = 0; i < t.numThreads; i++) {
+				final KafkaMessageConsumer consumer = this.kafkaMessageConsumer(t.topic);
+				Executors.newSingleThreadExecutor().submit(consumer);
+				consumers.put(t.topic + "-" + i, consumer);
+			}
 		});
 		return consumers;
 	}
@@ -245,5 +250,15 @@ public class ContextConfiguration {
 		return connectionFactory;
 	}
 
+	private static final class TopicInfo {
 
+		private final String topic;
+		private final int numThreads;
+
+		public TopicInfo(final String topic, final int numThreads) {
+
+			this.topic = topic;
+			this.numThreads = numThreads;
+		}
+	}
 }
