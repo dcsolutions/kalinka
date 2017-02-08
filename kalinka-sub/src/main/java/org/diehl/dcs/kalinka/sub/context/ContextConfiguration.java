@@ -23,7 +23,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -179,8 +178,9 @@ public class ContextConfiguration {
 		final Map<String, KafkaMessageConsumer> consumers = Maps.newHashMap();
 		this.kafkaSubscribedTopics.forEach(t -> {
 			for (int i = 0; i < t.numThreads; i++) {
+				final String threadName = t.topic + "-" + i;
 				final KafkaMessageConsumer consumer = this.kafkaMessageConsumer(t.topic);
-				Executors.newSingleThreadExecutor().submit(consumer);
+				new Thread(consumer, threadName).start();
 				consumers.put(t.topic + "-" + i, consumer);
 			}
 		});
