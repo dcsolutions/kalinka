@@ -15,7 +15,6 @@ limitations under the License.
  */
 package org.diehl.dcs.kalinka.sub.context;
 
-import static org.diehl.dcs.kalinka.util.LangUtil.createClass;
 import static org.diehl.dcs.kalinka.util.LangUtil.createObject;
 import static org.diehl.dcs.kalinka.util.LangUtil.splitCsStrings;
 
@@ -34,7 +33,6 @@ import javax.jms.ConnectionFactory;
 import org.I0Itec.zkclient.ZkClient;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.common.serialization.Deserializer;
 import org.diehl.dcs.kalinka.sub.cache.BrokerCache;
 import org.diehl.dcs.kalinka.sub.cache.IBrokerCache;
 import org.diehl.dcs.kalinka.sub.publisher.IMessagePublisher;
@@ -44,10 +42,12 @@ import org.diehl.dcs.kalinka.sub.sender.jms.JmsSenderProvider;
 import org.diehl.dcs.kalinka.sub.subscriber.KafkaMessageConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.jms.connection.CachingConnectionFactory;
 
@@ -60,6 +60,7 @@ import com.google.common.collect.Maps;
  *
  */
 @Configuration
+@ImportResource("${custom.config.file}")
 public class ContextConfiguration {
 
 	public static final String KAFKA_POLL_TIMEOUT = "kafkaPollTimeout";
@@ -67,6 +68,10 @@ public class ContextConfiguration {
 	public static final String KAFKA_SUBSCRIBED_TOPICS = "kafkaSubscribedTopics";
 
 	private static final Logger LOG = LoggerFactory.getLogger(ContextConfiguration.class);
+
+	@SuppressWarnings("rawtypes")
+	@Autowired
+	private List<IMessagePublisher> messagePublishers;
 
 	@Value("${kafka.group.id:kalinka}")
 	private String kafkaGroupId;
@@ -89,6 +94,12 @@ public class ContextConfiguration {
 	@Value("${kafka.session.timeout:15000}")
 	private Integer kafkaSessionTimeout;
 
+	@Value("${kafka.key.deserializer.class:org.apache.kafka.common.serialization.StringDeserializer}")
+	private String kafkaKeyDeserializerClass;
+
+	@Value("${kafka.value.deserializer.class:org.apache.kafka.common.serialization.ByteArrayDeserializer}")
+	private String kafkaValueDeserializerClass;
+
 	@Value("${jms.client.id.kalinka.sub:kalinka-sub-}")
 	private String jmsClientIdKalinkaSub;
 
@@ -101,29 +112,9 @@ public class ContextConfiguration {
 	@Value("${cache.eviction.hours}")
 	private int cacheEvictionHours;
 
-	@SuppressWarnings("rawtypes")
-	private Class<? extends Deserializer> kafkaKeyDeserializerClass;
-
-	@SuppressWarnings("rawtypes")
-	private Class<? extends Deserializer> kafkaValueDeserializerClass;
-
 	private List<String> jmsHosts;
 
 	private List<TopicInfo> kafkaSubscribedTopics;
-
-	private List<String> messagePublisherClassNames;
-
-	@Value("${kafka.key.serializer.class.name:org.apache.kafka.common.serialization.StringDeserializer}")
-	public void setKafkaKeyDeserializerClass(final String kafkaKeyDeserializerClassName) {
-
-		this.kafkaKeyDeserializerClass = createClass(kafkaKeyDeserializerClassName, Deserializer.class);
-	}
-
-	@Value("${kafka.value.serializer.class.name:org.apache.kafka.common.serialization.ByteArrayDeserializer}")
-	public void setKafkaValueDeserializerClass(final String kafkaValueDeserializerClassName) {
-
-		this.kafkaValueDeserializerClass = createClass(kafkaValueDeserializerClassName, Deserializer.class);
-	}
 
 	@Value("${jms.hosts}")
 	public void setJmsHosts(final String rawJmsHosts) {
@@ -141,21 +132,12 @@ public class ContextConfiguration {
 		}).collect(Collectors.toList());
 	}
 
-	@Value("${message.publisher.class.names}")
-	public void setMessagePublisherClassNames(final String rawMessagePublisherClassNames) {
-
-		this.messagePublisherClassNames = splitCsStrings(rawMessagePublisherClassNames);
-	}
-
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Bean
 	public MessagePublisherProvider messagePublisherProvider() {
 
 		final LinkedHashMap<Pattern, IMessagePublisher> publishers = new LinkedHashMap<>();
-		this.messagePublisherClassNames.forEach(className -> {
-			final IMessagePublisher publisher = this.messagePublisher(className);
-			publishers.put(publisher.getSourceTopicRegex(), publisher);
-		});
+		this.messagePublishers.forEach(p -> publishers.put(p.getSourceTopicRegex(), p));
 		return new MessagePublisherProvider(publishers);
 	}
 
