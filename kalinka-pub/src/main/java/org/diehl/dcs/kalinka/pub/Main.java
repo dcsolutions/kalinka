@@ -17,6 +17,7 @@ limitations under the License.
 package org.diehl.dcs.kalinka.pub;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.autoconfigure.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
@@ -26,7 +27,7 @@ import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
  *
  */
 @SpringBootApplication
-@EnableAutoConfiguration(exclude = JmsAutoConfiguration.class)
+@EnableAutoConfiguration(exclude = { JmsAutoConfiguration.class, HealthIndicatorAutoConfiguration.class })
 public class Main {
 
 	public static void main(final String[] args) {

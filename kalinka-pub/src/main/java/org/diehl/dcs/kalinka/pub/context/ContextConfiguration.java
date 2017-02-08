@@ -16,22 +16,34 @@ limitations under the License.
 
 package org.diehl.dcs.kalinka.pub.context;
 
+import static org.diehl.dcs.kalinka.util.LangUtil.splitCsStrings;
+
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+import javax.jms.ConnectionFactory;
 import javax.jms.MessageListener;
 
+import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.diehl.dcs.kalinka.pub.jms.JmsMessageListener;
 import org.diehl.dcs.kalinka.pub.publisher.IMessagePublisher;
 import org.diehl.dcs.kalinka.pub.publisher.MessagePublisherProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.context.annotation.Scope;
+import org.springframework.jms.connection.CachingConnectionFactory;
+import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
@@ -45,6 +57,8 @@ import com.google.common.collect.Maps;
 @Configuration
 @ImportResource("${custom.config.file}")
 public class ContextConfiguration {
+
+	private static final Logger LOG = LoggerFactory.getLogger(ContextConfiguration.class);
 
 	@SuppressWarnings("rawtypes")
 	@Autowired
@@ -70,6 +84,25 @@ public class ContextConfiguration {
 
 	@Value("${kafka.value.serializer.class:org.apache.kafka.common.serialization.ByteArraySerializer}")
 	private String kafkaValueSerializerClass;
+
+	@Value("${jms.client.id.kalinka.pub:kalinka-pub-}")
+	private String jmsClientIdKalinkaPub;
+
+	private List<String> jmsHosts;
+
+	private List<String> jmsDestinations;
+
+	@Value("${jms.hosts}")
+	public void setJmsHosts(final String rawJmsHosts) {
+
+		this.jmsHosts = splitCsStrings(rawJmsHosts);
+	}
+
+	@Value("${jms.destinations}")
+	public void setJmsDestinations(final String rawJmsDestinations) {
+
+		this.jmsDestinations = splitCsStrings(rawJmsDestinations);
+	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Bean
@@ -106,6 +139,47 @@ public class ContextConfiguration {
 	public KafkaTemplate kafkaTemplate() {
 
 		return new KafkaTemplate<>(this.kafkaProducerFactory());
+	}
+
+	@Bean
+	public Map<ConnectionFactory, List<DefaultMessageListenerContainer>> connectionFactories() {
+
+		final Map<ConnectionFactory, List<DefaultMessageListenerContainer>> connectionFactories = Maps.newHashMap();
+		this.jmsHosts.forEach(h -> {
+			final ConnectionFactory connectionFactory = this.connectionFactory(h);
+			final List<DefaultMessageListenerContainer> messageListenerContainers =
+					this.jmsDestinations.stream().map(d -> this.messageListenerContainer(connectionFactory, d)).collect(Collectors.toList());
+			connectionFactories.put(connectionFactory, messageListenerContainers);
+		});
+		return connectionFactories;
+	}
+
+	@Bean
+	@Scope(BeanDefinition.SCOPE_PROTOTYPE)
+	public ConnectionFactory connectionFactory(final String host) {
+
+		final CachingConnectionFactory connectionFactory = new CachingConnectionFactory(new ActiveMQConnectionFactory(host));
+		connectionFactory.setCacheConsumers(true);
+		connectionFactory.setReconnectOnException(true);
+		connectionFactory.setClientId(this.jmsClientIdKalinkaPub + host + "-" + UUID.randomUUID().toString());
+		try {
+			connectionFactory.createConnection();
+		} catch (final Throwable t) {
+			LOG.warn("Could not create connection", t);
+		}
+		return connectionFactory;
+	}
+
+	@Bean
+	@Scope(BeanDefinition.SCOPE_PROTOTYPE)
+	public DefaultMessageListenerContainer messageListenerContainer(final ConnectionFactory connectionFactory, final String destination) {
+
+		final DefaultMessageListenerContainer messageListenerContainer = new DefaultMessageListenerContainer();
+		messageListenerContainer.setMessageListener(this.messageListener());
+		messageListenerContainer.setConnectionFactory(connectionFactory);
+		messageListenerContainer.setDestinationName(destination);
+		messageListenerContainer.start();
+		return messageListenerContainer;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
