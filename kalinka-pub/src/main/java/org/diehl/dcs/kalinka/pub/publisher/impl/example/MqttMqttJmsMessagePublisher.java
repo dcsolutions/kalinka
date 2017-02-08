@@ -19,7 +19,6 @@ import javax.jms.Message;
 import org.diehl.dcs.kalinka.pub.jms.util.JmsUtil;
 import org.diehl.dcs.kalinka.pub.publisher.IMessagePublisher;
 import org.diehl.dcs.kalinka.pub.util.HashUtil;
-import org.diehl.dcs.kalinka.util.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -66,13 +65,13 @@ public class MqttMqttJmsMessagePublisher implements IMessagePublisher<Message, S
 		LOG.debug("Creating MessageContainer for rawSourceTopic={}, effectivePayload={}", rawSourceTopic,
 				effectivePayload != null ? new String(effectivePayload) : null);
 
-		final Tuple<String, String> srcDestIds = this.getSourceAndDestId(rawSourceTopic);
+		final SrcDestId srcDestIds = this.getSourceAndDestId(rawSourceTopic);
 		if (srcDestIds == null) {
 			throw new IllegalStateException("Could not get sourceId and destId from topic=" + rawSourceTopic);
 		}
-		final byte[] payload = this.getEnrichedPayload(effectivePayload, srcDestIds.getFirst());
-		final String destTopic = this.getDestTopic(srcDestIds.getFirst());
-		return new MessageContainer(destTopic, srcDestIds.getSecond(), payload);
+		final byte[] payload = this.getEnrichedPayload(effectivePayload, srcDestIds.getSrcId());
+		final String destTopic = this.getDestTopic(srcDestIds.getSrcId());
+		return new MessageContainer(destTopic, srcDestIds.getDestId(), payload);
 	}
 
 	String getDestTopic(final String sourceId) {
@@ -83,11 +82,11 @@ public class MqttMqttJmsMessagePublisher implements IMessagePublisher<Message, S
 	}
 
 
-	Tuple<String, String> getSourceAndDestId(final String rawTopic) {
+	SrcDestId getSourceAndDestId(final String rawTopic) {
 
 		final Matcher m = this.getSourceTopicRegex().matcher(rawTopic);
 		if (m.find()) {
-			return new Tuple<>(m.group(3), m.group(4));
+			return new SrcDestId(m.group(3), m.group(4));
 		}
 		return null;
 	}
@@ -136,5 +135,27 @@ public class MqttMqttJmsMessagePublisher implements IMessagePublisher<Message, S
 			return MoreObjects.toStringHelper(this.getClass()).add("topic", this.topic).add("key", this.key)
 					.add("content", content != null ? new String(this.content) : null).toString();
 		}
+	}
+
+	public static class SrcDestId {
+
+		private final String srcId;
+		private final String destId;
+
+		public SrcDestId(final String srcId, final String destId) {
+
+			this.srcId = srcId;
+			this.destId = destId;
+		}
+
+		public String getSrcId() {
+			return srcId;
+		}
+
+		public String getDestId() {
+			return destId;
+		}
+
+
 	}
 }

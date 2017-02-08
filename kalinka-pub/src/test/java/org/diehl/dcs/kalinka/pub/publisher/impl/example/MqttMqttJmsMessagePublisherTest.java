@@ -23,7 +23,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 import org.diehl.dcs.kalinka.pub.publisher.impl.example.MqttMqttJmsMessagePublisher.MessageContainer;
-import org.diehl.dcs.kalinka.util.Tuple;
+import org.diehl.dcs.kalinka.pub.publisher.impl.example.MqttMqttJmsMessagePublisher.SrcDestId;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -52,25 +52,25 @@ public class MqttMqttJmsMessagePublisherTest {
 	@Test
 	public void testGetEffectiveSourceTopic() throws Exception {
 
-		final Tuple<String, String> t1 = this.publisher.getSourceAndDestId("tcp://mqtt.src.mqtt.dest.pub");
-		assertThat(t1.getFirst(), is("src"));
-		assertThat(t1.getSecond(), is("dest"));
+		final SrcDestId t1 = this.publisher.getSourceAndDestId("tcp://mqtt.src.mqtt.dest.pub");
+		assertThat(t1.getSrcId(), is("src"));
+		assertThat(t1.getDestId(), is("dest"));
 
-		final Tuple<String, String> t2 = this.publisher.getSourceAndDestId("/mqtt.src.mqtt.dest.pub");
-		assertThat(t2.getFirst(), is("src"));
-		assertThat(t2.getSecond(), is("dest"));
+		final SrcDestId t2 = this.publisher.getSourceAndDestId("/mqtt.src.mqtt.dest.pub");
+		assertThat(t2.getSrcId(), is("src"));
+		assertThat(t2.getDestId(), is("dest"));
 
-		final Tuple<String, String> t3 = this.publisher.getSourceAndDestId("tcp+nio://mqtt/src/mqtt/dest/pub");
-		assertThat(t3.getFirst(), is("src"));
-		assertThat(t3.getSecond(), is("dest"));
+		final SrcDestId t3 = this.publisher.getSourceAndDestId("tcp+nio://mqtt/src/mqtt/dest/pub");
+		assertThat(t3.getSrcId(), is("src"));
+		assertThat(t3.getDestId(), is("dest"));
 
-		final Tuple<String, String> t4 = this.publisher.getSourceAndDestId("/mqtt/src/mqtt/dest/pub");
-		assertThat(t4.getFirst(), is("src"));
-		assertThat(t4.getSecond(), is("dest"));
+		final SrcDestId t4 = this.publisher.getSourceAndDestId("/mqtt/src/mqtt/dest/pub");
+		assertThat(t4.getSrcId(), is("src"));
+		assertThat(t4.getDestId(), is("dest"));
 
-		final Tuple<String, String> t5 = this.publisher.getSourceAndDestId("mqtt.src.mqtt.dest.pub");
-		assertThat(t5.getFirst(), is("src"));
-		assertThat(t5.getSecond(), is("dest"));
+		final SrcDestId t5 = this.publisher.getSourceAndDestId("mqtt.src.mqtt.dest.pub");
+		assertThat(t5.getSrcId(), is("src"));
+		assertThat(t5.getDestId(), is("dest"));
 	}
 
 	@Test
