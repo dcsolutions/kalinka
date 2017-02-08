@@ -16,8 +16,6 @@ limitations under the License.
 
 package org.diehl.dcs.kalinka.pub.context;
 
-import static org.diehl.dcs.kalinka.util.LangUtil.createObject;
-
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,11 +29,9 @@ import org.diehl.dcs.kalinka.pub.publisher.IMessagePublisher;
 import org.diehl.dcs.kalinka.pub.publisher.MessagePublisherProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
-import org.springframework.context.annotation.Scope;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
@@ -82,14 +78,6 @@ public class ContextConfiguration {
 		final LinkedHashMap<Pattern, IMessagePublisher> publishers = new LinkedHashMap<>();
 		this.messagePublishers.forEach(p -> publishers.put(p.getSourceTopicRegex(), p));
 		return new MessagePublisherProvider(publishers);
-	}
-
-	@SuppressWarnings("rawtypes")
-	@Bean
-	@Scope(BeanDefinition.SCOPE_PROTOTYPE)
-	public IMessagePublisher messageToKafkaPublisher(final String className) {
-
-		return createObject(className, IMessagePublisher.class);
 	}
 
 	@Bean
