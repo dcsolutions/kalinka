@@ -2,7 +2,6 @@ package org.diehl.dcs.kalinka.it;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,34 +9,48 @@ import java.util.List;
 import org.I0Itec.zkclient.ZkClient;
 import org.diehl.dcs.kalinka.it.model.KafkaProducerClient;
 import org.diehl.dcs.kalinka.it.model.MqttClient;
+import org.diehl.dcs.kalinka.it.testutil.TestUtils;
 import org.diehl.dcs.kalinka.it.testutil.ZookeeperCountdownLatch;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class KalinkaKafkaToMqttIT {
-
 	private static final Logger LOG = LoggerFactory.getLogger(KalinkaKafkaToMqttIT.class);
 
 	String zkConnection = "192.168.33.20:2181,192.168.33.21:2181,192.168.33.22:2181/activemq/connections";
 
 	private ZkClient zkClient;
+	private List<String> clients;
+	private List<MqttClient> connectors;
 
 	@Before
 	public void setUp() throws Exception {
 
 		this.zkClient = new ZkClient(zkConnection);
+		clients = new ArrayList<>();
+		clients.add("beast");
+		clients.add("pyro");
+		clients.add("wolverine");
+		connectors = new ArrayList<>();
+	}
+
+	@After
+	public void tearDown() throws Exception {
+		this.zkClient.close();
+		this.zkClient = null;
+		clients.clear();
+		clients = null;
+		connectors.clear();
+		connectors = null;
 	}
 
 	@Test
 	public void kafka2MqttMultipleNodes() throws Exception {
-		final long intervalInMillis = 3000;
-		final List<String> clients = new ArrayList<>();
-		clients.add("beast");
-		clients.add("pyro");
-		clients.add("wolverine");
-		final List<MqttClient> connectors = new ArrayList<>();
+		final long intervalInMillis = 500;
+
 		connectors.add(new MqttClient("tcp://192.168.33.20:1883", "beast", clients));
 		connectors.add(new MqttClient("tcp://192.168.33.21:1883", "pyro", clients));
 		connectors.add(new MqttClient("tcp://192.168.33.22:1883", "wolverine", clients));
@@ -47,27 +60,43 @@ public class KalinkaKafkaToMqttIT {
 		connectors.stream().forEach(con -> con.start());
 
 		final KafkaProducerClient kafkaProducerClient = new KafkaProducerClient(clients, intervalInMillis);
-		kafkaProducerClient.start();
+		kafkaProducerClient.startWithFixExecutions(9);
 
-		Thread.sleep(7000);
+		TestUtils.stopKafkaProducerWhenDone(kafkaProducerClient, LOG);
 
-		//		LOG.info("OUT:");
-		//		connectors.get(0).getOut().stream().forEach(out -> LOG.info(out));
-		//		LOG.info("IN:");
-		//		connectors.get(0).getIn().stream().forEach(in -> LOG.info(in));
-		//assertThat(connectors.get(0).getOut().size(), is(4));
-		//		assertThat(connectors.get(0).getIn().size(), is(4));
-		//		assertThat(connectors.get(1).getOut().size(), is(4));
-		//		assertThat(connectors.get(1).getIn().size(), is(4));
-		//		assertThat(connectors.get(2).getOut().size(), is(4));
-		//		assertThat(connectors.get(2).getIn().size(), is(4));
-
-		kafkaProducerClient.stop();
 		connectors.stream().forEach(con -> con.stop());
-		assertThat(kafkaProducerClient.getPublishCounter(), is(9));
 
-		assertTrue(true);
+		assertThat(kafkaProducerClient.getPublishCounter(), is(27));
+		assertThat(connectors.get(0).getIn().size(), is(9));
+		assertThat(connectors.get(1).getIn().size(), is(9));
+		assertThat(connectors.get(2).getIn().size(), is(9));
 	}
 
+	@Test
+	public void kafka2MqttMultipleNodesHighFrequency() throws Exception {
+		final long intervalInMillis = 1;
 
+		connectors.add(new MqttClient("tcp://192.168.33.20:1883", "beast", clients));
+		connectors.add(new MqttClient("tcp://192.168.33.21:1883", "pyro", clients));
+		connectors.add(new MqttClient("tcp://192.168.33.22:1883", "wolverine", clients));
+
+		ZookeeperCountdownLatch.waitForZookeeper(clients, zkClient);
+
+		connectors.stream().forEach(con -> con.start());
+
+		final KafkaProducerClient kafkaProducerClient = new KafkaProducerClient(clients, intervalInMillis);
+		kafkaProducerClient.startWithFixExecutions(1000);
+
+		TestUtils.stopKafkaProducerWhenDone(kafkaProducerClient, LOG);
+
+		//After KafkaProducer sent all messages, the MqttClients still need some time to be able to catch up
+		Thread.sleep(1000);
+
+		connectors.stream().forEach(con -> con.stop());
+
+		assertThat(kafkaProducerClient.getPublishCounter(), is(3000));
+		assertThat(connectors.get(0).getIn().size(), is(1000));
+		assertThat(connectors.get(1).getIn().size(), is(1000));
+		assertThat(connectors.get(2).getIn().size(), is(1000));
+	}
 }

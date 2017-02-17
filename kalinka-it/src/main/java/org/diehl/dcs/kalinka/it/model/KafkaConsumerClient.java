@@ -15,11 +15,20 @@ limitations under the License.
 */
 package org.diehl.dcs.kalinka.it.model;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.PartitionInfo;
+import org.apache.kafka.common.TopicPartition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,12 +39,12 @@ import org.slf4j.LoggerFactory;
 public class KafkaConsumerClient {
 	private static final Logger LOG = LoggerFactory.getLogger(KafkaConsumerClient.class);
 
-	private final KafkaConsumer<String, byte[]> consumer;
+	private KafkaConsumer<String, byte[]> consumer;
 	private final String kafkaHosts = "192.168.33.20:9092,192.168.33.21:9092,192.168.33.22:9092";
 
-	private final int publishCounter = 0;
-
 	private volatile boolean stopped = false;
+	private final ExecutorService execService = Executors.newSingleThreadExecutor();
+	private final Set<ConsumerRecord<String, byte[]>> recordSet = new HashSet<>();
 
 	public KafkaConsumerClient() {
 		final Map<String, Object> props = new HashMap<>();
@@ -44,42 +53,61 @@ public class KafkaConsumerClient {
 		props.put("value.deserializer", "org.apache.kafka.common.serialization.ByteArrayDeserializer");
 		props.put("group.id", "testConsumers");
 		consumer = new KafkaConsumer<>(props);
-		consumer.subscribe(Collections.singletonList("mqtt.sparkcluster"));
-		LOG.info("Assigning to topic=mqtt.sparkcluster");
+		List<PartitionInfo> partitionInfos = consumer.partitionsFor("0.mqtt.sparkcluster");
+		final List<TopicPartition> partitions = new ArrayList<>();
+		if (partitionInfos != null) {
+			for (final PartitionInfo partition : partitionInfos) {
+				partitions.add(new TopicPartition(partition.topic(), partition.partition()));
+			}
+		}
+		partitionInfos = consumer.partitionsFor("1.mqtt.sparkcluster");
+		if (partitionInfos != null) {
+			for (final PartitionInfo partition : partitionInfos) {
+				partitions.add(new TopicPartition(partition.topic(), partition.partition()));
+			}
+		}
+		LOG.info("assigning to partitions: {}", partitions);
+		consumer.assign(partitions);
 	}
 
-	//	private void doPublish() {
-	//		while (!stopped) {
-	//			try {
-	//				for (final String client : clients) {
-	//					LOG.info("publishing message from kafka to {}", client);
-	//					final ProducerRecord<String, byte[]> producerRecord =
-	//							new ProducerRecord<>("sparkcluster.mqtt", client, new String("Regards from Kafka to " + client).getBytes());
-	//					producer.send(producerRecord);
-	//					publishCounter++;
-	//				}
-	//				Thread.sleep(intervalInMillis);
-	//			} catch (final Throwable t) {
-	//				LOG.error("exception while publishing", t);
-	//			}
-	//
-	//		}
-	//	}
+	private void doConsume() {
+		try {
+			consumer.seekToEnd(new HashSet<TopicPartition>());
+			while (!stopped) {
+				final ConsumerRecords<String, byte[]> records = consumer.poll(10);
+				for (final ConsumerRecord<String, byte[]> record : records) {
+					recordSet.add(record);
+					LOG.info("Reading record: topic = {}, partition = {}, offset = {}, key = {}, value = {}", record.topic(), record.partition(),
+							record.offset(), record.key(), new String(record.value()));
+				}
+				consumer.commitSync();
+				Thread.sleep(10);
+			}
+		} catch (final InterruptedException e) {
+			LOG.error("interrupted", e);
+		} finally {
+			consumer.close();
+			consumer.unsubscribe();
+			consumer = null;
+		}
+	}
 
-	//	public void start() {
-	//		this.stopped = false;
-	//		try {
-	//			Executors.newSingleThreadExecutor().submit(() -> doPublish());
-	//		} catch (final Throwable t) {
-	//			LOG.error("exception during execution", t);
-	//		}
-	//	}
+	public void start() {
+		this.stopped = false;
+		try {
+			execService.submit(() -> doConsume());
+		} catch (final Throwable t) {
+			LOG.error("exception during execution", t);
+		}
+	}
 
 	public void stop() {
 		this.stopped = true;
+		execService.shutdown();
 	}
 
-	public int getPublishCounter() {
-		return this.publishCounter;
+	public int getConsumeCounter() {
+		return this.recordSet.size();
 	}
+
 }

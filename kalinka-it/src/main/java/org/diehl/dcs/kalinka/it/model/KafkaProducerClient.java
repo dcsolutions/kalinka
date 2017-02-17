@@ -19,7 +19,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -33,14 +35,17 @@ public class KafkaProducerClient {
 
 	private final KafkaProducer<String, byte[]> producer;
 	private final String kafkaHosts = "192.168.33.20:9092,192.168.33.21:9092,192.168.33.22:9092";
-	private final List<String> clients = new ArrayList<>();
+	private List<String> clients = new ArrayList<>();
 	private final long intervalInMillis;
 	private int publishCounter = 0;
 
 	private volatile boolean stopped = false;
 
-	//
+	private final ExecutorService execService = Executors.newSingleThreadExecutor();
+	private Future<?> future;
+
 	public KafkaProducerClient(final List<String> clients, final long intervalInMillis) {
+		this.clients = clients;
 		this.intervalInMillis = intervalInMillis;
 		final Map<String, Object> props = new HashMap<>();
 		props.put("bootstrap.servers", kafkaHosts);
@@ -53,29 +58,55 @@ public class KafkaProducerClient {
 		while (!stopped) {
 			try {
 				for (final String client : clients) {
-					LOG.info("publishing message from kafka to {}", client);
-					final ProducerRecord<String, byte[]> producerRecord =
-							new ProducerRecord<>("sparkcluster.mqtt", client, new String("Regards from Kafka to " + client).getBytes());
-					producer.send(producerRecord);
-					publishCounter++;
+					publish(client);
 				}
 				Thread.sleep(intervalInMillis);
 			} catch (final Throwable t) {
 				LOG.error("exception while publishing", t);
 			}
-
 		}
 	}
 
+	private void doPublishWithFixExecutions(final int numberOfExecutions) {
+		for (int i = 0; i < numberOfExecutions; i++) {
+			try {
+				for (final String client : clients) {
+					publish(client);
+				}
+				Thread.sleep(intervalInMillis);
+			} catch (final Throwable t) {
+				LOG.error("exception while publishing", t);
+			}
+		}
+	}
+
+	private void publish(final String client) {
+		LOG.info("publishing message from kafka to {}", client);
+		final ProducerRecord<String, byte[]> producerRecord =
+				new ProducerRecord<>("0.sparkcluster.mqtt", client, new String("Regards from Kafka to " + client).getBytes());
+		producer.send(producerRecord);
+		publishCounter++;
+	}
+
 	public void start() {
-		Executors.newSingleThreadExecutor().submit(() -> doPublish());
+		future = execService.submit(() -> doPublish());
 	}
 
 	public void stop() {
+		execService.shutdown();
+		future = null;
 		this.stopped = false;
 	}
 
 	public int getPublishCounter() {
 		return this.publishCounter;
+	}
+
+	public void startWithFixExecutions(final int numberOfExecutions) {
+		future = execService.submit(() -> doPublishWithFixExecutions(numberOfExecutions));
+	}
+
+	public boolean isDone() {
+		return future == null ? true : this.future.isDone();
 	}
 }
