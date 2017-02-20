@@ -1,3 +1,26 @@
+# What is it for?
+
+There are several solutions to access a Kafka-cluster via MQTT, e.g. with [Kafka-Bridge](https://github.com/jacklund/mqttKafkaBridge).
+In general these solutions work in a "one-way"-manner so that MQTT-clients may publish to Kafka but cannot consume from it.
+*Kalinka* tries to solve this issue. Since the reference-implementation uses ActiveMQ as MQTT-broker there is no restriction to MQTT
+so it should work any supported protocol.
+
+# Status Quo
+
+The project is in prototype-state right now and acts as a proof of concept.
+
+# Design
+
+*Kalinka* consists of 2 components:
+
+## kalinka-pub
+
+Consumes from MQTT and publishes the messages to Kafka.
+
+## kalinka-sub
+
+Subscribes to Kafka-topics and forwards messages to ActiveMQ-broker 
+
 # Test-environment
 
 ## General
@@ -11,7 +34,6 @@ The setup contains:
 
 * Zookeeper
 * Kafka
-* Spark
 * ActiveMQ
 * The MQTT-Kafka-Bridge-components
 
