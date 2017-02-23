@@ -3,11 +3,17 @@
 There are several solutions to access a Kafka-cluster via MQTT, e.g. with [Kafka-Bridge](https://github.com/jacklund/mqttKafkaBridge).
 In general these solutions work in a "one-way"-manner so that MQTT-clients may publish to Kafka but cannot consume from it.
 *Kalinka* tries to solve this issue. Since the reference-implementation uses ActiveMQ as MQTT-broker there is no restriction to MQTT
-so it should work any supported protocol.
+so it should work with any supported protocol.
 
 # Status Quo
 
 The project is in prototype-state right now and acts as a proof of concept.
+
+# Goals
+
+* No cluster of MQTT-Brokers. The system should scale well and as we found out in our tests "normal" broker-clusters are limited in this respect. Instead we want to use 1-n "standalone" broker-instances. As we will see, this decision implies some issues we had to deal with.
+* Kafka/Zookeeper is the only "real" clustered component.
+* No single-point-of-failure (of course)
 
 # Design
 
@@ -17,9 +23,25 @@ The project is in prototype-state right now and acts as a proof of concept.
 
 Consumes from MQTT and publishes the messages to Kafka.
 
+The way, *kalinka-pub* works, is quite straightforward: It subscribes several MQTT-topics (more precisely, JMS-queues because we use ActiveMQ as JMS-broker which uses JMS internally) and publishes all received messages to a kafka-cluster. Since JMS-queues and kafka-topics behave in a different way, some kind of mapping is required. See chapter *Topic-Mapping* for details on how to deal with that.
+Each *kalinka-pub*-instance may consume from several brokers and each broker should be consumed by multiple *kalinka-pub*-instances (no s.p.o.f.)
+
 ## kalinka-sub
 
 Subscribes to Kafka-topics and forwards messages to ActiveMQ-broker 
+
+In contrast to *kalinka-pub* the situation is slightly different: As mentioned before the ActiveMQ-brokers do not act as one logical broker, they consist of several independent broker-instances. So it is crucial for the service to know, which of the available broker-instances the MQTT-client is connected to. This information is currently stored in Zookeeper. If it turns out that this does scale well, we'll have to find a better solution.
+
+Another challenge is to limit the number of connections between hosts. If *n* instances of *kalinka-sub* had to send to *m* broker-instances this would result in n\*m relations between *kalinka-sub*- and broker-instances. We are trying to solve this issue by leveraging Kafka's partitioning-mechanism in combination with an additional grouping-strategy. More details in chapter *2nd-level-partitioning*.
+
+
+# Topic-mapping
+
+T.B.D.
+
+# 2nd-level partitioning
+
+T.B.D.
 
 # Test-environment
 
