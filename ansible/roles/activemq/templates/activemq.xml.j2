@@ -129,6 +129,12 @@
                 <constructor-arg name="zkServers" value="{% for host in groups['zookeeper'] %}{{hostvars[host]['inventory_hostname']}}:{{zk_client_port}}{% if not loop.last %},{% endif %}{% endfor %}{{zk_chroots['activemq']}}"/>
                 <constructor-arg name="host" value="{{inventory_hostname}}"/>
             </bean>
+            <!--
+            <jaasCertificateAuthenticationPlugin configuration="cert-login"/>
+            <jaasAuthenticationPlugin configuration="username-passwd-login"/>
+            -->
+            <!-- see: https://access.redhat.com/documentation/en-US/Fuse_ESB/4.3.1/html-single/Apache_ActiveMQ_Security_Guide/index.html#Auth-JAAS-AuthentPlugin -->
+            <jaasDualAuthenticationPlugin configuration="username-passwd-login" sslConfiguration="cert-login" />
         </plugins>
 		<destinationInterceptors>
 			<virtualDestinationInterceptor>
