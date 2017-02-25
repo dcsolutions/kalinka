@@ -65,10 +65,9 @@ public class ActivemqPlugin implements BrokerPlugin {
 
 				LOG.debug("Received connect from clientId={}", context.getClientId());
 
-				if (isClientToIgnore(context.getClientId(), clientIdRegexPatternsToIgnore)) {
-					return;
+				if (!isClientToIgnore(context.getClientId(), clientIdRegexPatternsToIgnore)) {
+					upsertZkNode(context.getClientId());
 				}
-				upsertZkNode(context.getClientId());
 				super.addConnection(context, info);
 			}
 
@@ -77,10 +76,9 @@ public class ActivemqPlugin implements BrokerPlugin {
 
 				LOG.debug("Received disconnect from clientId={}", context.getClientId());
 
-				if (isClientToIgnore(context.getClientId(), clientIdRegexPatternsToIgnore)) {
-					return;
+				if (!isClientToIgnore(context.getClientId(), clientIdRegexPatternsToIgnore)) {
+					deleteZkNode(context.getClientId());
 				}
-				deleteZkNode(context.getClientId());
 				super.removeConnection(context, info, error);
 			}
 		};
