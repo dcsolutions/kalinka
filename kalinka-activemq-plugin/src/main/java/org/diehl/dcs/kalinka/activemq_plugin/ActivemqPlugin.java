@@ -70,6 +70,7 @@ public class ActivemqPlugin implements BrokerPlugin {
 					return;
 				}
 				upsertZkNode(context.getClientId());
+				super.addConnection(context, info);
 			}
 
 			@Override
@@ -82,6 +83,7 @@ public class ActivemqPlugin implements BrokerPlugin {
 					return;
 				}
 				deleteZkNode(context.getClientId());
+				super.removeConnection(context, info, error);
 			}
 		};
 	};
