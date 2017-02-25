@@ -1,6 +1,3 @@
 ---
 - include: dockerhost.yml
 - include: registry.yml
-- include: zookeeper.yml
-- include: kafka.yml
-- include: activemq.yml

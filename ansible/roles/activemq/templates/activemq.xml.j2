@@ -115,7 +115,8 @@
             <transportConnector name="openwire" uri="tcp://0.0.0.0:61616?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>
             <transportConnector name="amqp" uri="amqp://0.0.0.0:5672?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>
             <transportConnector name="stomp" uri="stomp://0.0.0.0:61613?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>
-            <transportConnector name="mqtt" uri="mqtt://0.0.0.0:1883?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>
+            <transportConnector name="mqtt" uri="mqtt+nio://0.0.0.0:1883?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>
+            <transportConnector name="mqtt+ssl" uri="mqtt+nio+ssl://0.0.0.0:1885?needClientAuth=true&amp;maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600" />
             <transportConnector name="ws" uri="ws://0.0.0.0:61614?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>
         </transportConnectors>
 
@@ -141,6 +142,10 @@
             <queue physicalName="VirtualTopicConsumers.KafkaConsumer.mqtt.*.sparkcluster.pub"/>
             <!--queue physicalName="VirtualTopicConsumers.KafkaConsumer.*." /-->
         </destinations>
+        
+        <sslContext>
+      		<sslContext keyStore="/opt/activemq/conf/keystore.jks" keyStorePassword="geheim" trustStore="/opt/activemq/conf/keystore.jks" trustStorePassword="geheim"/>
+    	</sslContext>
     </broker>
 
 

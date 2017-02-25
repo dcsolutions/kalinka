@@ -1,3 +1,4 @@
 ---
 - include: infrastruct.yml
+- include: broker.yml
 - include: kalinka.yml

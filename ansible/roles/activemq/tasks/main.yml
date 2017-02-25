@@ -16,6 +16,11 @@
   - log4j.properties
   - jmx.password
 
+- name: copy cert to host
+  copy:
+    src: keystore.jks
+    dest: /volumes/activemq/config/keystore.jks
+
 - name: copy activemq-plugin
   copy:
     src: "../kalinka-activemq-plugin/target/kalinka-activemq-plugin-{{activemq_plugin_version}}.jar"
@@ -36,4 +41,5 @@
     - /volumes/activemq/config/activemq.xml:/opt/activemq/conf/activemq.xml
     - /volumes/activemq/config/jmx.password:/opt/activemq/conf/jmx.password
     - /volumes/activemq/lib/kalinka-activemq-plugin.jar:/opt/activemq/lib/kalinka-activemq-plugin.jar
+    - /volumes/activemq/config/keystore.jks:/opt/activemq/conf/keystore.jks
 
