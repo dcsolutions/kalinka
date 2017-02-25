@@ -144,7 +144,7 @@
         </destinations>
         
         <sslContext>
-      		<sslContext keyStore="/opt/activemq/conf/keystore.jks" keyStorePassword="geheim" trustStore="/opt/activemq/conf/keystore.jks" trustStorePassword="geheim"/>
+      		<sslContext keyStore="/opt/activemq/conf/keystore.jks" keyStorePassword="{{activemq_keystore_passwd}}" trustStore="/opt/activemq/conf/keystore.jks" trustStorePassword="{{activemq_keystore_passwd}}"/>
     	</sslContext>
     </broker>
 

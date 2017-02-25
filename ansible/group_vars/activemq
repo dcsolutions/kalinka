@@ -14,5 +14,5 @@ activemq_restart: False
 # desired state after deployment: started|stopped|present|absent
 activemq_state: started
 
-activemq_keystore_passwd: geheim
+activemq_keystore_passwd: s3cr3t
 

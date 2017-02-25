@@ -65,7 +65,6 @@ public class ActivemqPlugin implements BrokerPlugin {
 
 				LOG.debug("Received connect from clientId={}", context.getClientId());
 
-				super.addConnection(context, info);
 				if (isClientToIgnore(context.getClientId(), clientIdRegexPatternsToIgnore)) {
 					return;
 				}
@@ -78,7 +77,6 @@ public class ActivemqPlugin implements BrokerPlugin {
 
 				LOG.debug("Received disconnect from clientId={}", context.getClientId());
 
-				super.removeConnection(context, info, error);
 				if (isClientToIgnore(context.getClientId(), clientIdRegexPatternsToIgnore)) {
 					return;
 				}
