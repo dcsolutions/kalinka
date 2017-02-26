@@ -24,7 +24,6 @@
   - keystore.jks
   - login.config
   - users.properties
-  - cert_users.properties
   - groups.properties
 
 - name: copy activemq-plugin
@@ -50,6 +49,5 @@
     - /volumes/activemq/config/keystore.jks:/opt/activemq/conf/keystore.jks
     - /volumes/activemq/config/login.config:/opt/activemq/conf/login.config
     - /volumes/activemq/config/users.properties:/opt/activemq/conf/users.properties
-    - /volumes/activemq/config/cert_users.properties:/opt/activemq/conf/cert_users.properties
     - /volumes/activemq/config/groups.properties:/opt/activemq/conf/groups.properties
 
