@@ -155,11 +155,15 @@ You may want to do some simple tests to verify that deployment was successful. W
 * Subscribe topic
 ```
 mosquitto_sub -h 192.168.33.20 -p 1883  -i 12345 -t just/a/test -q 1 -d
+# with cert
+mosquitto_sub -h dev1 -p 1885 -i 1234 -t mqtt/abc/mqtt/def/sub -q 1 -d -k 100 --cafile server-cert.pem --cert client-cert.pem --key client-key.pem --insecure
 ```
 
 * Publish to topic
 ```
 mosquitto_pub -h 192.168.33.20 -p 1883 -i 1234 -m "xyz" -t just/a/test -q 1 -d
+# with cert
+mosquitto_pub -h dev1 -p 1885 -i 1234 -m "hallo" -t mqtt/abc/mqtt/def/pub -q 1 -d -k 100 --cafile server-cert.pem --cert client-cert.pem --key client-key.pem --insecure
 ```
 
 * Connect via JMX

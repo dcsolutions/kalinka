@@ -135,6 +135,22 @@
             -->
             <!-- see: https://access.redhat.com/documentation/en-US/Fuse_ESB/4.3.1/html-single/Apache_ActiveMQ_Security_Guide/index.html#Auth-JAAS-AuthentPlugin -->
             <jaasDualAuthenticationPlugin configuration="username-passwd-login" sslConfiguration="cert-login" />
+            <authorizationPlugin>
+				<map>
+					<authorizationMap>
+						<authorizationEntries>
+							<authorizationEntry queue=">" read="admins" write="admins" admin="admins"/>
+							<authorizationEntry topic=">" read="admins" write="admins" admin="admins"/>
+							<authorizationEntry topic="mqtt.*.mqtt.*.pub" read="admins" write="users" admin="users"/>
+							<authorizationEntry topic="mqtt.*.mqtt.*.sub" read="users" write="admins" admin="users"/>
+							<authorizationEntry topic="ActiveMQ.Advisory.>" read="users" write="users" admin="users"/>
+						</authorizationEntries>
+						<tempDestinationAuthorizationEntry>
+							<tempDestinationAuthorizationEntry read="admins" write="admins" admin="admins"/>
+						</tempDestinationAuthorizationEntry>
+					</authorizationMap>
+				</map>
+			</authorizationPlugin>
         </plugins>
 		<destinationInterceptors>
 			<virtualDestinationInterceptor>
