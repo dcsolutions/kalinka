@@ -25,6 +25,7 @@
 		<slf4j.version>1.7.22</slf4j.version>
 		<logback.version>1.1.9</logback.version>
 		<junit.version>4.12</junit.version>
+		<hamcrest.version>1.3</hamcrest.version>
 		<zkclient.version>0.10</zkclient.version>
 		<!-- We cannot use most recent curator-version because zookeeper-version conflicts with zkclient -->
 		<apache.curator.version>2.11.1</apache.curator.version>
@@ -41,5 +42,6 @@
 		<module>kalinka-activemq-plugin</module>
 		<module>kalinka-util</module>
 		<module>kalinka-it</module>
+		<module>kalinka-pub-plugin</module>
 	</modules>
 </project>

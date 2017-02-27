@@ -130,19 +130,40 @@ pip install -r requirements.txt
 
 ### Deployment
 
-All deployment-commands must be executed from inside folder *ansible*
+It is recommended to deploy the basic infrastructure first and create a snapshot afterwards. So you can reset the environment very quickly.
+**Note:** All deployment-commands must be executed from inside folder *ansible*
 
-To deploy the whole stack, execute:
+* Set up Docker-daemon, a Docker-registry and pull required images. These are the most time-consuming steps.
+```
+ansible-playbook infrastructure.yml
+```
 
+* Create a snapshot
 ```
-ansible-playbook site.yml
+cd ../vagrant
+vagrant snapshot save <NAME>
 ```
 
-There are some configuration-options for each component. See the variable-declarations in folder *group_vars*. You can override each variable on the command-line. To get a clean kafka-installation with purged data-directory you may enter:
+* Deploy zookeeper and kafka
+```
+cd ../ansible
+ansible-playbook zookeeper.yml kafka.yml
 
+* Before you can deploy activemq you'll have to build *kalinka-activemq-plugin* and *kalinka-pub-plugin* because these are required by activemq.
 ```
-ansible-playbook -e "kafka_reset=True" site.yml
+cd ../kalinka-activemq-plugin
+mvn clean install
+cd ../kalinka-pub-plugin
+mvn clean install
 ```
+
+* Deploy activemq
+```
+cd ../activemq
+ansible-playbook activemq
+```
+
+For further configuration-options see the variable-declarations in folder *group_vars*.
 
 ## Ensure everything is working
 
@@ -154,14 +175,16 @@ You may want to do some simple tests to verify that deployment was successful. W
 
 * Subscribe topic
 ```
-mosquitto_sub -h 192.168.33.20 -p 1883  -i 12345 -t just/a/test -q 1 -d
-# with cert
-mosquitto_sub -h dev1 -p 1885 -i 1234 -t mqtt/abc/mqtt/def/sub -q 1 -d -k 100 --cafile server-cert.pem --cert client-cert.pem --key client-key.pem --insecure
+# plain
+mosquitto_sub -h 192.168.33.20 -p 1883 -i 1234 -t mqtt/abc/mqtt/def/sub -q 1 -d -k 100 -u admin -P admin
+# with SSL
+mosquitto_sub -h 192.168.33.20 -p 1885 -i 1234 -t mqtt/abc/mqtt/def/sub -q 1 -d -k 100 --cafile server-cert.pem --cert client-cert.pem --key client-key.pem --insecure
 ```
 
 * Publish to topic
 ```
-mosquitto_pub -h 192.168.33.20 -p 1883 -i 1234 -m "xyz" -t just/a/test -q 1 -d
+# plain
+mosquitto_pub -h 192.168.33.20 -p 1883 -i 1234 -m "xyz" -t mqtt/abc/mqtt/def/pub -q 1 -d -u admin -P admin
 # with cert
 mosquitto_pub -h dev1 -p 1885 -i 1234 -m "hallo" -t mqtt/abc/mqtt/def/pub -q 1 -d -k 100 --cafile server-cert.pem --cert client-cert.pem --key client-key.pem --insecure
 ```

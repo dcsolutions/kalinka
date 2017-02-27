@@ -27,7 +27,7 @@
 - name: start container
   docker_container:
     name: zookeeper
-    image: "jplock/zookeeper:{{zookeeper_version}}" 
+    image: "jplock/zookeeper:{{zookeeper_version}}"
     docker_host: "{{docker_host}}"
     network_mode: host
     state: "{{zookeeper_state}}"

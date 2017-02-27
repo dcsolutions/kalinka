@@ -32,7 +32,7 @@ broker.id={{kafka_id}}
 #   EXAMPLE:
 #     listeners = PLAINTEXT://your.host.name:9092
 #listeners=PLAINTEXT://:9092
-listeners=PLAINTEXT://{{inventory_hostname}}:9092
+listeners=PLAINTEXT://{{inventory_hostname}}:{{kafka_listener_port}}
 
 # Hostname and port the broker will advertise to producers and consumers. If not set, 
 # it uses the value for "listeners" if configured.  Otherwise, it will use the value

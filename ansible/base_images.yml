@@ -1,0 +1,28 @@
+---
+- name: get zookeeper-image
+  hosts: zookeeper
+  tasks:
+  - docker_image:
+      docker_host: "{{docker_host}}"
+      name: "jplock/zookeeper:{{zookeeper_version}}"
+
+- name: get kafka-image
+  hosts: kafka
+  tasks:
+  - docker_image:
+      docker_host: "{{docker_host}}"
+      name: "wurstmeister/kafka:{{kafka_version}}"
+
+- name: get activemq-image
+  hosts: activemq
+  tasks:
+  - docker_image:
+      docker_host: "{{docker_host}}"
+      name: "rmohr/activemq:{{activemq_version}}"
+    
+- name: get kalinka-(base-)image
+  hosts: kalinka
+  tasks:
+  - docker_image:
+      docker_host: "{{docker_host}}"
+      name: "openjdk:8-jdk-alpine"

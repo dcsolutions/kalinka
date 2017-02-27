@@ -1,0 +1,2 @@
+kafka.hosts = {% for host in groups['kafka'] %}{{hostvars[host]['inventory_hostname']}}:{{kafka_listener_port}}{% if not loop.last %},{% endif %}{% endfor %}
+kafka.num.logical.partitions = {{kafka_num_logical_partitions}}
