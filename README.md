@@ -23,8 +23,14 @@ The project is in prototype-state right now and acts as a proof of concept.
 
 Consumes from MQTT and publishes the messages to Kafka.
 
-The way, *kalinka-pub* works, is quite straightforward: It subscribes several MQTT-topics (more precisely, JMS-queues because we use ActiveMQ as JMS-broker which uses JMS internally) and publishes all received messages to a kafka-cluster. Since JMS-queues and kafka-topics behave in a different way, some kind of mapping is required. See chapter *Topic-Mapping* for details on how to deal with that.
-Each *kalinka-pub*-instance may consume from several brokers and each broker should be consumed by multiple *kalinka-pub*-instances (no s.p.o.f.)
+There are 2 different possibilities to deploy *kalinka-pub*:
+
+* as a plugin inside ActiveMQ-Broker (recommended)
+* as a standalone service
+
+The way, *kalinka-pub* works, is quite straightforward: If deployed as a standalone service it subscribes several MQTT-topics (more precisely, JMS-queues because we use ActiveMQ as JMS-broker which uses JMS internally). If it runs as an ActiveMQ-plugin it intercepts the broker's *send*-method. In both variants it publishes all received messages to a kafka-cluster. Since JMS-queues and kafka-topics behave in a different way, some kind of mapping is required. See chapter *Topic-Mapping* for details on how to deal with that.
+
+In standalone-mode each *kalinka-pub*-instance may consume from several brokers and each broker should be consumed by multiple *kalinka-pub*-instances (no s.p.o.f.).
 
 ## kalinka-sub
 
