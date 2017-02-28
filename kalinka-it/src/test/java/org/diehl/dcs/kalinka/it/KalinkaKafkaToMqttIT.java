@@ -90,7 +90,7 @@ public class KalinkaKafkaToMqttIT {
 		TestUtils.stopKafkaProducerWhenDone(kafkaProducerClient, LOG);
 
 		//After KafkaProducer sent all messages, the MqttClients still need some time to be able to catch up
-		Thread.sleep(1000);
+		Thread.sleep(10000);
 
 		connectors.stream().forEach(con -> con.stop());
 

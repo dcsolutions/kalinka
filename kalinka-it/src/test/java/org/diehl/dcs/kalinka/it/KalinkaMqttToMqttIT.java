@@ -50,7 +50,7 @@ public class KalinkaMqttToMqttIT {
 
 	@Test
 	public void mqtt2MqttBasicSubscribingAndPublishingSingleNode() throws Exception {
-		final long intervalInMillis = 20;
+		final long intervalInMillis = 5L;
 
 		connectors.add(new MqttClient("tcp://192.168.33.20:1883", "beast", clients, intervalInMillis));
 		connectors.add(new MqttClient("tcp://192.168.33.20:1883", "pyro", clients, intervalInMillis));
@@ -166,7 +166,7 @@ public class KalinkaMqttToMqttIT {
 
 	@Test
 	public void mqtt2MqttBasicSubscribingAndPublishingMultipleNodesMultipleMessagesInSmallIntervals() throws Exception {
-		final long intervalInMillis = 5;
+		final long intervalInMillis = 5L;
 
 		connectors.add(new MqttClient("tcp://192.168.33.20:1883", "beast", clients, intervalInMillis));
 		connectors.add(new MqttClient("tcp://192.168.33.21:1883", "pyro", clients, intervalInMillis));
@@ -176,7 +176,7 @@ public class KalinkaMqttToMqttIT {
 
 		connectors.stream().forEach(con -> con.startWithFixExecutions(1000));
 
-		Thread.sleep(1000);
+		Thread.sleep(10000);
 
 		connectors.stream().forEach(con -> {
 			TestUtils.stopMqttClientWhenDone(con, LOG);
