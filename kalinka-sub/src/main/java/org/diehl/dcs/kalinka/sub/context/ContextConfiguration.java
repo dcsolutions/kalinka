@@ -102,6 +102,12 @@ public class ContextConfiguration {
 	@Value("${jms.client.id.kalinka.sub:kalinka-sub-}")
 	private String jmsClientIdKalinkaSub;
 
+	@Value("${jms.user:#{null}}")
+	private String jmsUser;
+
+	@Value("${jms.passwd:#{null}}")
+	private String jmsPasswd;
+
 	@Value("${cache.initial.size}")
 	private int cacheInitialSize;
 
@@ -220,7 +226,12 @@ public class ContextConfiguration {
 	@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 	public ConnectionFactory connectionFactory(final String host) {
 
-		final CachingConnectionFactory connectionFactory = new CachingConnectionFactory(new ActiveMQConnectionFactory(host));
+		CachingConnectionFactory connectionFactory = null;
+		if (this.jmsUser != null && this.jmsPasswd != null) {
+			connectionFactory = new CachingConnectionFactory(new ActiveMQConnectionFactory(this.jmsUser, this.jmsPasswd, host));
+		} else {
+			connectionFactory = new CachingConnectionFactory(new ActiveMQConnectionFactory(host));
+		}
 		connectionFactory.setCacheProducers(true);
 		connectionFactory.setReconnectOnException(true);
 		connectionFactory.setClientId(this.jmsClientIdKalinkaSub + host + "-" + UUID.randomUUID().toString());
