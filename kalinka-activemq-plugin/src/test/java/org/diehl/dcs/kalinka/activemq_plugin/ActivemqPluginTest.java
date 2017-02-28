@@ -99,6 +99,9 @@ public class ActivemqPluginTest {
 	@After
 	public void tearDown() throws Exception {
 
-		this.zkServer.stop();
+		if (this.zkServer != null) {
+			this.zkServer.stop();
+			this.zkServer.close();
+		}
 	}
 }

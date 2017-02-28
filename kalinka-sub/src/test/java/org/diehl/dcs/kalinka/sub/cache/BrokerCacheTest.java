@@ -145,7 +145,12 @@ public class BrokerCacheTest {
 	@After
 	public void tearDown() throws Exception {
 
-		this.zkServer.stop();
-		this.cache.delAll();
+		if (this.zkServer != null) {
+			this.zkServer.stop();
+			this.zkServer.close();
+		}
+		if (this.cache != null) {
+			this.cache.delAll();
+		}
 	}
 }
