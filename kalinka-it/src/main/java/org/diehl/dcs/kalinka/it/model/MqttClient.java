@@ -120,6 +120,8 @@ public class MqttClient implements MqttCallback {
 			LOG.debug("{} > connect..", url);
 
 			final MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
+			mqttConnectOptions.setUserName("admin");
+			mqttConnectOptions.setPassword("admin".toCharArray());
 			mqttConnectOptions.setCleanSession(true);
 			mqttConnectOptions.setWill(pubTopic2Mqtt, "Bye, bye Baby!".getBytes(), 0, false);
 
