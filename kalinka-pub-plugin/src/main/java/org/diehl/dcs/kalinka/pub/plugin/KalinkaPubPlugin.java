@@ -29,7 +29,6 @@ import org.springframework.kafka.core.KafkaTemplate;
 
 /**
  * @author michas <michas@jarmoni.org>
- * Just a test. Is it possible to "overwrite" the regular send-process???
  *
  */
 public class KalinkaPubPlugin<K, V> implements BrokerPlugin {
@@ -63,7 +62,7 @@ public class KalinkaPubPlugin<K, V> implements BrokerPlugin {
 					final String destination = messageSend.getDestination().getPhysicalName();
 					final IMessagePublisher<Message, K, V> publisher = messagePublisherProvider.getPublisher(destination);
 					if (publisher == null) {
-						LOG.info("No kakfa-publisher found for destination={}. Will forward message.", destination);
+						LOG.debug("No kakfa-publisher found for destination={}. Will forward message.", destination);
 						super.send(producerExchange, messageSend);
 					} else {
 						publisher.publish(messageSend, kafkaTemplate);
