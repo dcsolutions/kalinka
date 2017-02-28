@@ -31,7 +31,7 @@ public class MqttMqttJmsMessagePublisher implements IMessagePublisher<Message, S
 
 	private static final Logger LOG = LoggerFactory.getLogger(MqttMqttJmsMessagePublisher.class);
 
-	private static final Pattern REGEX_PATTERN = Pattern.compile("(\\S+//|/){0,1}(mqtt[\\./](\\S+)[\\./]mqtt[\\./](\\S+)).pub");
+	private static final Pattern REGEX_PATTERN = Pattern.compile("mqtt[\\./](\\S+)[\\./]mqtt[\\./](\\S+).pub");
 
 	private static final String KAFKA_DEST_TOPIC = "{p}.mqtt.mqtt";
 
@@ -81,7 +81,7 @@ public class MqttMqttJmsMessagePublisher implements IMessagePublisher<Message, S
 
 		final Matcher m = this.getSourceTopicRegex().matcher(rawTopic);
 		if (m.find()) {
-			return new SrcDestId(m.group(3), m.group(4));
+			return new SrcDestId(m.group(1), m.group(2));
 		}
 		return null;
 	}

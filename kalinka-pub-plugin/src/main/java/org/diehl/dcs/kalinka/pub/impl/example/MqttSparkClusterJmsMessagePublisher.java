@@ -34,7 +34,7 @@ public class MqttSparkClusterJmsMessagePublisher implements IMessagePublisher<Me
 	// TODO: Make this configurable
 	private static final int NUM_LOGICAL_PARTITIONS = 2;
 
-	private static final Pattern REGEX_PATTERN = Pattern.compile("\\S+//{0,1}mqtt\\.(\\S+)\\.sparkcluster.pub");
+	private static final Pattern REGEX_PATTERN = Pattern.compile("mqtt\\.(\\S+)\\.sparkcluster.pub");
 
 	private static final Logger LOG = LoggerFactory.getLogger(MqttSparkClusterJmsMessagePublisher.class);
 
