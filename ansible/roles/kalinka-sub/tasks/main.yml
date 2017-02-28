@@ -10,4 +10,6 @@
     recreate: "{{kalinka_sub_reset or reset_all}}"
     restart: "{{kalinka_sub_restart}}"
     restart_policy: always
+    env:
+      OPTS: "{{kalinka_sub_opts}}"
 

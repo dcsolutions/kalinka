@@ -13,3 +13,5 @@ kalinka_sub_restart: False
 # desired state after deployment: started|stopped|present|absent
 kalinka_sub_state: started
 
+kalinka_sub_opts: "-Djms.user=admin -Djms.passwd=admin"
+
