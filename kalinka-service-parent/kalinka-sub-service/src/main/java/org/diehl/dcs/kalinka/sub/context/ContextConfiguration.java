@@ -62,10 +62,6 @@ import com.google.common.collect.Maps;
 @ImportResource("${custom.config.file}")
 public class ContextConfiguration {
 
-	public static final String KAFKA_POLL_TIMEOUT = "kafkaPollTimeout";
-	public static final String KAFKA_SUBSCRIBED_PARTITIONS = "kafkaSubscribedPartitions";
-	public static final String KAFKA_SUBSCRIBED_TOPICS = "kafkaSubscribedTopics";
-
 	private static final Logger LOG = LoggerFactory.getLogger(ContextConfiguration.class);
 
 	@SuppressWarnings("rawtypes")
@@ -172,8 +168,8 @@ public class ContextConfiguration {
 		props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, this.kafkaSessionTimeout);
 		props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, this.kafkaKeyDeserializerClass);
 		props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, this.kafkaValueDeserializerClass);
-		props.put(KAFKA_POLL_TIMEOUT, this.kafkaPollTimeout);
-		props.put(KAFKA_SUBSCRIBED_TOPICS, this.kafkaSubscribedTopics);
+		props.put(Constants.KAFKA_POLL_TIMEOUT, this.kafkaPollTimeout);
+		props.put(Constants.KAFKA_SUBSCRIBED_TOPICS, this.kafkaSubscribedTopics);
 		return props;
 	}
 

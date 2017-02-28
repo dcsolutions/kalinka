@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package org.diehl.dcs.kalinka.pub.publisher.impl.example;
+package org.diehl.dcs.kalinka.pub.example;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -22,8 +22,8 @@ import static org.junit.Assert.assertThat;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
-import org.diehl.dcs.kalinka.pub.publisher.impl.example.MqttMqttJmsMessagePublisher.MessageContainer;
-import org.diehl.dcs.kalinka.pub.publisher.impl.example.MqttMqttJmsMessagePublisher.SrcDestId;
+import org.diehl.dcs.kalinka.pub.example.MqttMqttJmsMessagePublisher.MessageContainer;
+import org.diehl.dcs.kalinka.pub.example.MqttMqttJmsMessagePublisher.SrcDestId;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;

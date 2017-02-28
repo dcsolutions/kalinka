@@ -10,7 +10,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
-import org.diehl.dcs.kalinka.sub.context.ContextConfiguration;
+import org.diehl.dcs.kalinka.sub.context.Constants;
 import org.diehl.dcs.kalinka.sub.publisher.IMessagePublisher;
 import org.diehl.dcs.kalinka.sub.publisher.MessagePublisherProvider;
 import org.diehl.dcs.kalinka.sub.sender.ISenderProvider;
@@ -34,13 +34,13 @@ public class KafkaMessageConsumer2<T, K, V> implements Runnable {
 	public KafkaMessageConsumer2(final Map<String, Object> consumerConfig, final String topic, final ISenderProvider<T> senderProvider,
 			final MessagePublisherProvider<T, K, V> publisherProvider) {
 		this.consumer = new KafkaConsumer<>(consumerConfig);
-		this.pollTimeout = (Long) consumerConfig.get(ContextConfiguration.KAFKA_POLL_TIMEOUT);
+		this.pollTimeout = (Long) consumerConfig.get(Constants.KAFKA_POLL_TIMEOUT);
 		this.senderProvider = senderProvider;
 		this.publisherProvider = publisherProvider;
 
 		final List<PartitionInfo> partitionInfos = consumer.partitionsFor(topic);
 
-		final List<String> subscribedPartitions = (List<String>) consumerConfig.get(ContextConfiguration.KAFKA_SUBSCRIBED_PARTITIONS);
+		final List<String> subscribedPartitions = (List<String>) consumerConfig.get(Constants.KAFKA_SUBSCRIBED_PARTITIONS);
 		final Collection<TopicPartition> partitions = partitionInfos.stream().filter(p -> subscribedPartitions.contains(Integer.valueOf(p.partition())))
 				.map(p -> new TopicPartition(p.topic(), p.partition())).collect(Collectors.toList());
 		LOG.info("Assigning to topic={}, partitions={}", topic, partitions);

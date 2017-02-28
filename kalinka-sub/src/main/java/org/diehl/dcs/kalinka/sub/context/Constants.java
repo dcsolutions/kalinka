@@ -12,21 +12,18 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
- */
+*/
 
-package org.diehl.dcs.kalinka.pub;
-
-import java.util.regex.Pattern;
-
-import org.springframework.kafka.core.KafkaTemplate;
+package org.diehl.dcs.kalinka.sub.context;
 
 /**
  * @author michas <michas@jarmoni.org>
  *
  */
-public interface IMessagePublisher<T, K, V> {
+public class Constants {
 
-	void publish(T message, KafkaTemplate<K, V> kafkaTemplate);
+	public static final String KAFKA_POLL_TIMEOUT = "kafkaPollTimeout";
+	public static final String KAFKA_SUBSCRIBED_PARTITIONS = "kafkaSubscribedPartitions";
+	public static final String KAFKA_SUBSCRIBED_TOPICS = "kafkaSubscribedTopics";
 
-	Pattern getSourceTopicRegex();
 }

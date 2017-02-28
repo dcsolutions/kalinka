@@ -17,11 +17,10 @@ limitations under the License.
 package org.diehl.dcs.kalinka.pub.publisher;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.regex.Pattern;
-
-import com.google.common.base.Preconditions;
 
 
 /**
@@ -32,9 +31,13 @@ public class MessagePublisherProvider<T, K, V> {
 
 	private final LinkedHashMap<Pattern, IMessagePublisher<T, K, V>> publishers;
 
-	public MessagePublisherProvider(final LinkedHashMap<Pattern, IMessagePublisher<T, K, V>> publishers) {
+	public MessagePublisherProvider(final List<IMessagePublisher<T, K, V>> orderedPublishers) {
 
-		this.publishers = Preconditions.checkNotNull(publishers);
+		if (orderedPublishers == null) {
+			throw new IllegalStateException("'orderedPublishers' must not be null");
+		}
+		this.publishers = new LinkedHashMap<>();
+		orderedPublishers.forEach(p -> this.publishers.put(p.getSourceTopicRegex(), p));
 	}
 
 	public IMessagePublisher<T, K, V> getPublisher(final String sourceTopicName) {

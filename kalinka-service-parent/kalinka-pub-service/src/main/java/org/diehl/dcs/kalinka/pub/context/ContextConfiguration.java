@@ -18,11 +18,9 @@ package org.diehl.dcs.kalinka.pub.context;
 
 import static org.diehl.dcs.kalinka.util.LangUtil.splitCsStrings;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.jms.ConnectionFactory;
@@ -108,9 +106,7 @@ public class ContextConfiguration {
 	@Bean
 	public MessagePublisherProvider messagePublisherProvider() {
 
-		final LinkedHashMap<Pattern, IMessagePublisher> publishers = new LinkedHashMap<>();
-		this.messagePublishers.forEach(p -> publishers.put(p.getSourceTopicRegex(), p));
-		return new MessagePublisherProvider(publishers);
+		return new MessagePublisherProvider(this.messagePublishers);
 	}
 
 	@Bean

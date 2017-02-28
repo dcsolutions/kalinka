@@ -5,7 +5,7 @@ import java.util.Map;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.errors.WakeupException;
-import org.diehl.dcs.kalinka.sub.context.ContextConfiguration;
+import org.diehl.dcs.kalinka.sub.context.Constants;
 import org.diehl.dcs.kalinka.sub.publisher.IMessagePublisher;
 import org.diehl.dcs.kalinka.sub.publisher.MessagePublisherProvider;
 import org.diehl.dcs.kalinka.sub.sender.ISenderProvider;
@@ -30,7 +30,7 @@ public class KafkaMessageConsumer<T, K, V> implements Runnable {
 	public KafkaMessageConsumer(final Map<String, Object> consumerConfig, final String topic, final ISenderProvider<T> senderProvider,
 			final MessagePublisherProvider<T, K, V> publisherProvider) {
 		this.consumer = new KafkaConsumer<>(consumerConfig);
-		this.pollTimeout = (Long) consumerConfig.get(ContextConfiguration.KAFKA_POLL_TIMEOUT);
+		this.pollTimeout = (Long) consumerConfig.get(Constants.KAFKA_POLL_TIMEOUT);
 		this.senderProvider = senderProvider;
 		this.publisherProvider = publisherProvider;
 
