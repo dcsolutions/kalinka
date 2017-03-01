@@ -28,13 +28,14 @@
   - groups.properties
   - kalinka-pub.xml
 
-- name: copy activemq-plugins
+- name: copy activemq-plugins and example-lib
   copy:
     src: "../{{item}}/target/{{item}}-{{kalinka_version}}.jar" 
     dest: "/volumes/activemq/lib/{{item}}.jar"
   with_items:
   - kalinka-activemq-plugin
   - kalinka-pub-plugin
+  - kalinka-example
 
 - name: start container
   docker_container:

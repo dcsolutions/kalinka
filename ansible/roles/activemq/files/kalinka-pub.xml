@@ -35,8 +35,8 @@
 		<ref bean="mqttSparkClusterJmsMessagePublisher" />
 	</util:list>
 
-	<bean id="mqttMqttJmsMessagePublisher" class="org.diehl.dcs.kalinka.pub.impl.example.MqttMqttJmsMessagePublisher">
+	<bean id="mqttMqttJmsMessagePublisher" class="org.diehl.dcs.kalinka.pub.plugin.example.MqttMqttJmsMessagePublisher">
 		<constructor-arg name="numLogicalPartitions" value="${kafka.num.logical.partitions:1}" />
 	</bean>
-	<bean id="mqttSparkClusterJmsMessagePublisher" class="org.diehl.dcs.kalinka.pub.impl.example.MqttSparkClusterJmsMessagePublisher" />
+	<bean id="mqttSparkClusterJmsMessagePublisher" class="org.diehl.dcs.kalinka.pub.plugin.example.MqttSparkClusterJmsMessagePublisher" />
 </beans>

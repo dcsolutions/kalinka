@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package org.diehl.dcs.kalinka.pub.impl.example;
+package org.diehl.dcs.kalinka.pub.plugin.example;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
