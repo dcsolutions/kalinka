@@ -5,7 +5,7 @@
 
 - name: create chroots
   znode:
-    hosts: "{% for host in groups['zookeeper'] %}{{hostvars[host]['inventory_hostname']}}:{{zk_client_port}}{% if not loop.last %},{% endif %}{% endfor %}"
+    hosts: "{{zk_hosts}}"
     name: "{{item}}"
     state: present
   with_items:

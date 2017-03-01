@@ -2,7 +2,25 @@
 docker_host: "tcp://{{inventory_hostname}}:2375"
 kalinka_version: 0.0.1-SNAPSHOT
 reset_all: False
+
 zk_client_port: 2181
+zk_hosts: "{% for host in groups['zookeeper'] %}{{hostvars[host]['inventory_hostname']}}:{{zk_client_port}}{% if not loop.last %},{% endif %}{% endfor %}"
+
 zk_chroots:
   activemq: /activemq/connections
   kafka: /kafka
+
+kafka_topics:
+- { name: 0.mqtt.mqtt, replication_factor: 2, partitions: 3 } 
+- { name: 1.mqtt.mqtt, replication_factor: 2, partitions: 3 } 
+- { name: 0.sparkcluster.mqtt, replication_factor: 2, partitions: 3 } 
+- { name: 1.sparkcluster.mqtt, replication_factor: 2, partitions: 3 } 
+- { name: 0.mqtt.sparkcluster, replication_factor: 2, partitions: 3 } 
+- { name: 1.mqtt.sparkcluster, replication_factor: 2, partitions: 3 } 
+
+kafka_listener_port: 9092
+kafka_listener_url: "{% for host in groups['kafka'] %}{{hostvars[host]['inventory_hostname']}}:{{kafka_listener_port}}{% if not loop.last %},{% endif %}{% endfor %}" 
+kafka_num_logical_partitions: 2
+
+activemq_jms_port: 61616
+activemq_jms_url: "{% for host in groups['activemq'] %}tcp://{{hostvars[host]['inventory_hostname']}}:{{activemq_jms_port}}{% if not loop.last %},{% endif %}{% endfor %}"

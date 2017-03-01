@@ -6,17 +6,6 @@ kafka_download_url: "http://ftp-stud.hs-esslingen.de/pub/Mirrors/ftp.apache.org/
 kafka_log_level: INFO
 kafka_jmx_port: 9448
 
-kafka_topics:
-- { name: 0.mqtt.mqtt, replication_factor: 2, partitions: 3 }
-- { name: 1.mqtt.mqtt, replication_factor: 2, partitions: 3 }
-- { name: 0.sparkcluster.mqtt, replication_factor: 2, partitions: 3 }
-- { name: 1.sparkcluster.mqtt, replication_factor: 2, partitions: 3 }
-- { name: 0.mqtt.sparkcluster, replication_factor: 2, partitions: 3 }
-- { name: 1.mqtt.sparkcluster, replication_factor: 2, partitions: 3 }
-
-kafka_listener_port: 9092
-kafka_num_logical_partitions: 2
-
 # docker-container-behaviour
 # drops data-volume and forces recreation of container
 kafka_reset: False

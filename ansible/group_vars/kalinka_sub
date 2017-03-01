@@ -1,7 +1,7 @@
 ---
 #kalinka_sub_version: ???
-#kalinka_sub_log_level: INFO
-#kalinka_sub_log_level_diehl: DEBUG
+kalinka_sub_log_level: INFO
+kalinka_sub_log_level_diehl: DEBUG
 #kalinka_sub_max_mem: 512
 #kalinka_sub_jmx_port: 9447
 
@@ -13,5 +13,14 @@ kalinka_sub_restart: False
 # desired state after deployment: started|stopped|present|absent
 kalinka_sub_state: started
 
-kalinka_sub_opts: "-Djms.user=admin -Djms.passwd=admin"
+kalinka_sub_opts: 
+- "-Dcustom.config.file=classpath:example-custom-config.xml"
+- "-Dlogging.level.root={{kalinka_sub_log_level}}"
+- "-Dlogging.level.org.diehl.dcs={{kalinka_sub_log_level_diehl}}"
+- "-Dzk.hosts={{zk_hosts}}{{zk_chroots['activemq']}}"
+- "-Dkafka.hosts={{kafka_listener_url}}"
+- "-Dkafka.subscribed.topics=0.mqtt.mqtt,1.mqtt.mqtt,0.sparkcluster.mqtt:2,1.sparkcluster.mqtt:2"
+- "-Djms.hosts={{activemq_jms_url}}"
+- "-Djms.user=admin"
+- "-Djms.passwd=admin"
 

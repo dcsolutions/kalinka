@@ -26,7 +26,7 @@
 		<constructor-arg name="producerFactory" ref="kafkaProducerFactory"/>
 	</bean>
 	
-	<bean id="messagePublisherProvider" class="org.diehl.dcs.kalinka.pub.MessagePublisherProvider">
+	<bean id="messagePublisherProvider" class="org.diehl.dcs.kalinka.pub.publisher.MessagePublisherProvider">
 		<constructor-arg name="orderedPublishers" ref="messagePublishers"/>
 	</bean>
 

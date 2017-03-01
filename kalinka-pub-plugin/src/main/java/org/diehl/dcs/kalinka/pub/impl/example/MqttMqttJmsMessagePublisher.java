@@ -14,7 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.activemq.command.Message;
-import org.diehl.dcs.kalinka.pub.IMessagePublisher;
+import org.diehl.dcs.kalinka.pub.publisher.IMessagePublisher;
 import org.diehl.dcs.kalinka.pub.util.HashUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

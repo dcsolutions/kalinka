@@ -2,7 +2,7 @@
 - name: start container
   docker_container:
     name: kalinka-sub
-    image: "{{hostvars[groups['registry'][0]]['inventory_hostname']}}:5000/kalinka-sub:latest" 
+    image: "{{hostvars[groups['registry'][0]]['inventory_hostname']}}:5000/kalinka-sub-service:latest" 
     pull: True
     docker_host: "{{docker_host}}"
     network_mode: host
@@ -11,5 +11,5 @@
     restart: "{{kalinka_sub_restart}}"
     restart_policy: always
     env:
-      OPTS: "{{kalinka_sub_opts}}"
+      OPTS: "{{kalinka_sub_opts | join(' ')}}"
 

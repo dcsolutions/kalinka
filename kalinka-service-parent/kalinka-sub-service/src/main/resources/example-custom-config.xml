@@ -12,6 +12,6 @@
     	<ref bean="sparkClusterMqttJmsMessagePublisher"/>
     </util:list>
 
-	<bean id="mqttMqttJmsMessagePublisher" class="org.diehl.dcs.kalinka.sub.publisher.impl.example.MqttMqttJmsMessagePublisher"/>
-	<bean id="sparkClusterMqttJmsMessagePublisher" class="org.diehl.dcs.kalinka.sub.publisher.impl.example.SparkClusterMqttJmsMessagePublisher"/>
+	<bean id="mqttMqttJmsMessagePublisher" class="org.diehl.dcs.kalinka.sub.example.MqttMqttJmsMessagePublisher"/>
+	<bean id="sparkClusterMqttJmsMessagePublisher" class="org.diehl.dcs.kalinka.sub.example.SparkClusterMqttJmsMessagePublisher"/>
 </beans>

@@ -1,7 +1,7 @@
 ---
 #kalinka_pub_version: ???
-#kalinka_pub_log_level: INFO
-#kalinka_pub_log_level_diehl: DEBUG
+kalinka_pub_log_level: INFO
+kalinka_pub_log_level_diehl: INFO
 #kalinka_pub_max_mem: 512
 #kalinka_pub_jmx_port: 9447
 
@@ -13,3 +13,12 @@ kalinka_pub_restart: False
 # desired state after deployment: started|stopped|present|absent
 kalinka_pub_state: started
 
+kalinka_pub_service_opts: >
+  "-Dcustom.config.file=classpath:example-custom-config.xml\s
+   -Dlogging.level.root={{kalinka_pub_log_level}}\s
+   -Dlogging.level.org.diehl.dcs={{kalinka_pub_log_level_diehl}}\s
+   -Djms.hosts={{activemq_jms_url}}\s
+   -Djms.destinations=VirtualTopicConsumers.KafkaConsumer.mqtt.*.mqtt.*.pub,VirtualTopicConsumers.KafkaConsumer.mqtt.*.sparkcluster.pub\s
+   -Dkafka.hosts={{kafka_listener_url}}\s
+   -Dkafka.num.logical.partitions={{kafka_num_logical_partitions}}
+  "

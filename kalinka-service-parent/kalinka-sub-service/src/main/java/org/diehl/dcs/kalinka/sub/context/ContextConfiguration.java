@@ -223,6 +223,7 @@ public class ContextConfiguration {
 	public ConnectionFactory connectionFactory(final String host) {
 
 		CachingConnectionFactory connectionFactory = null;
+		LOG.info("Connecting with user={}, passwd={}", this.jmsUser, this.jmsPasswd);
 		if (this.jmsUser != null && this.jmsPasswd != null) {
 			connectionFactory = new CachingConnectionFactory(new ActiveMQConnectionFactory(this.jmsUser, this.jmsPasswd, host));
 		} else {

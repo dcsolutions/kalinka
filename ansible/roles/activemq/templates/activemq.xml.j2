@@ -131,7 +131,7 @@
         </shutdownHooks>
         <plugins>
             <bean xmlns="http://www.springframework.org/schema/beans" id="zkPlugin" class="org.diehl.dcs.kalinka.activemq_plugin.ActivemqPlugin">
-                <constructor-arg name="zkServers" value="{% for host in groups['zookeeper'] %}{{hostvars[host]['inventory_hostname']}}:{{zk_client_port}}{% if not loop.last %},{% endif %}{% endfor %}{{zk_chroots['activemq']}}"/>
+                <constructor-arg name="zkServers" value="{{zk_hosts}}{{zk_chroots['activemq']}}"/>
                 <constructor-arg name="host" value="{{inventory_hostname}}"/>
             </bean>
             <bean xmlns="http://www.springframework.org/schema/beans" id="kalinkaPubPlugin" class="org.diehl.dcs.kalinka.pub.plugin.KalinkaPubPlugin">

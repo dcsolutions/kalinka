@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ZK_HOSTS="{% for host in groups['zookeeper'] %}{{hostvars[host]['inventory_hostname']}}:{{zk_client_port}}{% if not loop.last %},{% endif %}{% endfor %}{{zk_chroots['kafka']}}"
+ZK_HOSTS="{{zk_hosts}}{{zk_chroots['kafka']}}"
 
 {% for topic in kafka_topics %}
 /opt/{{kafka_dir_name}}/bin/kafka-topics.sh --create --zookeeper "$ZK_HOSTS" --replication-factor {{topic['replication_factor']}} --partitions {{topic['partitions']}} --topic {{topic['name']}} 
