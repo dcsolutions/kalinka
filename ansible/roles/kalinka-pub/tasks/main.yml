@@ -2,7 +2,7 @@
 - name: start container
   docker_container:
     name: kalinka-pub
-    image: "{{hostvars[groups['registry'][0]]['inventory_hostname']}}:5000/kalinka-pub:latest" 
+    image: "{{hostvars[groups['registry'][0]]['inventory_hostname']}}:5000/kalinka-pub-service:latest" 
     pull: True
     docker_host: "{{docker_host}}"
     network_mode: host
@@ -10,4 +10,6 @@
     recreate: "{{kalinka_pub_reset or reset_all}}"
     restart: "{{kalinka_pub_restart}}"
     restart_policy: always
+    env:
+      OPTS: "{{kalinka_pub_opts | join(' ')}}"
 

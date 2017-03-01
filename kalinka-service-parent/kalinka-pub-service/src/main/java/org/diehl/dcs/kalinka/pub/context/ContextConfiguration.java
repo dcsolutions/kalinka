@@ -86,6 +86,12 @@ public class ContextConfiguration {
 	@Value("${jms.client.id.kalinka.pub:kalinka-pub-}")
 	private String jmsClientIdKalinkaPub;
 
+	@Value("${jms.user:#{null}}")
+	private String jmsUser;
+
+	@Value("${jms.passwd:#{null}}")
+	private String jmsPasswd;
+
 	private List<String> jmsHosts;
 
 	private List<String> jmsDestinations;
@@ -154,7 +160,13 @@ public class ContextConfiguration {
 	@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 	public ConnectionFactory connectionFactory(final String host) {
 
-		final CachingConnectionFactory connectionFactory = new CachingConnectionFactory(new ActiveMQConnectionFactory(host));
+		LOG.info("Connecting with user={}, passwd={}", this.jmsUser, this.jmsPasswd);
+		CachingConnectionFactory connectionFactory = null;
+		if (this.jmsUser != null && this.jmsPasswd != null) {
+			connectionFactory = new CachingConnectionFactory(new ActiveMQConnectionFactory(this.jmsUser, this.jmsPasswd, host));
+		} else {
+			connectionFactory = new CachingConnectionFactory(new ActiveMQConnectionFactory(host));
+		}
 		connectionFactory.setCacheConsumers(true);
 		connectionFactory.setReconnectOnException(true);
 		connectionFactory.setClientId(this.jmsClientIdKalinkaPub + host + "-" + UUID.randomUUID().toString());

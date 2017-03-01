@@ -1,34 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context" xmlns:util="http://www.springframework.org/schema/util"
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context
         http://www.springframework.org/schema/context/spring-context.xsd
         http://www.springframework.org/schema/util
         http://www.springframework.org/schema/util/spring-util.xsd">
-        
-	
-	<util:map id="kafkaProducerConfig" map-class="java.util.HashMap" key-type="java.lang.Object" value-type="java.lang.Object">
-		<entry key="" value="${kafka.hosts}"/>
-		<entry key="" value="${kafka.retries:0}"/>
-		<entry key="" value="${kafka.batch.size:16384}"/>
-		<entry key="" value="${kafka.linger.ms:1}"/>
-		<entry key="" value="${kafka.buffer.memory.config:33554432}"/>
-		<entry key="" value="${kafka.key.serializer.class:org.apache.kafka.common.serialization.StringSerializer}"/>
-		<entry key="" value="${kafka.value.serializer.class:org.apache.kafka.common.serialization.ByteArraySerializer}"/>
-	</util:map>
-	
-	<bean id="kafkaProducerFactory" class="org.springframework.kafka.core.DefaultKafkaProducerFactory">
-		<constructor-arg name="configs" ref="kafkaProducerConfig"/>
-	</bean>
-	
-    <util:list id="messagePublishers" list-class="java.util.ArrayList" value-type="org.diehl.dcs.kalinka.pub.publisher.IMessagePublisher">
-    	<ref bean="mqttMqttJmsMessagePublisher"/>
-    	<ref bean="mqttSparkClusterJmsMessagePublisher"/>
-    </util:list>
 
-	<bean id="mqttMqttJmsMessagePublisher" class="org.diehl.dcs.kalinka.pub.publisher.impl.example.MqttMqttJmsMessagePublisher">
-		<constructor-arg name="numLogicalPartitions" value="${kafka.num.logical.partitions:1}"/>
+
+	<util:list id="messagePublishers" list-class="java.util.ArrayList" value-type="org.diehl.dcs.kalinka.pub.publisher.IMessagePublisher">
+		<ref bean="mqttMqttJmsMessagePublisher" />
+		<ref bean="mqttSparkClusterJmsMessagePublisher" />
+	</util:list>
+
+	<bean id="mqttMqttJmsMessagePublisher" class="org.diehl.dcs.kalinka.pub.example.MqttMqttJmsMessagePublisher">
+		<constructor-arg name="numLogicalPartitions" value="${kafka.num.logical.partitions:1}" />
 	</bean>
-	<bean id="mqttSparkClusterJmsMessagePublisher" class="org.diehl.dcs.kalinka.pub.publisher.impl.example.MqttSparkClusterJmsMessagePublisher"/>
+	<bean id="mqttSparkClusterJmsMessagePublisher" class="org.diehl.dcs.kalinka.pub.example.MqttSparkClusterJmsMessagePublisher" />
 </beans>

@@ -21,6 +21,6 @@ kalinka_sub_opts:
 - "-Dkafka.hosts={{kafka_listener_url}}"
 - "-Dkafka.subscribed.topics=0.mqtt.mqtt,1.mqtt.mqtt,0.sparkcluster.mqtt:2,1.sparkcluster.mqtt:2"
 - "-Djms.hosts={{activemq_jms_url}}"
-- "-Djms.user=admin"
-- "-Djms.passwd=admin"
+- "-Djms.user={{activemq_jms_user}}"
+- "-Djms.passwd={{activemq_jms_passwd}}"
 
