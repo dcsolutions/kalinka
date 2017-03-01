@@ -15,3 +15,5 @@ activemq_state: started
 
 activemq_keystore_passwd: s3cr3t
 
+kalinka_pub_plugin_enabled: True
+

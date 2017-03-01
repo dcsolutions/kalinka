@@ -24,3 +24,4 @@ kafka_num_logical_partitions: 2
 
 activemq_jms_port: 61616
 activemq_jms_url: "{% for host in groups['activemq'] %}tcp://{{hostvars[host]['inventory_hostname']}}:{{activemq_jms_port}}{% if not loop.last %},{% endif %}{% endfor %}"
+

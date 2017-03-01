@@ -26,12 +26,16 @@
         <property name="locations">
         	<list>
             	<value>file:${activemq.conf}/credentials.properties</value>
-            	<value>file:${activemq.conf}/kalinka-pub.properties</value>
+{% if kalinka_pub_plugin_enabled | bool %}
+                <value>file:${activemq.conf}/kalinka-pub.properties</value>
+{% endif %}
             </list>
         </property>
     </bean>
     
+{% if kalinka_pub_plugin_enabled | bool %}
     <import resource="file:${activemq.conf}/kalinka-pub.xml"/>
+{% endif %}
 
    <!-- Allows accessing the server log -->
     <bean id="logQuery" class="io.fabric8.insight.log.log4j.Log4jLogQuery"
@@ -134,10 +138,12 @@
                 <constructor-arg name="zkServers" value="{{zk_hosts}}{{zk_chroots['activemq']}}"/>
                 <constructor-arg name="host" value="{{inventory_hostname}}"/>
             </bean>
+{% if kalinka_pub_plugin_enabled | bool %}
             <bean xmlns="http://www.springframework.org/schema/beans" id="kalinkaPubPlugin" class="org.diehl.dcs.kalinka.pub.plugin.KalinkaPubPlugin">
                 <constructor-arg name="messagePublisherProvider" ref="messagePublisherProvider"/>
                 <constructor-arg name="kafkaTemplate" ref="kafkaTemplate"/>
             </bean>
+{% endif %}
             <!--
             <jaasCertificateAuthenticationPlugin configuration="cert-login"/>
             <jaasAuthenticationPlugin configuration="username-passwd-login"/>
