@@ -8,13 +8,6 @@
   - config
   - bin
 
-- name: get kafka tarball
-  unarchive:
-    src: "{{kafka_download_url}}"
-    dest: /opt
-    creates: "/opt/{{kafka_dir_name}}"
-    remote_src: True
-
 - name: delete content of logs-dir
   shell: rm -rf /volumes/kafka/logs/*
   when: kafka_reset or reset_all
