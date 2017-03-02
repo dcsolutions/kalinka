@@ -19,15 +19,15 @@
 	</util:map>
 
 	<bean id="kafkaProducerFactory" class="org.diehl.dcs.kalinka.springframework.kafka.core.DefaultKafkaProducerFactory">
-		<constructor-arg name="configs" ref="kafkaProducerConfig" />
+		<constructor-arg ref="kafkaProducerConfig" />
 	</bean>
 	
 	<bean id="kafkaTemplate" class="org.diehl.dcs.kalinka.springframework.kafka.core.KafkaTemplate">
-		<constructor-arg name="producerFactory" ref="kafkaProducerFactory"/>
+		<constructor-arg ref="kafkaProducerFactory"/>
 	</bean>
 	
 	<bean id="messagePublisherProvider" class="org.diehl.dcs.kalinka.pub.publisher.MessagePublisherProvider">
-		<constructor-arg name="orderedPublishers" ref="messagePublishers"/>
+		<constructor-arg ref="messagePublishers"/>
 	</bean>
 
 	<util:list id="messagePublishers" list-class="java.util.ArrayList" value-type="org.diehl.dcs.kalinka.pub.publisher.IMessagePublisher">
@@ -36,7 +36,7 @@
 	</util:list>
 
 	<bean id="mqttMqttJmsMessagePublisher" class="org.diehl.dcs.kalinka.pub.plugin.example.MqttMqttJmsMessagePublisher">
-		<constructor-arg name="numLogicalPartitions" value="${kafka.num.logical.partitions:1}" />
+		<constructor-arg value="${kafka.num.logical.partitions:1}" />
 	</bean>
 	<bean id="mqttSparkClusterJmsMessagePublisher" class="org.diehl.dcs.kalinka.pub.plugin.example.MqttSparkClusterJmsMessagePublisher" />
 </beans>
