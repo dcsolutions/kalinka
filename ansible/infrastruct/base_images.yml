@@ -26,3 +26,13 @@
   - docker_image:
       docker_host: "{{docker_host}}"
       name: "openjdk:8-jdk-alpine"
+
+- name: get kafka tarball
+  hosts: kafka
+  tasks:
+  - unarchive:
+      src: "{{kafka_download_url}}"
+      dest: /opt
+      creates: "/opt/{{kafka_dir_name}}"
+      remote_src: True
+
