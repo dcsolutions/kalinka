@@ -7,7 +7,7 @@
  * for the specific language governing permissions and limitations under the License.
  */
 
-package org.diehls.dcs.kalinka.pub.plugin.example;
+package org.diehl.dcs.kalinka.pub.plugin.example;
 
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
