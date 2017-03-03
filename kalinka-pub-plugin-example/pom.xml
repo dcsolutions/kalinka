@@ -11,8 +11,33 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.diehl.dcs</groupId>
-			<artifactId>kalinka-pub</artifactId>
+			<artifactId>kalinka-pub-plugin</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>${maven.shade.plugin.version}</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<relocations>
+								<relocation>
+									<pattern>org.springframework</pattern>
+									<shadedPattern>org.diehl.dcs.kalinka.springframework</shadedPattern>
+								</relocation>
+							</relocations>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

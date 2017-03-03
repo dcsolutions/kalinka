@@ -15,21 +15,21 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 
-		<guava.version>21.0</guava.version>
+		<activemq.version>5.14.3</activemq.version>
 		<kafka.version>0.10.1.0</kafka.version>
-		<spring.kafka.version>1.1.2.RELEASE</spring.kafka.version>
 		<spring.jms.version>4.3.6.RELEASE</spring.jms.version>
-		<apache.activemq.version>5.14.3</apache.activemq.version>
-		<theore.spring.mockito.version>1.3.0</theore.spring.mockito.version>
-		<paho.client.version>1.1.0</paho.client.version>
+		<zkclient.version>0.10</zkclient.version>
+		<guava.version>21.0</guava.version>
+		<spring.kafka.version>1.1.2.RELEASE</spring.kafka.version>
 		<slf4j.version>1.7.22</slf4j.version>
 		<logback.version>1.1.9</logback.version>
+		<paho.version>1.1.0</paho.version>
 		<junit.version>4.12</junit.version>
 		<hamcrest.version>1.3</hamcrest.version>
-		<zkclient.version>0.10</zkclient.version>
+		<theore.spring.mockito.version>1.3.0</theore.spring.mockito.version>
 		<!-- We cannot use most recent curator-version because zookeeper-version conflicts with zkclient -->
 		<apache.curator.version>2.11.1</apache.curator.version>
-		<paho.version>1.1.0</paho.version>
+		<maven.shade.plugin.version>3.0.0</maven.shade.plugin.version>
 	</properties>
 
 	<modules>

@@ -7,11 +7,6 @@
 	</parent>
 	<artifactId>kalinka-pub-plugin</artifactId>
 
-	<properties>
-		<activemq.version>5.14.3</activemq.version>
-		<maven.shade.plugin.version>3.0.0</maven.shade.plugin.version>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.diehl.dcs</groupId>
@@ -69,29 +64,4 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<version>${maven.shade.plugin.version}</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-						<configuration>
-							<relocations>
-								<relocation>
-									<pattern>org.springframework</pattern>
-									<shadedPattern>org.diehl.dcs.kalinka.springframework</shadedPattern>
-								</relocation>
-							</relocations>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
 </project>
