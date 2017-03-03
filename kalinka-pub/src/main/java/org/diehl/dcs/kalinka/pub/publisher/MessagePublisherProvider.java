@@ -22,12 +22,17 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * @author michas <michas@jarmoni.org>
  *
  */
 public class MessagePublisherProvider<T, K, V> {
+
+	private static final Logger LOG = LoggerFactory.getLogger(MessagePublisherProvider.class);
 
 	private final LinkedHashMap<Pattern, IMessagePublisher<T, K, V>> publishers;
 
@@ -37,7 +42,10 @@ public class MessagePublisherProvider<T, K, V> {
 			throw new IllegalStateException("'orderedPublishers' must not be null");
 		}
 		this.publishers = new LinkedHashMap<>();
-		orderedPublishers.forEach(p -> this.publishers.put(p.getSourceTopicRegex(), p));
+		orderedPublishers.forEach(p -> {
+			this.publishers.put(p.getSourceTopicRegex(), p);
+			LOG.info("Added publisher: class={}, regex={}", p.getClass(), p.getSourceTopicRegex().pattern());
+		});
 	}
 
 	public IMessagePublisher<T, K, V> getPublisher(final String sourceTopicName) {
