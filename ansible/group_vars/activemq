@@ -1,7 +1,7 @@
 ---
 activemq_version: 5.14.3
 activemq_log_level: INFO
-activemq_log_level_diehl: INFO
+activemq_log_level_diehl: DEBUG
 activemq_max_mem: 512
 activemq_jmx_port: 9447
 
