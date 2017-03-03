@@ -2,10 +2,11 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.diehl.dcs</groupId>
-		<artifactId>kalinka-service-parent</artifactId>
+		<artifactId>kalinka</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>kalinka-pub-service-example</artifactId>
+	<groupId>org.diehl.dcs.kalinka.pub.plugin</groupId>
+	<artifactId>kalinka-pub-plugin-example</artifactId>
 
 	<dependencies>
 		<dependency>

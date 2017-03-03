@@ -40,6 +40,6 @@
 		<module>kalinka-it</module>
 		<module>kalinka-pub-plugin</module>
 		<module>kalinka-service-example-parent</module>
-		<module>kalinka-example</module>
+		<module>kalinka-pub-plugin-example</module>
 	</modules>
 </project>

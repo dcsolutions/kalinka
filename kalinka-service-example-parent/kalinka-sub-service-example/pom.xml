@@ -13,10 +13,5 @@
 			<artifactId>kalinka-sub</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.diehl.dcs</groupId>
-			<artifactId>kalinka-example</artifactId>
-			<version>${project.version}</version>
-		</dependency>
 	</dependencies>
 </project>
