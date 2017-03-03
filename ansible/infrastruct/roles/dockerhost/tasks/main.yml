@@ -27,7 +27,7 @@
   lineinfile:
     dest: /lib/systemd/system/docker.service
     regexp: '^ExecStart=/usr/bin/dockerd'
-    line: "ExecStart=/usr/bin/dockerd -H tcp://{{inventory_hostname}}:2375 --insecure-registry={{hostvars[groups['registry'][0]]['inventory_hostname']}}:5000"
+    line: "ExecStart=/usr/bin/dockerd -H tcp://{{inventory_hostname}}:2375"
   notify: restart docker
 
 - name: set env-var DOCKER_HOST

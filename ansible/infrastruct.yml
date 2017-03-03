@@ -1,4 +1,3 @@
 ---
 - include: infrastruct/dockerhost.yml
-- include: infrastruct/registry.yml
 - include: infrastruct/base_images.yml

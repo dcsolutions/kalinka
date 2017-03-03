@@ -1,4 +1,5 @@
 ---
+organization: dcsolutions
 docker_host: "tcp://{{inventory_hostname}}:2375"
 kalinka_version: 0.0.1-SNAPSHOT
 reset_all: False

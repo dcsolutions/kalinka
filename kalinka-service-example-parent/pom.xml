@@ -11,7 +11,6 @@
 	<properties>
 		<spring.boot.version>1.4.3.RELEASE</spring.boot.version>
 		<docker.maven.plugin.version>0.4.13</docker.maven.plugin.version>
-		<docker.registry.url>192.168.33.20:5000</docker.registry.url>
 		<docker.registry.push>false</docker.registry.push>
 		<docker.image.build>false</docker.image.build>
 	</properties>
@@ -78,7 +77,8 @@
 							</execution>
 						</executions>
 						<configuration>
-							<imageName>${docker.registry.url}/${project.artifactId}</imageName>
+							<serverId>dockerhub</serverId>
+							<imageName>${organization.name}/${project.artifactId}</imageName>
 							<imageTags>
 								<imageTag>${project.version}</imageTag>
 							</imageTags>
