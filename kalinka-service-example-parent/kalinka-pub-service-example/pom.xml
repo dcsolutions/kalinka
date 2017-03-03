@@ -5,12 +5,12 @@
 		<artifactId>kalinka-service-parent</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>kalinka-sub-service</artifactId>
+	<artifactId>kalinka-pub-service-example</artifactId>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.diehl.dcs</groupId>
-			<artifactId>kalinka-sub</artifactId>
+			<artifactId>kalinka-pub</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

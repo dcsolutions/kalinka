@@ -5,7 +5,7 @@
 		<artifactId>kalinka</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>kalinka-service-parent</artifactId>
+	<artifactId>kalinka-service-example-parent</artifactId>
 	<packaging>pom</packaging>
 
 	<properties>
@@ -103,7 +103,7 @@
 		</profile>
 	</profiles>
 	<modules>
-		<module>kalinka-pub-service</module>
-		<module>kalinka-sub-service</module>
+		<module>kalinka-pub-service-example</module>
+		<module>kalinka-sub-service-example</module>
 	</modules>
 </project>

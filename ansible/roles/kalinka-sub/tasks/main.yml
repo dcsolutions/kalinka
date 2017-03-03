@@ -2,7 +2,7 @@
 - name: start container
   docker_container:
     name: kalinka-sub
-    image: "{{hostvars[groups['registry'][0]]['inventory_hostname']}}:5000/kalinka-sub-service:latest" 
+    image: "{{hostvars[groups['registry'][0]]['inventory_hostname']}}:5000/kalinka-sub-service-example:latest" 
     pull: True
     docker_host: "{{docker_host}}"
     network_mode: host

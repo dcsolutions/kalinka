@@ -39,7 +39,7 @@
 		<module>kalinka-util</module>
 		<module>kalinka-it</module>
 		<module>kalinka-pub-plugin</module>
-		<module>kalinka-service-parent</module>
+		<module>kalinka-service-example-parent</module>
 		<module>kalinka-example</module>
 	</modules>
 </project>
