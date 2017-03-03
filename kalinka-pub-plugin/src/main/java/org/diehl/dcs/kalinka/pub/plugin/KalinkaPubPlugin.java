@@ -53,6 +53,9 @@ public class KalinkaPubPlugin<K, V> implements BrokerPlugin {
 
 	@Override
 	public Broker installPlugin(final Broker broker) throws Exception {
+
+		LOG.info("Installing plugin...");
+
 		return new BrokerFilter(broker) {
 
 			@Override
@@ -68,7 +71,8 @@ public class KalinkaPubPlugin<K, V> implements BrokerPlugin {
 						publisher.publish(messageSend, kafkaTemplate);
 					}
 				} catch (final Throwable t) {
-					throw new RuntimeException(t);
+					LOG.error("Exception occured", t);
+					throw t;
 				}
 			}
 		};

@@ -58,6 +58,8 @@ public class ActivemqPlugin implements BrokerPlugin {
 	@Override
 	public Broker installPlugin(final Broker broker) throws Exception {
 
+		LOG.info("Installing plugin...");
+
 		return new BrokerFilter(broker) {
 
 			@Override
