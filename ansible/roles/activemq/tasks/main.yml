@@ -34,8 +34,7 @@
     dest: "/volumes/activemq/lib/{{item}}.jar"
   with_items:
   - kalinka-activemq-plugin
-  - kalinka-pub-plugin
-  - kalinka-example
+  - kalinka-pub-plugin-example
 
 - name: start container
   docker_container:
@@ -52,8 +51,7 @@
     - /volumes/activemq/config/activemq.xml:/opt/activemq/conf/activemq.xml
     - /volumes/activemq/config/jmx.password:/opt/activemq/conf/jmx.password
     - /volumes/activemq/lib/kalinka-activemq-plugin.jar:/opt/activemq/lib/kalinka-activemq-plugin.jar
-    - /volumes/activemq/lib/kalinka-pub-plugin.jar:/opt/activemq/lib/kalinka-pub-plugin.jar
-    - /volumes/activemq/lib/kalinka-example.jar:/opt/activemq/lib/kalinka-example.jar
+    - /volumes/activemq/lib/kalinka-pub-plugin.jar:/opt/activemq/lib/kalinka-pub-plugin-example.jar
     - /volumes/activemq/config/keystore.jks:/opt/activemq/conf/keystore.jks
     - /volumes/activemq/config/login.config:/opt/activemq/conf/login.config
     - /volumes/activemq/config/users.properties:/opt/activemq/conf/users.properties
