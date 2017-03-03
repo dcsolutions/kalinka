@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/dcsolutions/kalinka.svg?branch=master)](https://travis-ci.org/dcsolutions/kalinka)
+
 # What is it for?
 
 There are several solutions to access a Kafka-cluster via MQTT, e.g. with [Kafka-Bridge](https://github.com/jacklund/mqttKafkaBridge).
