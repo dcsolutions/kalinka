@@ -209,6 +209,7 @@
 						<configuration>
 							<connectionType>developerConnection</connectionType>
 							<message>Preparing versions for Release: ${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}</message>
+							<pushChanges>false</pushChanges>
 						</configuration>
 						<executions>
 							<execution>
@@ -279,7 +280,8 @@
 						<version>${maven.scm.plugin.version}</version>
 						<configuration>
 							<connectionType>developerConnection</connectionType>
-							<message>Preparing versions for Release: ${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}</message>
+							<message>Preparing versions for next development-iteration: ${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.nextIncrementalVersion}-SNAPSHOT</message>
+							<pushChanges>false</pushChanges>
 						</configuration>
 						<executions>
 							<execution>
