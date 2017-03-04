@@ -7,11 +7,6 @@
 	</parent>
 	<artifactId>kalinka-activemq-plugin</artifactId>
 
-	<properties>
-		<activemq.version>5.14.3</activemq.version>
-		<maven.shade.plugin.version>3.0.0</maven.shade.plugin.version>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>com.101tec</groupId>

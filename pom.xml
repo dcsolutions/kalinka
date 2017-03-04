@@ -307,5 +307,9 @@
 		<module>kalinka-pub-plugin</module>
 		<module>kalinka-service-example-parent</module>
 		<module>kalinka-pub-plugin-example</module>
+		<module>kalinka-cluster</module>
+		<module>kalinka-cluster-zk</module>
+		<module>kalinka-cluster-plugin-example</module>
+		<module>kalinka-cluster-plugin</module>
 	</modules>
 </project>
