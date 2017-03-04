@@ -78,7 +78,7 @@
 						</executions>
 						<configuration>
 							<serverId>dockerhub</serverId>
-							<imageName>${organization.name}/${project.artifactId}</imageName>
+							<imageName>${docker.registry.prefix}/${project.artifactId}</imageName>
 							<imageTags>
 								<imageTag>${project.version}</imageTag>
 							</imageTags>
