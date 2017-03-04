@@ -1,10 +1,6 @@
-### Regular build
+### Release-process
 
-* without javadoc, sources and gpg-sign
-
-`mvn clean install`
-
-### Release
+Steps should be executed by build-server (jenkins)
 
 #### Snapshot
 
@@ -14,7 +10,7 @@
 
 #### 'Official' release (no snapshot)
 
-We don't use *maven-release-plugin*
+Project does not use *maven-release-plugin*
 
 * including javadoc, sources and gpg-sign
 
