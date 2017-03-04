@@ -12,7 +12,7 @@
 
 `mvn clean deploy -DperformRelease=true`
 
-#### 'Official release (no snapshot)
+#### 'Official' release (no snapshot)
 
 We don't use *maven-release-plugin*
 
