@@ -16,7 +16,7 @@ kalinka_pub_state: started
 kalinka_pub_opts:
 - "-Dcustom.config.file=classpath:example-custom-config.xml"
 - "-Dlogging.level.root={{kalinka_pub_log_level}}"
-- "-Dlogging.level.org.diehl.dcs={{kalinka_pub_log_level_diehl}}"
+- "-Dlogging.level.com.github.dcsolutions={{kalinka_pub_log_level_diehl}}"
 - "-Djms.hosts={{activemq_jms_url}}"
 - "-Djms.destinations=VirtualTopicConsumers.KafkaConsumer.mqtt.*.mqtt.*.pub,VirtualTopicConsumers.KafkaConsumer.mqtt.*.sparkcluster.pub"
 - "-Dkafka.hosts={{kafka_listener_url}}"

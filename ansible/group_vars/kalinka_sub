@@ -16,7 +16,7 @@ kalinka_sub_state: started
 kalinka_sub_opts: 
 - "-Dcustom.config.file=classpath:example-custom-config.xml"
 - "-Dlogging.level.root={{kalinka_sub_log_level}}"
-- "-Dlogging.level.org.diehl.dcs={{kalinka_sub_log_level_diehl}}"
+- "-Dlogging.level.com.github.dcsolutions={{kalinka_sub_log_level_diehl}}"
 - "-Dzk.hosts={{zk_hosts}}{{zk_chroots['activemq']}}"
 - "-Dkafka.hosts={{kafka_listener_url}}"
 - "-Dkafka.subscribed.topics=0.mqtt.mqtt,1.mqtt.mqtt,0.sparkcluster.mqtt:2,1.sparkcluster.mqtt:2"

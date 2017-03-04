@@ -134,12 +134,12 @@
             <bean xmlns="http://www.springframework.org/schema/beans" class="org.apache.activemq.hooks.SpringContextHook" />
         </shutdownHooks>
         <plugins>
-            <bean xmlns="http://www.springframework.org/schema/beans" id="zkPlugin" class="org.diehl.dcs.kalinka.activemq_plugin.ActivemqPlugin">
+            <bean xmlns="http://www.springframework.org/schema/beans" id="zkPlugin" class="com.github.dcsolutions.kalinka.activemq_plugin.ActivemqPlugin">
                 <constructor-arg name="zkServers" value="{{zk_hosts}}{{zk_chroots['activemq']}}"/>
                 <constructor-arg name="host" value="{{inventory_hostname}}"/>
             </bean>
 {% if kalinka_pub_plugin_enabled | bool %}
-            <bean xmlns="http://www.springframework.org/schema/beans" id="kalinkaPubPlugin" class="org.diehl.dcs.kalinka.pub.plugin.KalinkaPubPlugin">
+            <bean xmlns="http://www.springframework.org/schema/beans" id="kalinkaPubPlugin" class="com.github.dcsolutions.kalinka.pub.plugin.KalinkaPubPlugin">
                 <constructor-arg name="messagePublisherProvider" ref="messagePublisherProvider"/>
                 <constructor-arg name="kafkaTemplate" ref="kafkaTemplate"/>
             </bean>

@@ -9,13 +9,13 @@
         http://www.springframework.org/schema/util/spring-util.xsd">
 
 
-	<util:list id="messagePublishers" list-class="java.util.ArrayList" value-type="org.diehl.dcs.kalinka.pub.publisher.IMessagePublisher">
+	<util:list id="messagePublishers" list-class="java.util.ArrayList" value-type="com.github.dcsolutions.kalinka.pub.publisher.IMessagePublisher">
 		<ref bean="mqttMqttJmsMessagePublisher" />
 		<ref bean="mqttSparkClusterJmsMessagePublisher" />
 	</util:list>
 
-	<bean id="mqttMqttJmsMessagePublisher" class="org.diehl.dcs.kalinka.pub.example.MqttMqttJmsMessagePublisher">
+	<bean id="mqttMqttJmsMessagePublisher" class="com.github.dcsolutions.kalinka.pub.example.MqttMqttJmsMessagePublisher">
 		<constructor-arg name="numLogicalPartitions" value="${kafka.num.logical.partitions:1}" />
 	</bean>
-	<bean id="mqttSparkClusterJmsMessagePublisher" class="org.diehl.dcs.kalinka.pub.example.MqttSparkClusterJmsMessagePublisher" />
+	<bean id="mqttSparkClusterJmsMessagePublisher" class="com.github.dcsolutions.kalinka.pub.example.MqttSparkClusterJmsMessagePublisher" />
 </beans>

@@ -7,11 +7,11 @@
         http://www.springframework.org/schema/util
         http://www.springframework.org/schema/util/spring-util.xsd">
         
-    <util:list id="messagePublishers" list-class="java.util.ArrayList" value-type="org.diehl.dcs.kalinka.sub.publisher.IMessagePublisher">
+    <util:list id="messagePublishers" list-class="java.util.ArrayList" value-type="com.github.dcsolutions.kalinka.sub.publisher.IMessagePublisher">
     	<ref bean="mqttMqttJmsMessagePublisher"/>
     	<ref bean="sparkClusterMqttJmsMessagePublisher"/>
     </util:list>
 
-	<bean id="mqttMqttJmsMessagePublisher" class="org.diehl.dcs.kalinka.sub.example.MqttMqttJmsMessagePublisher"/>
-	<bean id="sparkClusterMqttJmsMessagePublisher" class="org.diehl.dcs.kalinka.sub.example.SparkClusterMqttJmsMessagePublisher"/>
+	<bean id="mqttMqttJmsMessagePublisher" class="com.github.dcsolutions.kalinka.sub.example.MqttMqttJmsMessagePublisher"/>
+	<bean id="sparkClusterMqttJmsMessagePublisher" class="com.github.dcsolutions.kalinka.sub.example.SparkClusterMqttJmsMessagePublisher"/>
 </beans>

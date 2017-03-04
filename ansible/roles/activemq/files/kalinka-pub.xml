@@ -18,25 +18,25 @@
 		<entry key="value.serializer" value="${kafka.value.serializer.class:org.apache.kafka.common.serialization.ByteArraySerializer}" />
 	</util:map>
 
-	<bean id="kafkaProducerFactory" class="org.diehl.dcs.kalinka.springframework.kafka.core.DefaultKafkaProducerFactory">
+	<bean id="kafkaProducerFactory" class="com.github.dcsolutions.kalinka.springframework.kafka.core.DefaultKafkaProducerFactory">
 		<constructor-arg ref="kafkaProducerConfig" />
 	</bean>
 	
-	<bean id="kafkaTemplate" class="org.diehl.dcs.kalinka.springframework.kafka.core.KafkaTemplate">
+	<bean id="kafkaTemplate" class="com.github.dcsolutions.kalinka.springframework.kafka.core.KafkaTemplate">
 		<constructor-arg ref="kafkaProducerFactory"/>
 	</bean>
 	
-	<bean id="messagePublisherProvider" class="org.diehl.dcs.kalinka.pub.publisher.MessagePublisherProvider">
+	<bean id="messagePublisherProvider" class="com.github.dcsolutions.kalinka.pub.publisher.MessagePublisherProvider">
 		<constructor-arg ref="messagePublishers"/>
 	</bean>
 
-	<util:list id="messagePublishers" list-class="java.util.ArrayList" value-type="org.diehl.dcs.kalinka.pub.publisher.IMessagePublisher">
+	<util:list id="messagePublishers" list-class="java.util.ArrayList" value-type="com.github.dcsolutions.kalinka.pub.publisher.IMessagePublisher">
 		<ref bean="mqttMqttJmsMessagePublisher" />
 		<ref bean="mqttSparkClusterJmsMessagePublisher" />
 	</util:list>
 
-	<bean id="mqttMqttJmsMessagePublisher" class="org.diehl.dcs.kalinka.pub.plugin.example.MqttMqttJmsMessagePublisher">
+	<bean id="mqttMqttJmsMessagePublisher" class="com.github.dcsolutions.kalinka.pub.plugin.example.MqttMqttJmsMessagePublisher">
 		<constructor-arg value="${kafka.num.logical.partitions:1}" />
 	</bean>
-	<bean id="mqttSparkClusterJmsMessagePublisher" class="org.diehl.dcs.kalinka.pub.plugin.example.MqttSparkClusterJmsMessagePublisher" />
+	<bean id="mqttSparkClusterJmsMessagePublisher" class="com.github.dcsolutions.kalinka.pub.plugin.example.MqttSparkClusterJmsMessagePublisher" />
 </beans>
