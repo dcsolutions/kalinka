@@ -6,11 +6,50 @@
 	<groupId>com.github.dcsolutions</groupId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	
+
+	<name>${project.artifactId}</name>
+	<description>Kafka-connectivity for MQTT-devices in both directions</description>
+	<url>https://github.com/dcsolutions/kalinka</url>
+
 	<organization>
 		<name>dcsolutions</name>
 		<url>https://github.com/dcsolutions</url>
 	</organization>
+
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<name>Michael Sorg</name>
+			<email>michas@jarmoni.org</email>
+			<organization>dcsolustions</organization>
+			<organizationUrl>https://github.com/dcsolutions</organizationUrl>
+		</developer>
+		<developer>
+			<name>Klaus Uhl</name>
+			<email>ridethesnake7@yahoo.de</email>
+			<organization>dcsolustions</organization>
+			<organizationUrl>https://github.com/dcsolutions</organizationUrl>
+		</developer>
+	</developers>
+
+	<scm>
+		<connection>scm:git:https://github.com/dcsolutions/kalinka.git</connection>
+		<developerConnection>scm:git:git@github.com:dcsolutions/kalinka.git</developerConnection>
+		<url>https://github.com/dcsolutions</url>
+	</scm>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -35,7 +74,68 @@
 		<!-- We cannot use most recent curator-version because zookeeper-version conflicts with zkclient -->
 		<apache.curator.version>2.11.1</apache.curator.version>
 		<maven.shade.plugin.version>3.0.0</maven.shade.plugin.version>
+		<nexus.staging.plugin.version>1.6.8</nexus.staging.plugin.version>
+		<maven.javadoc.plugin.version>2.10.4</maven.javadoc.plugin.version>
+		<maven.source.plugin.version>3.0.1</maven.source.plugin.version>
+		<maven.gpg.plugin.version>1.6</maven.gpg.plugin.version>
 	</properties>
+
+	<build>
+		<plugins>
+			<!-- See: http://central.sonatype.org/pages/apache-maven.html#distribution-management-and-authentication -->
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<version>${nexus.staging.plugin.version}</version>
+				<extensions>true</extensions>
+				<configuration>
+					<serverId>ossrh</serverId>
+					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+					<autoReleaseAfterClose>true</autoReleaseAfterClose>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>${maven.source.plugin.version}</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>${maven.javadoc.plugin.version}</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>${maven.gpg.plugin.version}</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 
 	<modules>
 		<module>kalinka-pub</module>
