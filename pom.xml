@@ -157,6 +157,7 @@
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>build-helper-maven-plugin</artifactId>
 						<version>${build.helper.maven.plugin.version}</version>
+						<inherited>false</inherited>
 						<executions>
 							<execution>
 								<id>parse-version</id>
@@ -171,6 +172,7 @@
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>versions-maven-plugin</artifactId>
 						<version>${versions.maven.plugin.version}</version>
+						<inherited>false</inherited>
 						<executions>
 							<execution>
 								<id>set-version</id>
