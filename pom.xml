@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>kalinka</artifactId>
-	<groupId>com.github.dcsolutions</groupId>
+	<groupId>com.github.dcsolutions.kalinka</groupId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
