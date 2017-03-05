@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package com.github.dcsolutions.kalinka.cluster.plugin.example;
+package com.github.dcsolutions.kalinka.cluster.plugin;
 
 
 import java.util.Arrays;

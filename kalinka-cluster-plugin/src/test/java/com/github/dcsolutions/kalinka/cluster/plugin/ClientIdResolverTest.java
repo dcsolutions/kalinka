@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package com.github.dcsolutions.kalinka.cluster.plugin.example;
+package com.github.dcsolutions.kalinka.cluster.plugin;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -25,6 +25,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
+
+import com.github.dcsolutions.kalinka.cluster.plugin.ClientIdResolver;
 
 
 /**
