@@ -16,11 +16,13 @@ limitations under the License.
 
 package com.github.dcsolutions.kalinka.cluster;
 
+import java.util.Optional;
+
 /**
  * @author michas <michas@jarmoni.org>
  *
  */
 public interface IHostResolver {
 
-	String getHost(String id);
+	Optional<String> getHost(String id);
 }

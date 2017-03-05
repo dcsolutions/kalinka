@@ -13,6 +13,11 @@
 			<artifactId>kalinka-pub-plugin</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.github.dcsolutions.kalinka</groupId>
+			<artifactId>kalinka-cluster-plugin</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

@@ -19,6 +19,10 @@ package com.github.dcsolutions.kalinka.cluster.plugin;
 import org.apache.activemq.broker.Broker;
 import org.apache.activemq.broker.BrokerFilter;
 import org.apache.activemq.broker.BrokerPlugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Preconditions;
 
 /**
  * @author michas <michas@jarmoni.org>
@@ -26,15 +30,19 @@ import org.apache.activemq.broker.BrokerPlugin;
  */
 public class KalinkaClusterPlugin implements BrokerPlugin {
 
+	private static final Logger LOG = LoggerFactory.getLogger(KalinkaClusterPlugin.class);
+
 	private final BrokerFilter brokerFilter;
 
 	public KalinkaClusterPlugin(final BrokerFilter brokerFilter) {
 
-		this.brokerFilter = brokerFilter;
+		this.brokerFilter = Preconditions.checkNotNull(brokerFilter);
 	}
 
 	@Override
 	public Broker installPlugin(final Broker broker) throws Exception {
+
+		LOG.info("Installing plugin...");
 
 		return this.brokerFilter;
 	}

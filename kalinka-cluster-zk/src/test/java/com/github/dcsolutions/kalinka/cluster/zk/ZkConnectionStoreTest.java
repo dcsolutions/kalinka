@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.dcsolutions.kalinka.activemq_plugin;
+package com.github.dcsolutions.kalinka.cluster.zk;
 
 import static org.junit.Assert.assertEquals;
 
@@ -31,7 +31,7 @@ import org.junit.rules.ExpectedException;
  * @author michas <michas@jarmoni.org>
  *
  */
-public class ActivemqPluginTest {
+public class ZkConnectionStoreTest {
 
 	@Rule
 	public ExpectedException ee = ExpectedException.none();
@@ -53,13 +53,13 @@ public class ActivemqPluginTest {
 	@Test
 	public void testUpsertZkNode() throws Exception {
 
-		final ActivemqPlugin plugin = new ActivemqPlugin(this.zkServer.getConnectString() + ZK_CHROOT_PATH, "mysuperhost");
-		plugin.upsertZkNode("123");
+		final ZkConnectionStore store = new ZkConnectionStore(this.zkServer.getConnectString() + ZK_CHROOT_PATH, "mysuperhost");
+		store.upsertZkNode("123");
 
 		assertEquals("mysuperhost", this.zkClient.readData(ZK_CHROOT_PATH + "/123").toString());
 
-		final ActivemqPlugin plugin2 = new ActivemqPlugin(this.zkServer.getConnectString() + ZK_CHROOT_PATH, "myevenbetterhost");
-		plugin2.upsertZkNode("123");
+		final ZkConnectionStore store2 = new ZkConnectionStore(this.zkServer.getConnectString() + ZK_CHROOT_PATH, "myevenbetterhost");
+		store2.upsertZkNode("123");
 
 		assertEquals("myevenbetterhost", this.zkClient.readData(ZK_CHROOT_PATH + "/123").toString());
 
@@ -68,12 +68,12 @@ public class ActivemqPluginTest {
 	@Test
 	public void testDeleteZkNode() throws Exception {
 
-		final ActivemqPlugin plugin = new ActivemqPlugin(this.zkServer.getConnectString(), "mysuperhost");
+		final ZkConnectionStore store = new ZkConnectionStore(this.zkServer.getConnectString(), "mysuperhost");
 		// no exception is thrown when trying to delete a not existing node
-		plugin.deleteZkNode("123");
-		plugin.upsertZkNode("123");
+		store.deleteZkNode("123");
+		store.upsertZkNode("123");
 
-		plugin.deleteZkNode("123");
+		store.deleteZkNode("123");
 		this.ee.expect(ZkNoNodeException.class);
 		this.zkClient.readData("/123");
 	}
