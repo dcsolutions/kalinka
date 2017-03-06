@@ -2,26 +2,16 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.github.dcsolutions.kalinka</groupId>
-		<artifactId>kalinka-service-example-parent</artifactId>
+		<artifactId>kalinka</artifactId>
 		<version>0.0.2-SNAPSHOT</version>
 	</parent>
-	<artifactId>kalinka-pub-service-example</artifactId>
+	<artifactId>kalinka-pub-service</artifactId>
 
 	<dependencies>
 		<dependency>
 			<groupId>com.github.dcsolutions.kalinka</groupId>
-			<artifactId>kalinka-pub-service</artifactId>
+			<artifactId>kalinka-pub</artifactId>
 			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-core</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-library</artifactId>
-			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>

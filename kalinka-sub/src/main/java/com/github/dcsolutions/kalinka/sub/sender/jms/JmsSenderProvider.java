@@ -20,12 +20,12 @@ import java.util.Map;
 
 import javax.jms.ConnectionFactory;
 
-import com.github.dcsolutions.kalinka.sub.cache.IBrokerCache;
-import com.github.dcsolutions.kalinka.sub.sender.AbstractSenderProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jms.core.JmsTemplate;
 
+import com.github.dcsolutions.kalinka.cluster.IHostResolver;
+import com.github.dcsolutions.kalinka.sub.sender.AbstractSenderProvider;
 import com.google.common.base.Preconditions;
 
 /**
@@ -39,9 +39,9 @@ public class JmsSenderProvider extends AbstractSenderProvider<JmsTemplate> {
 	private final Map<String, ConnectionFactory> connectionFactories;
 
 
-	public JmsSenderProvider(final Map<String, ConnectionFactory> connectionFactories, final IBrokerCache brokerCache) {
+	public JmsSenderProvider(final Map<String, ConnectionFactory> connectionFactories, final IHostResolver hostResolver) {
 
-		super(brokerCache);
+		super(hostResolver);
 		this.connectionFactories = Preconditions.checkNotNull(connectionFactories);
 	}
 

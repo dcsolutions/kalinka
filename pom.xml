@@ -311,5 +311,6 @@
 		<module>kalinka-cluster-zk</module>
 		<module>kalinka-cluster-plugin-example</module>
 		<module>kalinka-cluster-plugin</module>
+		<module>kalinka-pub-service</module>
 	</modules>
 </project>

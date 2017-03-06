@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
  */
 
-package com.github.dcsolutions.kalinka.pub.context;
+package com.github.dcsolutions.kalinka.pub.service.context;
 
 import static com.github.dcsolutions.kalinka.util.LangUtil.splitCsStrings;
 

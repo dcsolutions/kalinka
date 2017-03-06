@@ -32,13 +32,6 @@ import javax.jms.ConnectionFactory;
 import org.I0Itec.zkclient.ZkClient;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import com.github.dcsolutions.kalinka.sub.cache.BrokerCache;
-import com.github.dcsolutions.kalinka.sub.cache.IBrokerCache;
-import com.github.dcsolutions.kalinka.sub.publisher.IMessagePublisher;
-import com.github.dcsolutions.kalinka.sub.publisher.MessagePublisherProvider;
-import com.github.dcsolutions.kalinka.sub.sender.ISenderProvider;
-import com.github.dcsolutions.kalinka.sub.sender.jms.JmsSenderProvider;
-import com.github.dcsolutions.kalinka.sub.subscriber.KafkaMessageConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +43,12 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.jms.connection.CachingConnectionFactory;
 
+import com.github.dcsolutions.kalinka.cluster.IHostResolver;
+import com.github.dcsolutions.kalinka.sub.publisher.IMessagePublisher;
+import com.github.dcsolutions.kalinka.sub.publisher.MessagePublisherProvider;
+import com.github.dcsolutions.kalinka.sub.sender.ISenderProvider;
+import com.github.dcsolutions.kalinka.sub.sender.jms.JmsSenderProvider;
+import com.github.dcsolutions.kalinka.sub.subscriber.KafkaMessageConsumer;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Maps;
 
@@ -67,6 +66,9 @@ public class ContextConfiguration {
 	@SuppressWarnings("rawtypes")
 	@Autowired
 	private List<IMessagePublisher> messagePublishers;
+
+	@Autowired
+	private IHostResolver hostResolver;
 
 	@Value("${kafka.group.id:kalinka}")
 	private String kafkaGroupId;
@@ -198,12 +200,6 @@ public class ContextConfiguration {
 		return new KafkaMessageConsumer<>(this.kafkaConsumerConfig(), topic, this.senderProvider(), this.messagePublisherProvider());
 	}
 
-	@Bean
-	public IBrokerCache brokerCache() {
-
-		return new BrokerCache(this.zkClient(), this.cacheInitialSize, this.cacheMaxSize, this.cacheEvictionHours);
-	}
-
 	@SuppressWarnings("rawtypes")
 	@Bean
 	public ISenderProvider senderProvider() {
@@ -215,7 +211,7 @@ public class ContextConfiguration {
 			m.find();
 			connectionFactories.put(m.group(1), this.connectionFactory(h));
 		});
-		return new JmsSenderProvider(connectionFactories, this.brokerCache());
+		return new JmsSenderProvider(connectionFactories, this.hostResolver);
 	}
 
 	@Bean
