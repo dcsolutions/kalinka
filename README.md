@@ -152,17 +152,29 @@ cd ../vagrant
 vagrant snapshot save <NAME>
 ```
 
+* You can restore the snapshot by entering:
+```
+vagrant snapshot restore <NAME>
+```
+
 * Deploy zookeeper and kafka
 ```
 cd ../ansible
 ansible-playbook zookeeper.yml kafka.yml
 
-* Before you can deploy activemq you'll have to build *kalinka-activemq-plugin* and *kalinka-pub-plugin* because these are required by activemq.
+* Now it's time to build the software:
 ```
-cd ../kalinka-activemq-plugin
+cd ..
 mvn clean install
-cd ../kalinka-pub-plugin
-mvn clean install
+```
+
+* To create the docker-images you have to create an account on <https://hub.docker.com>. The builds for the docker-images are located in:
+  * `kalinka-example/kalinka-service-example-parent/kalinka-pub-service-example`
+  * `kalinka-example/kalinka-service-example-parent/kalinka-sub-service-example`
+
+* Create the images by entering the directories and execute:
+```
+mvn clean install -DdockerImageBuild=True -DdockerRegistryPush=True -Ddocker.registry.prefix=<NAME_OF_YOUR_DOCKERHUB_ACCOUNT>
 ```
 
 * Deploy activemq
