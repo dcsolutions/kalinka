@@ -299,18 +299,15 @@
 	</profiles>
 
 	<modules>
-		<module>kalinka-pub</module>
-		<module>kalinka-sub</module>
-		<module>kalinka-activemq-plugin</module>
-		<module>kalinka-util</module>
-		<module>kalinka-it</module>
-		<module>kalinka-pub-plugin</module>
-		<module>kalinka-service-example-parent</module>
-		<module>kalinka-pub-plugin-example</module>
 		<module>kalinka-cluster</module>
 		<module>kalinka-cluster-zk</module>
-		<module>kalinka-cluster-plugin-example</module>
 		<module>kalinka-cluster-plugin</module>
+		<module>kalinka-it</module>
+		<module>kalinka-sub</module>
+		<module>kalinka-pub</module>
+		<module>kalinka-pub-plugin</module>
 		<module>kalinka-pub-service</module>
+		<module>kalinka-util</module>
+		<module>kalinka-example</module>
 	</modules>
 </project>
