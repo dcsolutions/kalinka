@@ -134,7 +134,7 @@
             <bean xmlns="http://www.springframework.org/schema/beans" class="org.apache.activemq.hooks.SpringContextHook" />
         </shutdownHooks>
         <plugins>
-            <bean xmlns="http://www.springframework.org/schema/beans" id="zkPlugin" class="com.github.dcsolutions.kalinka.activemq_plugin.ActivemqPlugin">
+            <bean xmlns="http://www.springframework.org/schema/beans" id="kalinkaClusterPluginZk" class="com.github.dcsolutions.kalinka.cluster.plugin.KalinkaClusterPlugin">
                 <constructor-arg name="zkServers" value="{{zk_hosts}}{{zk_chroots['activemq']}}"/>
                 <constructor-arg name="host" value="{{inventory_hostname}}"/>
             </bean>

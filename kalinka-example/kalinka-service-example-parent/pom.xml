@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.github.dcsolutions.kalinka</groupId>
-		<artifactId>kalinka</artifactId>
+		<artifactId>kalinka-example</artifactId>
 		<version>0.0.2-SNAPSHOT</version>
 	</parent>
 	<artifactId>kalinka-service-example-parent</artifactId>

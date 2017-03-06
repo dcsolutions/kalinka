@@ -5,7 +5,7 @@
 		<artifactId>kalinka</artifactId>
 		<version>0.0.2-SNAPSHOT</version>
 	</parent>
-	<artifactId>kalinka-pub-plugin-example</artifactId>
+	<artifactId>kalinka-activemq-plugin-example</artifactId>
 
 	<dependencies>
 		<dependency>
@@ -16,6 +16,11 @@
 		<dependency>
 			<groupId>com.github.dcsolutions.kalinka</groupId>
 			<artifactId>kalinka-cluster-plugin</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.dcsolutions.kalinka</groupId>
+			<artifactId>kalinka-cluster-zk</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
