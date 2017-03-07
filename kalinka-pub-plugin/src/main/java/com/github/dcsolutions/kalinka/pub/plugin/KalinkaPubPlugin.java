@@ -19,9 +19,14 @@ package com.github.dcsolutions.kalinka.pub.plugin;
 import org.apache.activemq.broker.Broker;
 import org.apache.activemq.broker.BrokerFilter;
 import org.apache.activemq.broker.BrokerPlugin;
+import org.apache.activemq.broker.ProducerBrokerExchange;
+import org.apache.activemq.command.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
 
+import com.github.dcsolutions.kalinka.pub.publisher.IMessagePublisher;
+import com.github.dcsolutions.kalinka.pub.publisher.MessagePublisherProvider;
 import com.google.common.base.Preconditions;
 
 /**
@@ -32,19 +37,41 @@ public class KalinkaPubPlugin<K, V> implements BrokerPlugin {
 
 	private static final Logger LOG = LoggerFactory.getLogger(KalinkaPubPlugin.class);
 
-	private final BrokerFilter brokerFilter;
+	private final MessagePublisherProvider<Message, K, V> messagePublisherProvider;
+	private final KafkaTemplate<K, V> kafkaTemplate;
 
-	public KalinkaPubPlugin(final BrokerFilter brokerFilter) {
 
-		this.brokerFilter = Preconditions.checkNotNull(brokerFilter);
+	public KalinkaPubPlugin(final MessagePublisherProvider<Message, K, V> messagePublisherProvider, final KafkaTemplate<K, V> kafkaTemplate) {
+
+		this.messagePublisherProvider = Preconditions.checkNotNull(messagePublisherProvider);
+		this.kafkaTemplate = Preconditions.checkNotNull(kafkaTemplate);
 	}
 
 	@Override
-	public Broker installPlugin(final Broker broker) throws Exception {
+	public Broker installPlugin(final Broker next) throws Exception {
 
 		LOG.info("Installing plugin...");
 
-		return this.brokerFilter;
+		return new BrokerFilter(next) {
+
+			@Override
+			public void send(final ProducerBrokerExchange producerExchange, final Message messageSend) throws Exception {
+
+				try {
+					final String destination = messageSend.getDestination().getPhysicalName();
+					final IMessagePublisher<Message, K, V> publisher = messagePublisherProvider.getPublisher(destination);
+					if (publisher == null) {
+						LOG.debug("No kakfa-publisher found for destination={}. Will forward message.", destination);
+						super.send(producerExchange, messageSend);
+					} else {
+						publisher.publish(messageSend, kafkaTemplate);
+					}
+				} catch (final Throwable t) {
+					LOG.error("Exception occured", t);
+					throw t;
+				}
+			}
+		};
 
 	}
 

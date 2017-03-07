@@ -1,8 +1,10 @@
 ---
 organization: dcsolutions
 docker_host: "tcp://{{inventory_hostname}}:2375"
-kalinka_version: 0.0.1-SNAPSHOT
+kalinka_version: 0.0.2-SNAPSHOT
 reset_all: False
+
+hc_clustering_enabled: False
 
 zk_client_port: 2181
 zk_hosts: "{% for host in groups['zookeeper'] %}{{hostvars[host]['inventory_hostname']}}:{{zk_client_port}}{% if not loop.last %},{% endif %}{% endfor %}"

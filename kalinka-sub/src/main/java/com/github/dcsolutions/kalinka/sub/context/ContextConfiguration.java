@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 
 import javax.jms.ConnectionFactory;
 
-import org.I0Itec.zkclient.ZkClient;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.slf4j.Logger;
@@ -58,7 +57,7 @@ import com.google.common.collect.Maps;
  *
  */
 @Configuration
-@ImportResource("${custom.config.file}")
+@ImportResource({ "${custom.config.file}", "${clustering.config.file}" })
 public class ContextConfiguration {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ContextConfiguration.class);
@@ -72,9 +71,6 @@ public class ContextConfiguration {
 
 	@Value("${kafka.group.id:kalinka}")
 	private String kafkaGroupId;
-
-	@Value("${zk.hosts}")
-	private String zkHosts;
 
 	@Value("${kafka.hosts}")
 	private String kafkaHosts;
@@ -105,15 +101,6 @@ public class ContextConfiguration {
 
 	@Value("${jms.passwd:#{null}}")
 	private String jmsPasswd;
-
-	@Value("${cache.initial.size}")
-	private int cacheInitialSize;
-
-	@Value("${cache.max.size}")
-	private long cacheMaxSize;
-
-	@Value("${cache.eviction.hours}")
-	private int cacheEvictionHours;
 
 	private List<String> jmsHosts;
 
@@ -150,12 +137,6 @@ public class ContextConfiguration {
 	public IMessagePublisher messagePublisher(final String className) {
 
 		return createObject(className, IMessagePublisher.class);
-	}
-
-	@Bean
-	public ZkClient zkClient() {
-
-		return new ZkClient(this.zkHosts);
 	}
 
 	@Bean

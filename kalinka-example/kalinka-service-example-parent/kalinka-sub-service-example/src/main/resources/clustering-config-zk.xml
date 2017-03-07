@@ -8,11 +8,14 @@
         http://www.springframework.org/schema/util
         http://www.springframework.org/schema/util/spring-util.xsd">
 
-	<util:list id="messagePublishers" list-class="java.util.ArrayList" value-type="com.github.dcsolutions.kalinka.sub.publisher.IMessagePublisher">
-		<ref bean="mqttMqttJmsMessagePublisher" />
-		<ref bean="sparkClusterMqttJmsMessagePublisher" />
-	</util:list>
+	<bean id="hostResolver" class="com.github.dcsolutions.kalinka.cluster.zk.ZkHostResolver">
+		<constructor-arg index="0" ref="zkClient" />
+		<constructor-arg index="1" value="${cache.initial.size}" />
+		<constructor-arg index="2" value="${cache.max.size}" />
+		<constructor-arg index="3" value="${cache.eviction.hours}" />
+	</bean>
 
-	<bean id="mqttMqttJmsMessagePublisher" class="com.github.dcsolutions.kalinka.sub.example.MqttMqttJmsMessagePublisher" />
-	<bean id="sparkClusterMqttJmsMessagePublisher" class="com.github.dcsolutions.kalinka.sub.example.SparkClusterMqttJmsMessagePublisher" />
+	<bean id="zkClient" class="org.I0Itec.zkclient.ZkClient">
+		<constructor-arg index="0" type="java.lang.String" value="${zk.hosts}" />
+	</bean>
 </beans>

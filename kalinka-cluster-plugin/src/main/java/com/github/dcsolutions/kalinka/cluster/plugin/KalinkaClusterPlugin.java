@@ -16,12 +16,18 @@ limitations under the License.
 
 package com.github.dcsolutions.kalinka.cluster.plugin;
 
+import java.util.Optional;
+
 import org.apache.activemq.broker.Broker;
 import org.apache.activemq.broker.BrokerFilter;
 import org.apache.activemq.broker.BrokerPlugin;
+import org.apache.activemq.broker.ConnectionContext;
+import org.apache.activemq.command.ConnectionInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.dcsolutions.kalinka.cluster.IConnectionStore;
+import com.github.dcsolutions.kalinka.cluster.IIdResolver;
 import com.google.common.base.Preconditions;
 
 /**
@@ -32,19 +38,31 @@ public class KalinkaClusterPlugin implements BrokerPlugin {
 
 	private static final Logger LOG = LoggerFactory.getLogger(KalinkaClusterPlugin.class);
 
-	private final BrokerFilter brokerFilter;
+	private final IConnectionStore connectionStore;
+	private final IIdResolver idResolver;
 
-	public KalinkaClusterPlugin(final BrokerFilter brokerFilter) {
+	public KalinkaClusterPlugin(final IConnectionStore connectionStore, final IIdResolver idResolver) {
 
-		this.brokerFilter = Preconditions.checkNotNull(brokerFilter);
+		this.connectionStore = Preconditions.checkNotNull(connectionStore);
+		this.idResolver = Preconditions.checkNotNull(idResolver);
 	}
 
 	@Override
-	public Broker installPlugin(final Broker broker) throws Exception {
+	public Broker installPlugin(final Broker next) throws Exception {
 
 		LOG.info("Installing plugin...");
 
-		return this.brokerFilter;
-	}
+		return new BrokerFilter(next) {
 
+			@Override
+			public void addConnection(final ConnectionContext context, final ConnectionInfo info) throws Exception {
+
+				final Optional<String> idOpt = idResolver.resolveId(context, info);
+				if (idOpt.isPresent()) {
+					connectionStore.upsertConnection(idOpt.get());
+				}
+				super.addConnection(context, info);
+			}
+		};
+	}
 }

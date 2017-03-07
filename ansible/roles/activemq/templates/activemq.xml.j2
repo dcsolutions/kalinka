@@ -26,6 +26,7 @@
         <property name="locations">
         	<list>
             	<value>file:${activemq.conf}/credentials.properties</value>
+            	<value>file:${activemq.conf}/kalinka-cluster.properties</value>
 {% if kalinka_pub_plugin_enabled | bool %}
                 <value>file:${activemq.conf}/kalinka-pub.properties</value>
 {% endif %}
@@ -35,6 +36,11 @@
     
 {% if kalinka_pub_plugin_enabled | bool %}
     <import resource="file:${activemq.conf}/kalinka-pub.xml"/>
+{% endif %}
+{% if hc_clustering_enabled | bool %}
+    <import resource="file:${activemq.conf}/kalinka-cluster-hc.xml"/>
+{% else %}
+    <import resource="file:${activemq.conf}/kalinka-cluster-zk.xml"/>
 {% endif %}
 
    <!-- Allows accessing the server log -->
@@ -135,8 +141,8 @@
         </shutdownHooks>
         <plugins>
             <bean xmlns="http://www.springframework.org/schema/beans" id="kalinkaClusterPluginZk" class="com.github.dcsolutions.kalinka.cluster.plugin.KalinkaClusterPlugin">
-                <constructor-arg name="zkServers" value="{{zk_hosts}}{{zk_chroots['activemq']}}"/>
-                <constructor-arg name="host" value="{{inventory_hostname}}"/>
+                <constructor-arg name="connectionStore" ref="connectionStore"/>
+                <constructor-arg name="idResolver" ref="idResolver"/>
             </bean>
 {% if kalinka_pub_plugin_enabled | bool %}
             <bean xmlns="http://www.springframework.org/schema/beans" id="kalinkaPubPlugin" class="com.github.dcsolutions.kalinka.pub.plugin.KalinkaPubPlugin">

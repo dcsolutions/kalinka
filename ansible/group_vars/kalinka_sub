@@ -15,6 +15,7 @@ kalinka_sub_state: started
 
 kalinka_sub_opts: 
 - "-Dcustom.config.file=classpath:example-custom-config.xml"
+- "-Dclustering.config.file=classpath:{% if hc_clustering_enabled %}clusterin-config-hc{% else %}clustering-config-zk{% endif %}.xml"
 - "-Dlogging.level.root={{kalinka_sub_log_level}}"
 - "-Dlogging.level.com.github.dcsolutions={{kalinka_sub_log_level_diehl}}"
 - "-Dzk.hosts={{zk_hosts}}{{zk_chroots['activemq']}}"

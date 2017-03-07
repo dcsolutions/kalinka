@@ -13,14 +13,19 @@
 			<artifactId>kalinka-sub</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.github.dcsolutions.kalinka</groupId>
+			<artifactId>kalinka-cluster-zk</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
-	
+
 	<build>
 		<plugins>
-						<plugin>
-							<groupId>com.spotify</groupId>
-							<artifactId>docker-maven-plugin</artifactId>
-		</plugin>
+			<plugin>
+				<groupId>com.spotify</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+			</plugin>
 		</plugins>
 	</build>
 </project>

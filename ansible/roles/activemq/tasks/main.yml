@@ -13,6 +13,7 @@
     dest: "/volumes/activemq/config/{{item}}"
   with_items:
   - activemq.xml
+  - kalinka-cluster.properties
   - log4j.properties
   - jmx.password
   - kalinka-pub.properties
@@ -27,14 +28,12 @@
   - users.properties
   - groups.properties
   - kalinka-pub.xml
+  - kalinka-cluster-zk.xml
 
-- name: copy activemq-plugins and example-lib
+- name: copy activemq-plugins
   copy:
-    src: "../{{item}}/target/{{item}}-{{kalinka_version}}.jar" 
-    dest: "/volumes/activemq/lib/{{item}}.jar"
-  with_items:
-  - kalinka-activemq-plugin
-  - kalinka-pub-plugin-example
+    src: "../kalinka-example/kalinka-activemq-plugin-example/target/kalinka-activemq-plugin-example-{{kalinka_version}}.jar" 
+    dest: "/volumes/activemq/lib/kalinka-activemq-plugin.jar"
 
 - name: start container
   docker_container:
@@ -49,13 +48,14 @@
     volumes:
     - /volumes/activemq/config/log4j.properties:/opt/activemq/conf/log4j.properties
     - /volumes/activemq/config/activemq.xml:/opt/activemq/conf/activemq.xml
+    - /volumes/activemq/config/kalinka-cluster.properties:/opt/activemq/conf/kalinka-cluster.properties
     - /volumes/activemq/config/jmx.password:/opt/activemq/conf/jmx.password
     - /volumes/activemq/lib/kalinka-activemq-plugin.jar:/opt/activemq/lib/kalinka-activemq-plugin.jar
-    - /volumes/activemq/lib/kalinka-pub-plugin-example.jar:/opt/activemq/lib/kalinka-pub-plugin-example.jar
     - /volumes/activemq/config/keystore.jks:/opt/activemq/conf/keystore.jks
     - /volumes/activemq/config/login.config:/opt/activemq/conf/login.config
     - /volumes/activemq/config/users.properties:/opt/activemq/conf/users.properties
     - /volumes/activemq/config/groups.properties:/opt/activemq/conf/groups.properties
     - /volumes/activemq/config/kalinka-pub.properties:/opt/activemq/conf/kalinka-pub.properties
     - /volumes/activemq/config/kalinka-pub.xml:/opt/activemq/conf/kalinka-pub.xml
+    - /volumes/activemq/config/kalinka-cluster-zk.xml:/opt/activemq/conf/kalinka-cluster-zk.xml
 
