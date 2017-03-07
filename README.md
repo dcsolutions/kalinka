@@ -179,7 +179,9 @@ ansible-playbook  -v -e "reset_all=True" zookeeper.yml kafka.yml activemq.yml ka
 
 #### Self-built
 
-* You have not the permission to push to `dcsolutions` so you'll have to create an account on <https://hub.docker.com> first:
+* You have not the permission to push to `dcsolutions` so you'll have to create an account on <https://hub.docker.com> and setup the following repositories first:
+  * kalinka-pub-service-example
+  * kalinka-sub-service-example
 * After creation of account you can build the whole project, including docker images by entering:
 ```
 cd ..
