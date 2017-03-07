@@ -154,18 +154,32 @@ vagrant snapshot save <NAME>
 
 * You can restore the snapshot by entering:
 ```
-vagrant snapshot restore <NAME>
+vagrant snapshot restore --no-provision <NAME>
 ```
+Since we don't want to waste time, the flag `--no-provision` is recommended.
 
-* Deploy zookeeper and kafka
+* Now you'll have to decide if you want to run the latest snapshot or build the setup on your own
+
+#### Run latest snapshot 
+
+* Run the setup with *kalinka-pub* as seperate process (container)
+
 ```
 cd ../ansible
-ansible-playbook zookeeper.yml kafka.yml
+ansible-playbook  -v -e "reset_all=True kalinka_pub_plugin_enabled=False" zookeeper.yml kafka.yml activemq.yml kalinka-pub.yml kalinka-sub.yml
+```
 
-* Now it's time to build the software:
+* Run the setup with *kalinka-pub* embedded in activemq-broker
+
+```
+cd ../ansible
+ansible-playbook  -v -e "reset_all=True" zookeeper.yml kafka.yml activemq.yml kalinka-sub.yml
+```
+
+* Now it's time to build the software. You have not the permission to push to `dcsolutions` so you'll have to create an account on <https://hub.docker.com> first:
 ```
 cd ..
-mvn clean install
+mvn clean install -DdockerImageBuild=true -DdockerRegistryPush=true -Ddocker.registry.prefix=<NAME_OF_YOUR_DOCKERHUB_ACCOUNT>
 ```
 
 * To create the docker-images you have to create an account on <https://hub.docker.com>. The builds for the docker-images are located in:
