@@ -159,10 +159,11 @@ vagrant snapshot restore --no-provision <NAME>
 Since we don't want to waste time, the flag `--no-provision` is recommended.
 
 * Now you'll have to decide if you want to run the latest snapshot or build the setup on your own
+* For further deployment-options take a look into the playbooks in folder *ansible*
 
 #### Run latest snapshot 
 
-* Run the setup with *kalinka-pub* as seperate process (container)
+* Run the setup with *kalinka-pub* as seperate process/container (standalone)
 
 ```
 cd ../ansible
@@ -176,105 +177,24 @@ cd ../ansible
 ansible-playbook  -v -e "reset_all=True" zookeeper.yml kafka.yml activemq.yml kalinka-sub.yml
 ```
 
-* Now it's time to build the software. You have not the permission to push to `dcsolutions` so you'll have to create an account on <https://hub.docker.com> first:
+#### Self-built
+
+* You have not the permission to push to `dcsolutions` so you'll have to create an account on <https://hub.docker.com> first:
+* After creation of account you can build the whole project, including docker images by entering:
 ```
 cd ..
+cd <PROJECT_ROOT_DIR>
 mvn clean install -DdockerImageBuild=true -DdockerRegistryPush=true -Ddocker.registry.prefix=<NAME_OF_YOUR_DOCKERHUB_ACCOUNT>
 ```
 
-* To create the docker-images you have to create an account on <https://hub.docker.com>. The builds for the docker-images are located in:
-  * `kalinka-example/kalinka-service-example-parent/kalinka-pub-service-example`
-  * `kalinka-example/kalinka-service-example-parent/kalinka-sub-service-example`
+The deployment is the nearly the same as described before but you'll have to refer to your own docker-account:
 
-* Create the images by entering the directories and execute:
+* *kalinka-pub*-standalone
 ```
-mvn clean install -DdockerImageBuild=True -DdockerRegistryPush=True -Ddocker.registry.prefix=<NAME_OF_YOUR_DOCKERHUB_ACCOUNT>
+ansible-playbook  -v -e "reset_all=True kalinka_pub_plugin_enabled=False organization=<NAME_OF_YOUR_DOCKER_ACCOUNT>" zookeeper.yml kafka.yml activemq.yml kalinka-pub.yml kalinka-sub.yml
 ```
 
-* Deploy activemq
+* *kalinka-pub* as plugin
 ```
-cd ../activemq
-ansible-playbook activemq
-```
-
-For further configuration-options see the variable-declarations in folder *group_vars*.
-
-## Ensure everything is working
-
-You may want to do some simple tests to verify that deployment was successful. When you have used the default configuration there should run an instance of each component on every of the three nodes. So you should perform each of the following checks on every node.
-
-**Note:** These tests only ensure that proccesses are running and connectivity is possible (aka "smoke tests"). 
-
-### ActiveMQ
-
-* Subscribe topic
-```
-# plain
-mosquitto_sub -h 192.168.33.20 -p 1883 -i 1234 -t mqtt/abc/mqtt/def/sub -q 1 -d -k 100 -u admin -P admin
-# with SSL
-mosquitto_sub -h 192.168.33.20 -p 1885 -i 1234 -t mqtt/abc/mqtt/def/sub -q 1 -d -k 100 --cafile server-cert.pem --cert client-cert.pem --key client-key.pem --insecure
-```
-
-* Publish to topic
-```
-# plain
-mosquitto_pub -h 192.168.33.20 -p 1883 -i 1234 -m "xyz" -t mqtt/abc/mqtt/def/pub -q 1 -d -u admin -P admin
-# with cert
-mosquitto_pub -h dev1 -p 1885 -i 1234 -m "hallo" -t mqtt/abc/mqtt/def/pub -q 1 -d -k 100 --cafile server-cert.pem --cert client-cert.pem --key client-key.pem --insecure
-```
-
-* Connect via JMX
-```
-jconsole 192.168.33.20:9447
-```
-### Zookeeper
-
-* Check if running
-
-```
-echo mntr | nc 192.168.33.20 2181
-# Should return something like this:
-# zk_version    3.4.9-1757313, built on 08/23/2016 06:50 GMT
-# ...
-# ...
-```
-
-* Connect via JMX
-```
-jconsole 192.168.33.20:9449
-```
-
-### Kafka
-
-* Create topic
-```
-kafka-topics.sh --create --zookeeper 192.168.33.20:2181 --replication-factor 1 --partitions 1 --topic test
-```
-
-* Verify topic
-```
-kafka-topics.sh --zookeeper 192.168.33.11:2181 --describe --topic test
-```
-
-* Produce message
-```
-kafka-console-producer.sh --broker-list 192.168.33.20:9092 --topic test
-# Enter text-message now
-```
-
-* Consume message
-```
-kafka-console-consumer.sh --zookeeper 192.168.33.12:2181 --topic test --from-beginning
-# new syntax
-kafka-console-consumer.sh --bootstrap-server 192.168.33.12:9092 --topic test --from-beginning
-```   
-
-* Connect via JMX
-```
-jconsole 192.168.33.20:9448
-```
-
-* List the topics created during deployment
-```
-kafka-topics.sh --zookeeper 192.168.33.20:2181/kafka --list
+ansible-playbook  -v -e "reset_all=True organization=<NAME_OF_YOUR_DOCKER_ACCOUNT>" zookeeper.yml kafka.yml activemq.yml kalinka-sub.yml
 ```
