@@ -63,38 +63,40 @@
 				</property>
 			</activation>
 			<build>
-				<plugins>
-					<plugin>
-						<groupId>com.spotify</groupId>
-						<artifactId>docker-maven-plugin</artifactId>
-						<version>${docker.maven.plugin.version}</version>
-						<executions>
-							<execution>
-								<phase>install</phase>
-								<goals>
-									<goal>build</goal>
-								</goals>
-							</execution>
-						</executions>
-						<configuration>
-							<serverId>dockerhub</serverId>
-							<imageName>${docker.registry.prefix}/${project.artifactId}</imageName>
-							<imageTags>
-								<imageTag>${project.version}</imageTag>
-							</imageTags>
-							<forceTags>true</forceTags>
-							<dockerDirectory>${project.basedir}/docker</dockerDirectory>
-							<resources>
-								<resource>
-									<targetPath>/</targetPath>
-									<directory>${project.build.directory}</directory>
-									<include>${project.artifactId}-${project.version}.jar</include>
-								</resource>
-							</resources>
-							<pushImage>${docker.registry.push}</pushImage>
-						</configuration>
-					</plugin>
-				</plugins>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>com.spotify</groupId>
+							<artifactId>docker-maven-plugin</artifactId>
+							<version>${docker.maven.plugin.version}</version>
+							<executions>
+								<execution>
+									<phase>package</phase>
+									<goals>
+										<goal>build</goal>
+									</goals>
+								</execution>
+							</executions>
+							<configuration>
+								<serverId>dockerhub</serverId>
+								<imageName>${docker.registry.prefix}/${project.artifactId}</imageName>
+								<imageTags>
+									<imageTag>${project.version}</imageTag>
+								</imageTags>
+								<forceTags>true</forceTags>
+								<dockerDirectory>${project.basedir}/docker</dockerDirectory>
+								<resources>
+									<resource>
+										<targetPath>/</targetPath>
+										<directory>${project.build.directory}</directory>
+										<include>${project.artifactId}-${project.version}.jar</include>
+									</resource>
+								</resources>
+								<pushImage>${docker.registry.push}</pushImage>
+							</configuration>
+						</plugin>
+					</plugins>
+				</pluginManagement>
 			</build>
 		</profile>
 	</profiles>
