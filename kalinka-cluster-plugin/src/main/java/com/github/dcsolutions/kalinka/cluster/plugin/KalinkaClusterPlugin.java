@@ -63,6 +63,16 @@ public class KalinkaClusterPlugin implements BrokerPlugin {
 				}
 				super.addConnection(context, info);
 			}
+
+			@Override
+			public void removeConnection(final ConnectionContext context, final ConnectionInfo info, final Throwable error) throws Exception {
+
+				final Optional<String> idOpt = idResolver.resolveId(context, info);
+				if (idOpt.isPresent()) {
+					connectionStore.removeConnection(idOpt.get());
+				}
+				super.removeConnection(context, info, error);
+			}
 		};
 	}
 }
