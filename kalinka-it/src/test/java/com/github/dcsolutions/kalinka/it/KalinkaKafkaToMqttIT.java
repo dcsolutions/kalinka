@@ -7,15 +7,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.I0Itec.zkclient.ZkClient;
-import com.github.dcsolutions.kalinka.it.model.KafkaProducerClient;
-import com.github.dcsolutions.kalinka.it.model.MqttClient;
-import com.github.dcsolutions.kalinka.it.testutil.TestUtils;
-import com.github.dcsolutions.kalinka.it.testutil.ZookeeperCountdownLatch;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.github.dcsolutions.kalinka.it.model.KafkaProducerClient;
+import com.github.dcsolutions.kalinka.it.model.MqttClient;
+import com.github.dcsolutions.kalinka.it.testutil.TestUtils;
+import com.github.dcsolutions.kalinka.it.testutil.ZookeeperCountdownLatch;
 
 public class KalinkaKafkaToMqttIT {
 	private static final Logger LOG = LoggerFactory.getLogger(KalinkaKafkaToMqttIT.class);
@@ -32,7 +33,7 @@ public class KalinkaKafkaToMqttIT {
 		this.zkClient = new ZkClient(zkConnection);
 		clients = new ArrayList<>();
 		clients.add("beast");
-		clients.add("pyro");
+		clients.add("sabretooth");
 		clients.add("wolverine");
 		connectors = new ArrayList<>();
 	}
@@ -52,7 +53,7 @@ public class KalinkaKafkaToMqttIT {
 		final long intervalInMillis = 500;
 
 		connectors.add(new MqttClient("tcp://192.168.33.20:1883", "beast", clients));
-		connectors.add(new MqttClient("tcp://192.168.33.21:1883", "pyro", clients));
+		connectors.add(new MqttClient("tcp://192.168.33.21:1883", "sabretooth", clients));
 		connectors.add(new MqttClient("tcp://192.168.33.22:1883", "wolverine", clients));
 
 		ZookeeperCountdownLatch.waitForZookeeper(clients, zkClient);
@@ -77,7 +78,7 @@ public class KalinkaKafkaToMqttIT {
 		final long intervalInMillis = 1;
 
 		connectors.add(new MqttClient("tcp://192.168.33.20:1883", "beast", clients));
-		connectors.add(new MqttClient("tcp://192.168.33.21:1883", "pyro", clients));
+		connectors.add(new MqttClient("tcp://192.168.33.21:1883", "sabretooth", clients));
 		connectors.add(new MqttClient("tcp://192.168.33.22:1883", "wolverine", clients));
 
 		ZookeeperCountdownLatch.waitForZookeeper(clients, zkClient);

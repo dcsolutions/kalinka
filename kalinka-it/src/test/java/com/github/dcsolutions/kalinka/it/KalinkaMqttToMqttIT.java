@@ -7,14 +7,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.I0Itec.zkclient.ZkClient;
-import com.github.dcsolutions.kalinka.it.model.MqttClient;
-import com.github.dcsolutions.kalinka.it.testutil.TestUtils;
-import com.github.dcsolutions.kalinka.it.testutil.ZookeeperCountdownLatch;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.github.dcsolutions.kalinka.it.model.MqttClient;
+import com.github.dcsolutions.kalinka.it.testutil.TestUtils;
+import com.github.dcsolutions.kalinka.it.testutil.ZookeeperCountdownLatch;
 
 public class KalinkaMqttToMqttIT {
 
@@ -33,7 +34,7 @@ public class KalinkaMqttToMqttIT {
 
 		clients = new ArrayList<>();
 		clients.add("beast");
-		clients.add("pyro");
+		clients.add("sabretooth");
 		clients.add("wolverine");
 		connectors = new ArrayList<>();
 	}
@@ -53,7 +54,7 @@ public class KalinkaMqttToMqttIT {
 		final long intervalInMillis = 5L;
 
 		connectors.add(new MqttClient("tcp://192.168.33.20:1883", "beast", clients, intervalInMillis));
-		connectors.add(new MqttClient("tcp://192.168.33.20:1883", "pyro", clients, intervalInMillis));
+		connectors.add(new MqttClient("tcp://192.168.33.20:1883", "sabretooth", clients, intervalInMillis));
 		connectors.add(new MqttClient("tcp://192.168.33.20:1883", "wolverine", clients, intervalInMillis));
 
 		ZookeeperCountdownLatch.waitForZookeeper(clients, zkClient);
@@ -78,7 +79,7 @@ public class KalinkaMqttToMqttIT {
 		final long intervalInMillis = 1000;
 
 		connectors.add(new MqttClient("tcp://192.168.33.20:1883", "beast", clients, intervalInMillis));
-		connectors.add(new MqttClient("tcp://192.168.33.21:1883", "pyro", clients, intervalInMillis));
+		connectors.add(new MqttClient("tcp://192.168.33.21:1883", "sabretooth", clients, intervalInMillis));
 		connectors.add(new MqttClient("tcp://192.168.33.22:1883", "wolverine", clients, intervalInMillis));
 
 		ZookeeperCountdownLatch.waitForZookeeper(clients, zkClient);
@@ -108,7 +109,7 @@ public class KalinkaMqttToMqttIT {
 		final long intervalInMillis = 5000;
 
 		connectors.add(new MqttClient("tcp://192.168.33.20:1883", "beast", clients, intervalInMillis));
-		connectors.add(new MqttClient("tcp://192.168.33.21:1883", "pyro", clients, intervalInMillis));
+		connectors.add(new MqttClient("tcp://192.168.33.21:1883", "sabretooth", clients, intervalInMillis));
 		connectors.add(new MqttClient("tcp://192.168.33.22:1883", "wolverine", clients, intervalInMillis));
 
 		ZookeeperCountdownLatch.waitForZookeeper(clients, zkClient);
@@ -145,7 +146,7 @@ public class KalinkaMqttToMqttIT {
 		final long intervalInMillis = 100;
 
 		connectors.add(new MqttClient("tcp://192.168.33.20:1883", "beast", clients, intervalInMillis));
-		connectors.add(new MqttClient("tcp://192.168.33.21:1883", "pyro", clients, intervalInMillis));
+		connectors.add(new MqttClient("tcp://192.168.33.21:1883", "sabretooth", clients, intervalInMillis));
 		connectors.add(new MqttClient("tcp://192.168.33.22:1883", "wolverine", clients, intervalInMillis));
 
 		ZookeeperCountdownLatch.waitForZookeeper(clients, zkClient);
@@ -169,7 +170,7 @@ public class KalinkaMqttToMqttIT {
 		final long intervalInMillis = 5L;
 
 		connectors.add(new MqttClient("tcp://192.168.33.20:1883", "beast", clients, intervalInMillis));
-		connectors.add(new MqttClient("tcp://192.168.33.21:1883", "pyro", clients, intervalInMillis));
+		connectors.add(new MqttClient("tcp://192.168.33.21:1883", "sabretooth", clients, intervalInMillis));
 		connectors.add(new MqttClient("tcp://192.168.33.22:1883", "wolverine", clients, intervalInMillis));
 
 		ZookeeperCountdownLatch.waitForZookeeper(clients, zkClient);
