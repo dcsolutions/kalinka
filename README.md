@@ -143,7 +143,7 @@ It is recommended to deploy the basic infrastructure first and create a snapshot
 
 * Set up Docker-daemon, a Docker-registry and pull required images. These are the most time-consuming steps.
 ```
-ansible-playbook infrastructure.yml
+ansible-playbook infrastruct.yml
 ```
 
 * Create a snapshot
