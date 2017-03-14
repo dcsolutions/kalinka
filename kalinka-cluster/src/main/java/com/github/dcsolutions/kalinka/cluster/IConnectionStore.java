@@ -25,5 +25,4 @@ public interface IConnectionStore {
 	public void upsertConnection(String id);
 
 	public void removeConnection(String id);
-
 }

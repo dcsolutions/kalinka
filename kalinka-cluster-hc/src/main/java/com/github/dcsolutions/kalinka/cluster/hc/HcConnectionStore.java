@@ -40,10 +40,12 @@ public class HcConnectionStore implements IConnectionStore {
 	private final String mapName;
 	private final String host;
 
-	public HcConnectionStore(final String connectionString, final String mapName, final String host) {
+	public HcConnectionStore(final String connectionString, final String groupName, final String mapName, final String host) {
 
 		final ClientConfig clientConfig = new ClientConfig();
+		clientConfig.setProperty("hazelcast.logging.type", "slf4j");
 		clientConfig.getNetworkConfig().setAddresses(LangUtil.splitCsStrings(Preconditions.checkNotNull(connectionString)));
+		clientConfig.getGroupConfig().setName(Preconditions.checkNotNull(groupName));
 		this.hazelcastClient = HazelcastClient.newHazelcastClient(clientConfig);
 
 		this.mapName = Preconditions.checkNotNull(mapName);
@@ -54,15 +56,19 @@ public class HcConnectionStore implements IConnectionStore {
 	public void upsertConnection(final String id) {
 
 		LOG.debug("Received connect from id={}", id);
-		this.hazelcastClient.getMap(this.mapName).set(id, this.host);
+		this.upsertHcNode(id);
 	}
 
 	@Override
 	public void removeConnection(final String id) {
 
 		LOG.debug("Received connect from id={}", id);
-		// TODO Auto-generated method stub
+		this.deleteHcNode(id);
+	}
 
+	public void shutdown() {
+
+		this.hazelcastClient.shutdown();
 	}
 
 	void upsertHcNode(final String clientId) {
