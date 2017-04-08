@@ -77,6 +77,8 @@
 		<theore.spring.mockito.version>1.3.0</theore.spring.mockito.version>
 		<!-- We cannot use most recent curator-version because zookeeper-version conflicts with zkclient -->
 		<apache.curator.version>2.11.1</apache.curator.version>
+		<kafka.cluster.tools.version>1.3.1</kafka.cluster.tools.version>
+		<jamm.version>0.3.1</jamm.version>
 		<maven.shade.plugin.version>3.0.0</maven.shade.plugin.version>
 		<nexus.staging.plugin.version>1.6.8</nexus.staging.plugin.version>
 		<maven.javadoc.plugin.version>2.10.4</maven.javadoc.plugin.version>
@@ -85,7 +87,47 @@
 		<versions.maven.plugin.version>2.3</versions.maven.plugin.version>
 		<build.helper.maven.plugin.version>3.0.0</build.helper.maven.plugin.version>
 		<maven.scm.plugin.version>1.9.5</maven.scm.plugin.version>
+		<maven.surefire.plugin.version>2.19.1</maven.surefire.plugin.version>
 	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${logback.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-core</artifactId>
+			<version>${logback.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-core</artifactId>
+			<version>${hamcrest.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-library</artifactId>
+			<version>${hamcrest.version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 
 	<profiles>
 		<profile>
@@ -286,7 +328,8 @@
 						<version>${maven.scm.plugin.version}</version>
 						<configuration>
 							<connectionType>developerConnection</connectionType>
-							<message>Preparing versions for next development-iteration: ${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.nextIncrementalVersion}-SNAPSHOT</message>
+							<message>Preparing versions for next development-iteration:
+								${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.nextIncrementalVersion}-SNAPSHOT</message>
 							<pushChanges>false</pushChanges>
 						</configuration>
 						<executions>
@@ -303,7 +346,6 @@
 			</build>
 		</profile>
 	</profiles>
-
 	<modules>
 		<module>kalinka-cluster</module>
 		<module>kalinka-cluster-zk</module>

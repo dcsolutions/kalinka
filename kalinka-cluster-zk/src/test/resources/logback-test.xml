@@ -10,7 +10,7 @@
 		</layout>
 	</appender>
 	
-	<logger name="org.diehl" level="DEBUG" />
+	<logger name="com.github.dcsolutions" level="DEBUG" />
 	<root level="INFO">
 		<appender-ref ref="stdout" />
 	</root>

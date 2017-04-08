@@ -40,46 +40,61 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>${logback.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-core</artifactId>
-			<version>${logback.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-core</artifactId>
-			<version>${hamcrest.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-library</artifactId>
-			<version>${hamcrest.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.curator</groupId>
 			<artifactId>curator-test</artifactId>
 			<version>${apache.curator.version}</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.gruchalski</groupId>
+			<artifactId>kafka-cluster-tools</artifactId>
+			<version>${kafka.cluster.tools.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.github.jbellis</groupId>
+			<artifactId>jamm</artifactId>
+			<version>${jamm.version}</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/lib</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- <plugin> -->
+			<!-- <groupId>org.apache.maven.plugins</groupId> -->
+			<!-- <artifactId>maven-compiler-plugin</artifactId> -->
+			<!-- <version>3.1</version> -->
+			<!-- <configuration> -->
+			<!-- <compilerVersion>${javac.target}</compilerVersion> -->
+			<!-- <source>${javac.target}</source> -->
+			<!-- <target>${javac.target}</target> -->
+			<!-- </configuration> -->
+			<!-- </plugin> -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>${maven.surefire.plugin.version}</version>
+				<configuration>
+					<excludes>
+						<exclude>com.github.dcsolutions.kalinka.cluster.zk.SimpleTypesTest,com.github.dcsolutions.kalinka.cluster.zk.ZkConnectionStoreTest,com.github.dcsolutions.kalinka.cluster.zk.ZkHostResolverTest</exclude>
+					</excludes>
+					<argLine>-javaagent:${project.build.directory}/lib/jamm-${jamm.version}.jar</argLine>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
