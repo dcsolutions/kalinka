@@ -41,8 +41,8 @@
     restart_policy: unless-stopped
     volumes:
     - /volumes/kafka/logs:/opt/kafka-logs
-    - "/volumes/kafka/config/log4j.properties:/opt/kafka_{{kafka_scala_version}}-{{kafka_version}}/config/log4j.properties"
-    - "/volumes/kafka/config/server.properties:/opt/kafka_{{kafka_scala_version}}-{{kafka_version}}/config/server.properties"
+    - "/volumes/kafka/config/log4j.properties:/opt/{{kafka_dir_name}}/config/log4j.properties"
+    - "/volumes/kafka/config/server.properties:/opt/{{kafka_dir_name}}/config/server.properties"
     - /volumes/kafka/bin/start-kafka.sh:/usr/bin/start-kafka.sh
     env:
       EXTRA_ARGS: "-Dcom.sun.management.jmxremote.port={{kafka_jmx_port}}"
