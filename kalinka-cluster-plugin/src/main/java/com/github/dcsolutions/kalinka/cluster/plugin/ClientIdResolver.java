@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 
 import org.apache.activemq.broker.ConnectionContext;
 import org.apache.activemq.command.ConnectionInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.dcsolutions.kalinka.cluster.IIdResolver;
 
@@ -33,6 +35,8 @@ import com.github.dcsolutions.kalinka.cluster.IIdResolver;
  *
  */
 public class ClientIdResolver implements IIdResolver {
+
+	private static final Logger LOG = LoggerFactory.getLogger(ClientIdResolver.class);
 
 	static final String JMS_CLIENT_ID_KALINKA_PUB_REGEX = "kalinka-pub-.*, kalinka-sub-.*";
 
@@ -44,6 +48,8 @@ public class ClientIdResolver implements IIdResolver {
 	}
 
 	public ClientIdResolver(final String clientIdRegexesToIgnore) {
+
+		LOG.info("Ignored client-id-regex-patterns={}", clientIdRegexesToIgnore);
 
 		this.clientIdRegexPatternsToIgnore = Arrays.asList(clientIdRegexesToIgnore.split(",")).stream().filter(s -> !s.trim().isEmpty())
 				.map(r -> Pattern.compile(r.trim())).collect(Collectors.toList());
