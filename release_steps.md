@@ -25,3 +25,6 @@ Project does not use *maven-release-plugin*
 ##### Alter version to next deployment-version
 
 `mvn validate -DprepareDev=true`
+
+##### Push commits incl. release-tag
+`git push --follow-tags`
