@@ -209,11 +209,6 @@ public class ContextConfiguration {
 		connectionFactory.setCacheProducers(true);
 		connectionFactory.setReconnectOnException(true);
 		connectionFactory.setClientId(this.jmsClientIdKalinkaSub + host + "-" + UUID.randomUUID().toString());
-		try {
-			connectionFactory.createConnection();
-		} catch (final Throwable t) {
-			LOG.warn("Could not create connection", t);
-		}
 		return connectionFactory;
 	}
 
