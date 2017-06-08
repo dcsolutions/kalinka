@@ -212,10 +212,12 @@
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-scm-plugin</artifactId>
 						<version>${maven.scm.plugin.version}</version>
+						<inherited>false</inherited>
 						<configuration>
 							<connectionType>developerConnection</connectionType>
-							<message>Preparing versions for Release: ${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}</message>
 							<pushChanges>false</pushChanges>
+							<message>Preparing versions for Release: ${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}</message>
+							<tag>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}</tag>
 						</configuration>
 						<executions>
 							<execution>
@@ -223,6 +225,7 @@
 								<phase>validate</phase>
 								<goals>
 									<goal>checkin</goal>
+									<goal>tag</goal>
 								</goals>
 							</execution>
 						</executions>
