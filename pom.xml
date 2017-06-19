@@ -4,7 +4,7 @@
 
 	<artifactId>kalinka</artifactId>
 	<groupId>com.github.dcsolutions.kalinka</groupId>
-	<version>0.0.3-SNAPSHOT</version>
+	<version>0.0.3</version>
 	<packaging>pom</packaging>
 
 	<name>${project.artifactId}</name>
