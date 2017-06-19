@@ -27,4 +27,4 @@ Project does not use *maven-release-plugin*
 `mvn validate -DprepareDev=true`
 
 ##### Push commits incl. release-tag
-`git push --follow-tags`
+`git push [--set-upstream origin master] --follow-tags`
