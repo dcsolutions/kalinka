@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>com.github.dcsolutions.kalinka</groupId>
 		<artifactId>kalinka-example</artifactId>
-		<version>0.0.4</version>
+		<version>0.0.5-SNAPSHOT</version>
 	</parent>
 	<artifactId>kalinka-service-example-parent</artifactId>
 	<packaging>pom</packaging>
