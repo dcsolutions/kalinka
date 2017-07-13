@@ -62,7 +62,7 @@
 		<docker.registry.prefix>${project.organization.name}</docker.registry.prefix>
 
 		<activemq.version>5.14.3</activemq.version>
-		<kafka.version>0.10.1.0</kafka.version>
+		<kafka.version>0.10.2.0</kafka.version>
 		<spring.jms.version>4.3.6.RELEASE</spring.jms.version>
 		<zkclient.version>0.10</zkclient.version>
 		<guava.version>21.0</guava.version>
