@@ -40,11 +40,18 @@ public class KalinkaClusterPlugin implements BrokerPlugin {
 
 	private final IConnectionStore connectionStore;
 	private final IIdResolver idResolver;
+	private final boolean handleDisconnects;
 
 	public KalinkaClusterPlugin(final IConnectionStore connectionStore, final IIdResolver idResolver) {
 
+		this(connectionStore, idResolver, true);
+	}
+
+	public KalinkaClusterPlugin(final IConnectionStore connectionStore, final IIdResolver idResolver, final boolean handleDisconnects) {
+
 		this.connectionStore = Preconditions.checkNotNull(connectionStore);
 		this.idResolver = Preconditions.checkNotNull(idResolver);
+		this.handleDisconnects = handleDisconnects;
 	}
 
 	@Override
@@ -67,9 +74,13 @@ public class KalinkaClusterPlugin implements BrokerPlugin {
 			@Override
 			public void removeConnection(final ConnectionContext context, final ConnectionInfo info, final Throwable error) throws Exception {
 
-				final Optional<String> idOpt = idResolver.resolveId(context, info);
-				if (idOpt.isPresent()) {
-					connectionStore.removeConnection(idOpt.get());
+				if (handleDisconnects) {
+					final Optional<String> idOpt = idResolver.resolveId(context, info);
+					if (idOpt.isPresent()) {
+						connectionStore.removeConnection(idOpt.get());
+					}
+				} else {
+					LOG.debug("Handling disconnects is disabled");
 				}
 				super.removeConnection(context, info, error);
 			}
