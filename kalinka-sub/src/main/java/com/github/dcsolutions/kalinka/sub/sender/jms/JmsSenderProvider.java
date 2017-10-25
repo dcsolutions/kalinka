@@ -56,6 +56,10 @@ public class JmsSenderProvider extends AbstractSenderProvider<JmsTemplate> {
 				return false;
 			}
 			return true;
-		}).map(h -> new JmsTemplate(connectionFactories.get(h))).collect(Collectors.toSet());
+		}).map(h -> {
+			final JmsTemplate jmsTemplate = new JmsTemplate(connectionFactories.get(h));
+			jmsTemplate.setPubSubDomain(true);
+			return jmsTemplate;
+		}).collect(Collectors.toSet());
 	}
 }
