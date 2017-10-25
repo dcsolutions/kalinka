@@ -15,17 +15,19 @@ limitations under the License.
 */
 package com.github.dcsolutions.kalinka.sub.example;
 
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.jms.BytesMessage;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import com.github.dcsolutions.kalinka.sub.publisher.IMessagePublisher;
-import com.github.dcsolutions.kalinka.sub.sender.ISenderProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
+
+import com.github.dcsolutions.kalinka.sub.publisher.IMessagePublisher;
+import com.github.dcsolutions.kalinka.sub.sender.ISenderProvider;
 
 /**
  * @author michas <michas@jarmoni.org>
@@ -46,22 +48,28 @@ public class SparkClusterMqttJmsMessagePublisher implements IMessagePublisher<Jm
 			final String destId = message.key();
 			final String topic = "sparkcluster" + ".mqtt." + destId + ".sub";
 
-			final JmsTemplate sender = senderProvider.getSender(destId);
-			if (sender == null) {
+			final Set<JmsTemplate> senders = senderProvider.getSenders(destId);
+			if (senders.isEmpty()) {
 				LOG.warn("Cannot send, no sender available for destId={}", destId);
 				return;
 			}
-			sender.send(topic, (MessageCreator) session -> {
-				final BytesMessage byteMessage = session.createBytesMessage();
+			senders.forEach(sender -> {
 				try {
-					byteMessage.writeBytes(message.value());
-					return byteMessage;
+					sender.send(topic, (MessageCreator) session -> {
+						final BytesMessage byteMessage = session.createBytesMessage();
+						try {
+							byteMessage.writeBytes(message.value());
+							return byteMessage;
+						} catch (final Throwable t) {
+							throw new RuntimeException("Exception during sending", t);
+						}
+					});
 				} catch (final Throwable t) {
-					throw new RuntimeException(t);
+					LOG.error("Exception while sending", t);
 				}
 			});
 		} catch (final Throwable t) {
-			LOG.error("Exception while sending", t);
+			LOG.error("Unexpected exception", t);
 		}
 	}
 

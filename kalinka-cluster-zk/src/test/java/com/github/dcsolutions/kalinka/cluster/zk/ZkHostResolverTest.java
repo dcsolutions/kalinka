@@ -19,7 +19,6 @@ package com.github.dcsolutions.kalinka.cluster.zk;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -31,6 +30,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import com.google.common.collect.Sets;
 
 /**
  * @author michas <michas@jarmoni.org>
@@ -64,20 +65,20 @@ public class ZkHostResolverTest {
 		this.hostResolver.put("2", "two");
 		this.hostResolver.put("3", "three");
 
-		assertThat(this.hostResolver.getHost("1").get(), is("one"));
-		assertThat(this.hostResolver.getHost("2").get(), is("two"));
-		assertThat(this.hostResolver.getHost("3").get(), is("three"));
+		assertThat(this.hostResolver.getHosts("1"), is(Sets.newHashSet("one")));
+		assertThat(this.hostResolver.getHosts("2"), is(Sets.newHashSet("two")));
+		assertThat(this.hostResolver.getHosts("3"), is(Sets.newHashSet("three")));
 
 		this.hostResolver.put("4", "four");
 
-		assertThat(this.hostResolver.getHost("1"), is(Optional.empty()));
-		assertThat(this.hostResolver.getHost("2").get(), is("two"));
-		assertThat(this.hostResolver.getHost("3").get(), is("three"));
-		assertThat(this.hostResolver.getHost("4").get(), is("four"));
+		assertThat(this.hostResolver.getHosts("1"), is(Sets.newHashSet()));
+		assertThat(this.hostResolver.getHosts("2"), is(Sets.newHashSet("two")));
+		assertThat(this.hostResolver.getHosts("3"), is(Sets.newHashSet("three")));
+		assertThat(this.hostResolver.getHosts("4"), is(Sets.newHashSet("four")));
 
 		this.hostResolver.put("2", "dos");
 
-		assertThat(this.hostResolver.getHost("2").get(), is("dos"));
+		assertThat(this.hostResolver.getHosts("2"), is(Sets.newHashSet("dos")));
 	}
 
 	@Test
@@ -85,7 +86,7 @@ public class ZkHostResolverTest {
 
 		this.zkClient.createPersistent(ZK_CHROOT_PATH + "/1", "one");
 
-		assertThat(this.hostResolver.getHost("1").get(), is("one"));
+		assertThat(this.hostResolver.getHosts("1"), is(Sets.newHashSet("one")));
 
 		final CountDownLatch cdl = new CountDownLatch(1);
 
@@ -109,7 +110,7 @@ public class ZkHostResolverTest {
 
 		cdl.await(5, TimeUnit.SECONDS);
 
-		assertThat(this.hostResolver.getHost("1"), is(Optional.empty()));
+		assertThat(this.hostResolver.getHosts("1"), is(Sets.newHashSet()));
 	}
 
 	@Test
@@ -139,7 +140,7 @@ public class ZkHostResolverTest {
 
 		cdl.await(5, TimeUnit.SECONDS);
 
-		assertThat(this.hostResolver.getHost("1").get(), is("uno"));
+		assertThat(this.hostResolver.getHosts("1"), is(Sets.newHashSet("uno")));
 	}
 
 	@After

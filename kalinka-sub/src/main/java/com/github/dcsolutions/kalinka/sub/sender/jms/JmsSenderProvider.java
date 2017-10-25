@@ -17,6 +17,8 @@ limitations under the License.
 package com.github.dcsolutions.kalinka.sub.sender.jms;
 
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.jms.ConnectionFactory;
 
@@ -46,15 +48,14 @@ public class JmsSenderProvider extends AbstractSenderProvider<JmsTemplate> {
 	}
 
 	@Override
-	public JmsTemplate getSenderForHost(final String host) {
+	public Set<JmsTemplate> getSendersForHosts(final Set<String> hosts) {
 
-		final ConnectionFactory connectionFactory = this.connectionFactories.get(host);
-		if (connectionFactory == null) {
-			LOG.warn("No connectionFactory available for host={}", host);
-			return null;
-		}
-		final JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory);
-		jmsTemplate.setPubSubDomain(true);
-		return jmsTemplate;
+		return hosts.stream().filter(host -> {
+			if (this.connectionFactories.get(host) == null) {
+				LOG.warn("No connectionFactory available for host={}", host);
+				return false;
+			}
+			return true;
+		}).map(h -> new JmsTemplate(connectionFactories.get(h))).collect(Collectors.toSet());
 	}
 }

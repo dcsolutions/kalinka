@@ -16,7 +16,8 @@ limitations under the License.
 
 package com.github.dcsolutions.kalinka.cluster.zk;
 
-import java.util.Optional;
+import java.util.Collections;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.I0Itec.zkclient.IZkDataListener;
@@ -29,6 +30,8 @@ import com.github.dcsolutions.kalinka.cluster.IHostResolver;
 import com.google.common.base.Preconditions;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 /**
  * @author michas <michas@jarmoni.org>
@@ -50,18 +53,18 @@ public class ZkHostResolver implements IHostResolver {
 	}
 
 	@Override
-	public Optional<String> getHost(final String id) {
+	public Set<String> getHosts(final String id) {
 
 		String host = this.cache.getIfPresent(id);
 		if (host != null) {
-			return Optional.of(host);
+			return Sets.newHashSet(host);
 		}
 		final String path = "/" + id;
 		try {
 			host = this.zkClient.readData(path);
 		} catch (final ZkNoNodeException nex) {
 			LOG.debug("Node={} not existing in ZK", path);
-			return Optional.empty();
+			return Sets.newHashSet(Lists.newArrayList());
 		}
 		this.put(id, host);
 		this.zkClient.subscribeDataChanges(path, new IZkDataListener() {
@@ -81,7 +84,7 @@ public class ZkHostResolver implements IHostResolver {
 
 			}
 		});
-		return host != null ? Optional.of(host) : Optional.empty();
+		return host != null ? Sets.newHashSet(host) : Collections.unmodifiableSet(Sets.newHashSet());
 	}
 
 	void put(final String id, final String host) {

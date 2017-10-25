@@ -15,12 +15,14 @@ limitations under the License.
 */
 package com.github.dcsolutions.kalinka.sub.sender;
 
+import java.util.Set;
+
 /**
  * @author michas <michas@jarmoni.org>
  *
  */
 public interface ISenderProvider<T> {
 
-	T getSender(String hostIdentifier);
+	Set<T> getSenders(String hostIdentifier);
 
 }

@@ -16,21 +16,17 @@ limitations under the License.
 
 package com.github.dcsolutions.kalinka.sub.sender;
 
-import java.util.Optional;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Set;
 
 import com.github.dcsolutions.kalinka.cluster.IHostResolver;
 import com.google.common.base.Preconditions;
+
 
 /**
  * @author michas <michas@jarmoni.org>
  *
  */
 public abstract class AbstractSenderProvider<T> implements ISenderProvider<T> {
-
-	private static final Logger LOG = LoggerFactory.getLogger(AbstractSenderProvider.class);
 
 	private final IHostResolver hostResolver;
 
@@ -40,16 +36,12 @@ public abstract class AbstractSenderProvider<T> implements ISenderProvider<T> {
 	}
 
 	@Override
-	public T getSender(final String hostIdentifier) {
+	public Set<T> getSenders(final String hostIdentifier) {
 
-		final Optional<String> hostOpt = this.hostResolver.getHost(hostIdentifier);
-		if (!hostOpt.isPresent()) {
-			LOG.warn("HostIdentifier={} is not registered in ZK. Cannot publish", hostIdentifier);
-			return null;
-		}
-		return this.getSenderForHost(hostOpt.get());
+		final Set<String> hosts = this.hostResolver.getHosts(hostIdentifier);
+		return this.getSendersForHosts(hosts);
 	}
 
-	public abstract T getSenderForHost(String host);
+	public abstract Set<T> getSendersForHosts(Set<String> hosts);
 
 }

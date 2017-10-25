@@ -16,7 +16,7 @@ limitations under the License.
 
 package com.github.dcsolutions.kalinka.cluster;
 
-import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author michas <michas@jarmoni.org>
@@ -24,5 +24,5 @@ import java.util.Optional;
  */
 public interface IHostResolver {
 
-	Optional<String> getHost(String id);
+	Set<String> getHosts(String id);
 }

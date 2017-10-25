@@ -16,13 +16,12 @@ limitations under the License.
 package com.github.dcsolutions.kalinka.sub.example;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.jms.BytesMessage;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import com.github.dcsolutions.kalinka.sub.publisher.IMessagePublisher;
-import com.github.dcsolutions.kalinka.sub.sender.ISenderProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jms.core.JmsTemplate;
@@ -30,6 +29,8 @@ import org.springframework.jms.core.MessageCreator;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.dcsolutions.kalinka.sub.publisher.IMessagePublisher;
+import com.github.dcsolutions.kalinka.sub.sender.ISenderProvider;
 
 /**
  * @author michas <michas@jarmoni.org>
@@ -58,22 +59,28 @@ public class MqttMqttJmsMessagePublisher implements IMessagePublisher<JmsTemplat
 			final byte[] effectivePayloadFromResult = new byte[effectiveLength];
 			System.arraycopy(message.value(), 64, effectivePayloadFromResult, 0, effectiveLength);
 
-			final JmsTemplate sender = senderProvider.getSender(destId);
-			if (sender == null) {
+			final Set<JmsTemplate> senders = senderProvider.getSenders(destId);
+			if (senders.isEmpty()) {
 				LOG.warn("Cannot send, no sender available for destId={}", destId);
 				return;
 			}
-			sender.send(topic, (MessageCreator) session -> {
-				final BytesMessage byteMessage = session.createBytesMessage();
+			senders.forEach(sender -> {
 				try {
-					byteMessage.writeBytes(effectivePayloadFromResult);
-					return byteMessage;
+					sender.send(topic, (MessageCreator) session -> {
+						final BytesMessage byteMessage = session.createBytesMessage();
+						try {
+							byteMessage.writeBytes(effectivePayloadFromResult);
+							return byteMessage;
+						} catch (final Throwable t) {
+							throw new RuntimeException("Exception during sending", t);
+						}
+					});
 				} catch (final Throwable t) {
-					throw new RuntimeException(t);
+					LOG.error("Exception while sending", t);
 				}
 			});
 		} catch (final Throwable t) {
-			LOG.error("Exception while sending", t);
+			LOG.error("Unexpected exception", t);
 		}
 	}
 
