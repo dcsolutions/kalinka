@@ -23,7 +23,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -187,10 +186,7 @@ public class ContextConfiguration {
 
 		final Map<String, ConnectionFactory> connectionFactories = Maps.newHashMap();
 		this.jmsHosts.forEach(h -> {
-			final Pattern p = Pattern.compile("\\S+//(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}):\\d{3,5}");
-			final Matcher m = p.matcher(h);
-			m.find();
-			connectionFactories.put(m.group(1), this.connectionFactory(h));
+			connectionFactories.put(h.split(":")[0], this.connectionFactory(h));
 		});
 		return new JmsSenderProvider(connectionFactories, this.hostResolver);
 	}
