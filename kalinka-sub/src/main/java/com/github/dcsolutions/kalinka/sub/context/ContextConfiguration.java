@@ -111,6 +111,9 @@ public class ContextConfiguration {
 		this.jmsHosts = splitCsStrings(rawJmsHosts);
 	}
 
+	@Value("${jms.transport.protocol}:tcp://")
+	public String jmsTransportProtocol;
+
 	@Value("${kafka.subscribed.topics}")
 	public void setKafkaSuscribedTopics(final String rawKafkaSubscribedTopics) {
 
@@ -186,7 +189,7 @@ public class ContextConfiguration {
 
 		final Map<String, ConnectionFactory> connectionFactories = Maps.newHashMap();
 		this.jmsHosts.forEach(h -> {
-			connectionFactories.put(h.split(":")[0], this.connectionFactory(h));
+			connectionFactories.put(h.split(":")[0], this.connectionFactory(this.jmsTransportProtocol + h));
 		});
 		return new JmsSenderProvider(connectionFactories, this.hostResolver);
 	}
