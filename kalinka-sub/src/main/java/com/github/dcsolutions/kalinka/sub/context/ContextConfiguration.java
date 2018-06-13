@@ -111,7 +111,7 @@ public class ContextConfiguration {
 		this.jmsHosts = splitCsStrings(rawJmsHosts);
 	}
 
-	@Value("${jms.transport.protocol}:tcp://")
+	@Value("${jms.transport.protocol:tcp://}")
 	public String jmsTransportProtocol;
 
 	@Value("${kafka.subscribed.topics}")
@@ -199,7 +199,7 @@ public class ContextConfiguration {
 	public ConnectionFactory connectionFactory(final String host) {
 
 		CachingConnectionFactory connectionFactory = null;
-		LOG.info("Connecting with user={}, passwd={}", this.jmsUser, this.jmsPasswd);
+		LOG.info("Connecting with user={}, passwd={} to={}", this.jmsUser, this.jmsPasswd, host);
 		if (this.jmsUser != null && this.jmsPasswd != null) {
 			connectionFactory = new CachingConnectionFactory(new ActiveMQConnectionFactory(this.jmsUser, this.jmsPasswd, host));
 		} else {
