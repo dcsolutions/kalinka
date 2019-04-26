@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>com.github.dcsolutions.kalinka</groupId>
 		<artifactId>kalinka</artifactId>
-		<version>0.0.10</version>
+		<version>0.0.11-SNAPSHOT</version>
 	</parent>
 	<artifactId>kalinka-pub-plugin</artifactId>
 
